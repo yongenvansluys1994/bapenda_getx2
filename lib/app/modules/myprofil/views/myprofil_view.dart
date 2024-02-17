@@ -211,7 +211,6 @@ class MyprofilView extends GetView<MyprofilController> {
                   //   thickness: 1,
                   //   color: Color(0xFFE0E3E7),
                   // ),
-                  SizedBox(),
                   Padding(
                     padding: EdgeInsetsDirectional.fromSTEB(12, 8, 12, 8),
                     child: Row(
