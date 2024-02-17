@@ -1,0 +1,95 @@
+name: bapenda_getx2
+description: A new Flutter project.
+# The following line prevents the package from being accidentally published to
+# pub.dev using `flutter pub publish`. This is preferred for private packages.
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+# The following defines the version and build number for your application.
+# A version number is three numbers separated by dots, like 1.2.43
+# followed by an optional build number separated by a +.
+# Both the version and the builder number may be overridden in flutter
+# build by specifying --build-name and --build-number, respectively.
+# In Android, build-name is used as versionName while build-number used as versionCode.
+# Read more about Android versioning at https://developer.android.com/studio/publish/versioning
+# In iOS, build-name is used as CFBundleShortVersionString while build-number is used as CFBundleVersion.
+# Read more about iOS versioning at
+# https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
+# In Windows, build-name is used as the major, minor, and patch parts
+# of the product and file versions while build-number is used as the build suffix.
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.1.0 <4.0.0'
+
+# Dependencies specify other packages that your package needs in order to work.
+# To automatically upgrade your package dependencies to the latest versions
+# consider running `flutter pub upgrade --major-versions`. Alternatively,
+# dependencies can be manually updated by changing the version numbers below to
+# the latest version available on pub.dev. To see which dependencies have newer
+# versions available, run `flutter pub outdated`.
+dependencies:
+  badges: ^3.1.2
+  cached_network_image: ^3.2.3
+  carousel_slider: ^4.2.1
+  cloud_firestore: ^4.9.1
+  code_builder: ^4.5.0
+  cupertino_icons: ^1.0.2
+  dart_style: ^2.3.2
+  dio: ^5.3.2
+  easy_debounce: ^2.0.3
+  equatable: ^2.0.5
+  external_app_launcher: ^3.1.0
+  faker: ^2.1.0
+  firebase_core: ^2.15.1
+  firebase_messaging: ^14.6.7
+  firebase_storage: ^11.2.8
+  flash: ^3.0.5+1
+  flutter:
+    sdk: flutter
+  flutter_chat_ui: ^1.6.9
+  flutter_easyloading: ^3.0.5
+  flutter_local_notifications: ^15.1.1
+  flutter_screenutil: ^5.9.0
+  font_awesome_flutter: ^10.5.0
+  get: ^4.6.5
+  get_storage: ^2.1.1
+  google_maps_flutter: ^2.5.0
+  graphql_flutter: ^5.2.0-beta.5
+  image_gallery_saver: ^2.0.3
+  image_picker: ^1.0.2
+  intl: ^0.18.1
+  jwt_decoder: ^2.0.1
+  location: ^5.0.3
+  lottie: ^2.6.0
+  mask_text_input_formatter: ^2.5.0
+  month_picker_dialog: ^2.0.2
+  open_filex: ^4.3.4
+  open_store: ^0.5.0
+  open_street_map_search_and_pick: ^0.1.0
+  pdf: ^3.10.4
+  permission_handler: ^11.0.0
+  qr_flutter: ^4.1.0
+  rflutter_alert: ^2.0.7
+  sanitize_html: ^2.0.0
+  screenshot: ^2.1.0
+  share_plus: ^7.1.0
+  shimmer: ^3.0.0
+  sleek_circular_slider: ^2.0.1
+  sunmi_printer_plus: ^2.1.2
+  timeago: ^3.5.0
+  url_launcher: ^6.1.14
+
+dev_dependencies:
+  flutter_lints: ^2.0.0
+  flutter_test:
+    sdk: flutter
+
+# For information on the generic Dart part of this file, see the
+# following page: https://dart.dev/tools/pub/pubspec
+# The following section is specific to Flutter packages.
+flutter:
+  assets:
+    - assets/images/
+    - assets/icon/
+    - assets/lottie/
+  uses-material-design: true

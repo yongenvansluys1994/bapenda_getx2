@@ -1,0 +1,67 @@
+{
+  "project_info": {
+    "project_number": "33008143253",
+    "project_id": "bapendagetx",
+    "storage_bucket": "bapendagetx.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:33008143253:android:b9592785ef2f125a55849c",
+        "android_client_info": {
+          "package_name": "com.bapenda_getx_admin"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCXQ_gO8VksQAIatJrLGuYhl5cFQiJQcnI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:33008143253:android:de31e950983c8e1555849c",
+        "android_client_info": {
+          "package_name": "com.example.bapenda_getx"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCXQ_gO8VksQAIatJrLGuYhl5cFQiJQcnI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:33008143253:android:06e400052a7ca4ff55849c",
+        "android_client_info": {
+          "package_name": "com.yongenbisa.mybapenda"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCXQ_gO8VksQAIatJrLGuYhl5cFQiJQcnI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

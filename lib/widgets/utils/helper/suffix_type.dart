@@ -1,0 +1,1 @@
+enum SuffixType { text, icon }

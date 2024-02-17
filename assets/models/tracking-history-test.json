@@ -1,0 +1,25 @@
+{
+  "item_number": "900001",
+  "material_number": "R815505-6875643212:FB429",
+  "batch_number": "R815505-68",
+  "serial_number": "R815505-6875643212",
+  "qty": "1 EA",
+  "material_description": "PACKING, PREFORMED / AXJ COLUMBUS 15SAH",
+  "image": [
+    {
+      "name": "images/GADCtoLogistic.png"
+    },
+    {
+      "name": "images/PickupGADC.png"
+    },
+    {
+      "name": "images/TemporaryReceipt.png"
+    }
+  ],
+  "status": "Verified",
+  "mode": "View",
+  "isDeliveryNote": true,
+  "isTagging": true,
+  "itStamp": true,
+  "isQuantity": true
+}
