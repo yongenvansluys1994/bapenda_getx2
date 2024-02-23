@@ -1,13 +1,10 @@
 import 'package:bapenda_getx2/app/routes/app_pages.dart';
-import 'package:bapenda_getx2/core/push_notification/push_notif_single.dart';
 import 'package:bapenda_getx2/widgets/badge_notif.dart';
 import 'package:bapenda_getx2/widgets/custtombottombar.dart';
 import 'package:bapenda_getx2/widgets/getdialog.dart';
 import 'package:bapenda_getx2/widgets/shimmer.dart';
 import 'package:bapenda_getx2/widgets/texts.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:bapenda_getx2/app/core/api/api.dart';
@@ -115,7 +112,7 @@ class Dashboard extends StatelessWidget {
                         SizedBox(height: 10.h),
                         Container(
                           width: MediaQuery.of(context).size.width,
-                          height: 142.h,
+                          height: 150.h,
                           decoration: BoxDecoration(
                               // border: Border.all(
                               //     color: Colors.black12.withOpacity(0.04)),
@@ -191,7 +188,7 @@ class Dashboard extends StatelessWidget {
                                       color: Colors.transparent,
                                     ),
                                     Container(
-                                      height: 77.h,
+                                      height: 85.h,
                                       width: 95.w,
                                       child: Column(
                                         children: [
@@ -208,8 +205,7 @@ class Dashboard extends StatelessWidget {
                                           GestureDetector(
                                             onTap: () {},
                                             child: Container(
-                                              height: 57.h,
-                                              width: 110.w,
+                                              height: 53.h,
                                               child: SleekCircularSlider(
                                                 appearance:
                                                     CircularSliderAppearance(
@@ -370,74 +366,80 @@ class Dashboard extends StatelessWidget {
                     children: [
                       Container(
                         margin: EdgeInsets.symmetric(horizontal: 20.r),
-                        height: 230.h,
+                        height: 220.h,
                         decoration: BoxDecoration(
                           // color: const Color.fromARGB(255, 255, 255, 255),
                           borderRadius: BorderRadius.circular(15),
                         ),
                         child: GridView.count(
                           physics: NeverScrollableScrollPhysics(),
-                          childAspectRatio: (8 / 10),
+                          childAspectRatio: (9 / 10),
                           crossAxisCount: 4,
                           padding: EdgeInsets.only(top: 2.h),
                           children: <Widget>[
                             Container(
                               child: Column(
                                 children: [
-                                  Ink(
-                                    height: 63.h,
-                                    width: 62.w,
-                                    decoration: BoxDecoration(
-                                      gradient: LinearGradient(colors: <Color>[
-                                        Color.fromARGB(255, 235, 237, 244),
-                                        Color.fromARGB(255, 188, 230, 236)
-                                      ]),
-                                      borderRadius: BorderRadius.circular(8.w),
-                                      boxShadow: [
-                                        BoxShadow(
-                                            color: Colors.black12,
-                                            blurRadius: 4,
-                                            offset: Offset(3, 3),
-                                            spreadRadius: 1),
-                                        BoxShadow(
-                                            color: Colors.white,
-                                            blurRadius: 4,
-                                            offset: Offset(-1, -1),
-                                            spreadRadius: 1),
-                                      ],
-                                    ),
-                                    child: InkWell(
-                                      splashColor: lightBlueColor,
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Container(
-                                            height: 40.h,
-                                            decoration: BoxDecoration(
-                                                image: DecorationImage(
-                                                    image: AssetImage(
-                                                        'assets/images/pelaporan.png'))),
+                                  Stack(
+                                    children: [
+                                      notif(
+                                          showbadge:
+                                              controller.tot_pelaporan == 0
+                                                  ? false
+                                                  : true,
+                                          number: controller.tot_pelaporan),
+                                      Ink(
+                                        height: 63.h,
+                                        width: 62.w,
+                                        decoration: BoxDecoration(
+                                          gradient:
+                                              LinearGradient(colors: <Color>[
+                                            Color.fromARGB(255, 235, 237, 244),
+                                            Color.fromARGB(255, 188, 230, 236)
+                                          ]),
+                                          borderRadius:
+                                              BorderRadius.circular(8.w),
+                                          boxShadow: [
+                                            BoxShadow(
+                                                color: Colors.black12,
+                                                blurRadius: 4,
+                                                offset: Offset(3, 3),
+                                                spreadRadius: 1),
+                                            BoxShadow(
+                                                color: Colors.white,
+                                                blurRadius: 4,
+                                                offset: Offset(-1, -1),
+                                                spreadRadius: 1),
+                                          ],
+                                        ),
+                                        child: InkWell(
+                                          splashColor: lightBlueColor,
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Container(
+                                                height: 40.h,
+                                                decoration: BoxDecoration(
+                                                    image: DecorationImage(
+                                                        image: AssetImage(
+                                                            'assets/images/pelaporan.png'))),
+                                              ),
+                                            ],
                                           ),
-                                        ],
+                                          onTap: () {
+                                            Get.toNamed(Routes.LAPOR_PAJAK,
+                                                arguments:
+                                                    controller.authModel);
+                                          },
+                                        ),
                                       ),
-                                      onTap: () {
-                                        Get.toNamed(Routes.LAPOR_PAJAK,
-                                            arguments: controller.authModel);
-                                      },
-                                    ),
+                                    ],
                                   ),
                                   SizedBox(height: 9.h),
                                   Texts.captionDashboard("Lapor Pajak",
                                       color: lightTextColor,
                                       textAlign: TextAlign.center),
-                                  Expanded(
-                                      child: notif(
-                                          showbadge:
-                                              controller.tot_pelaporan == 0
-                                                  ? false
-                                                  : true,
-                                          number: controller.tot_pelaporan))
                                 ],
                               ),
                             ),
@@ -606,60 +608,67 @@ class Dashboard extends StatelessWidget {
                             Container(
                               child: Column(
                                 children: [
-                                  Ink(
-                                    height: 63.h,
-                                    width: 62.w,
-                                    decoration: BoxDecoration(
-                                      gradient: LinearGradient(colors: <Color>[
-                                        Color.fromARGB(255, 235, 237, 244),
-                                        Color.fromARGB(255, 188, 230, 236)
-                                      ]),
-                                      borderRadius: BorderRadius.circular(8.w),
-                                      boxShadow: [
-                                        BoxShadow(
-                                            color: Colors.black12,
-                                            blurRadius: 4,
-                                            offset: Offset(3, 3),
-                                            spreadRadius: 1),
-                                        BoxShadow(
-                                            color: Colors.white,
-                                            blurRadius: 4,
-                                            offset: Offset(-1, -1),
-                                            spreadRadius: 1),
-                                      ],
-                                    ),
-                                    child: InkWell(
-                                      splashColor: lightBlueColor,
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Container(
-                                            height: 50.h,
-                                            decoration: BoxDecoration(
-                                                image: DecorationImage(
-                                                    image: AssetImage(
-                                                        'assets/images/pembayaran.png'))),
+                                  Stack(
+                                    children: [
+                                      notif(
+                                          showbadge:
+                                              controller.datalist.length == 0
+                                                  ? false
+                                                  : true,
+                                          number: controller.datalist.length),
+                                      Ink(
+                                        height: 63.h,
+                                        width: 62.w,
+                                        decoration: BoxDecoration(
+                                          gradient:
+                                              LinearGradient(colors: <Color>[
+                                            Color.fromARGB(255, 235, 237, 244),
+                                            Color.fromARGB(255, 188, 230, 236)
+                                          ]),
+                                          borderRadius:
+                                              BorderRadius.circular(8.w),
+                                          boxShadow: [
+                                            BoxShadow(
+                                                color: Colors.black12,
+                                                blurRadius: 4,
+                                                offset: Offset(3, 3),
+                                                spreadRadius: 1),
+                                            BoxShadow(
+                                                color: Colors.white,
+                                                blurRadius: 4,
+                                                offset: Offset(-1, -1),
+                                                spreadRadius: 1),
+                                          ],
+                                        ),
+                                        child: InkWell(
+                                          splashColor: lightBlueColor,
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Container(
+                                                height: 50.h,
+                                                decoration: BoxDecoration(
+                                                    image: DecorationImage(
+                                                        image: AssetImage(
+                                                            'assets/images/pembayaran.png'))),
+                                              ),
+                                            ],
                                           ),
-                                        ],
+                                          onTap: () {
+                                            Get.toNamed(Routes.PEMBAYARAN,
+                                                arguments:
+                                                    controller.authModel);
+                                          },
+                                        ),
                                       ),
-                                      onTap: () {
-                                        Get.toNamed(Routes.PEMBAYARAN,
-                                            arguments: controller.authModel);
-                                      },
-                                    ),
+                                    ],
                                   ),
                                   SizedBox(height: 9.h),
                                   Texts.captionDashboard("Pembayaran",
                                       color: lightTextColor,
                                       textAlign: TextAlign.center),
-                                  Expanded(
-                                      child: notif(
-                                          showbadge:
-                                              controller.datalist.length == 0
-                                                  ? false
-                                                  : true,
-                                          number: controller.datalist.length))
+
                                   // Expanded(child: notifkhotbah()),
                                 ],
                               ),
@@ -721,62 +730,68 @@ class Dashboard extends StatelessWidget {
                             Container(
                               child: Column(
                                 children: [
-                                  Ink(
-                                    height: 63.h,
-                                    width: 62.w,
-                                    decoration: BoxDecoration(
-                                      gradient: LinearGradient(colors: <Color>[
-                                        Color.fromARGB(255, 235, 237, 244),
-                                        Color.fromARGB(255, 188, 230, 236)
-                                      ]),
-                                      borderRadius: BorderRadius.circular(8.w),
-                                      boxShadow: [
-                                        BoxShadow(
-                                            color: Colors.black12,
-                                            blurRadius: 4,
-                                            offset: Offset(3, 3),
-                                            spreadRadius: 1),
-                                        BoxShadow(
-                                            color: Colors.white,
-                                            blurRadius: 4,
-                                            offset: Offset(-1, -1),
-                                            spreadRadius: 1),
-                                      ],
-                                    ),
-                                    child: InkWell(
-                                      splashColor: lightBlueColor,
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Container(
-                                            height: 40.h,
-                                            decoration: BoxDecoration(
-                                                image: DecorationImage(
-                                                    image: AssetImage(
-                                                        'assets/images/tanya.png'))),
+                                  Stack(
+                                    children: [
+                                      notif(
+                                          showbadge:
+                                              controller.countUnseenChat == 0
+                                                  ? false
+                                                  : true,
+                                          number: controller.countUnseenChat
+                                              .toInt()),
+                                      Ink(
+                                        height: 63.h,
+                                        width: 62.w,
+                                        decoration: BoxDecoration(
+                                          gradient:
+                                              LinearGradient(colors: <Color>[
+                                            Color.fromARGB(255, 235, 237, 244),
+                                            Color.fromARGB(255, 188, 230, 236)
+                                          ]),
+                                          borderRadius:
+                                              BorderRadius.circular(8.w),
+                                          boxShadow: [
+                                            BoxShadow(
+                                                color: Colors.black12,
+                                                blurRadius: 4,
+                                                offset: Offset(3, 3),
+                                                spreadRadius: 1),
+                                            BoxShadow(
+                                                color: Colors.white,
+                                                blurRadius: 4,
+                                                offset: Offset(-1, -1),
+                                                spreadRadius: 1),
+                                          ],
+                                        ),
+                                        child: InkWell(
+                                          splashColor: lightBlueColor,
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Container(
+                                                height: 40.h,
+                                                decoration: BoxDecoration(
+                                                    image: DecorationImage(
+                                                        image: AssetImage(
+                                                            'assets/images/tanya.png'))),
+                                              ),
+                                            ],
                                           ),
-                                        ],
+                                          onTap: () {
+                                            Get.toNamed(Routes.CHAT,
+                                                arguments:
+                                                    controller.authModel);
+                                          },
+                                        ),
                                       ),
-                                      onTap: () {
-                                        Get.toNamed(Routes.CHAT,
-                                            arguments: controller.authModel);
-                                      },
-                                    ),
+                                    ],
                                   ),
                                   SizedBox(height: 9.h),
                                   Texts.captionDashboard("Chat Admin",
                                       color: lightTextColor,
                                       textAlign: TextAlign.center,
                                       maxLines: 2),
-                                  Expanded(
-                                      child: notif(
-                                          showbadge:
-                                              controller.countUnseenChat == 0
-                                                  ? false
-                                                  : true,
-                                          number: controller.countUnseenChat
-                                              .toInt()))
                                 ],
                               ),
                             ),
@@ -835,6 +850,7 @@ class Dashboard extends StatelessWidget {
                       ),
                     ],
                   ),
+                  SizedBox(height: 10.h),
                   Column(
                     children: [
                       Row(
@@ -879,7 +895,7 @@ class Dashboard extends StatelessWidget {
                           return Padding(
                             padding: EdgeInsets.symmetric(horizontal: 10.r),
                             child: SizedBox(
-                              height: 135.h,
+                              height: 145.h,
                               width: 500.w,
                               child: ListView.builder(
                                   scrollDirection: Axis.horizontal,
@@ -984,7 +1000,7 @@ class Dashboard extends StatelessWidget {
                           return Padding(
                             padding: EdgeInsets.symmetric(horizontal: 10.r),
                             child: SizedBox(
-                              height: 150.h,
+                              height: 145.h,
                               width: 500.w,
                               child: ListView.builder(
                                   scrollDirection: Axis.horizontal,
@@ -1060,7 +1076,7 @@ class Dashboard extends StatelessWidget {
                       Padding(
                         padding: EdgeInsets.symmetric(horizontal: 10.r),
                         child: SizedBox(
-                            height: 150.h,
+                            height: 155.h,
                             width: 500.w,
                             child: ListView(
                               scrollDirection: Axis.horizontal,
@@ -1069,7 +1085,8 @@ class Dashboard extends StatelessWidget {
                               children: [
                                 InkWell(
                                   onTap: () {
-                                    Get.toNamed(Routes.PARKIR_APP);
+                                    Get.toNamed(Routes.PARKIR_APP,
+                                        arguments: controller.authModel);
                                   },
                                   child: Container(
                                     width: 170.w,

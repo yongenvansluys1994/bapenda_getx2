@@ -70,7 +70,7 @@ class HistoryPajak5 extends StatelessWidget {
                 child: Padding(
                     padding: EdgeInsetsDirectional.fromSTEB(0, 0, 0, 1),
                     child: Container(
-                      height: 90.h,
+                      height: 120.h,
                       decoration: BoxDecoration(
                         image: DecorationImage(
                             image: AssetImage(item.status == "0"
@@ -162,7 +162,7 @@ class HistoryPajak5 extends StatelessWidget {
                                       children: [
                                         Container(
                                           width: 300.w,
-                                          height: 20.h,
+                                          height: 30.h,
                                           child: Stack(
                                             children: [
                                               Texts.caption(
@@ -313,7 +313,8 @@ class HistoryPajak5 extends StatelessWidget {
                                                     : 'Lihat E-Billing'),
                                             Icon(
                                               Icons.chevron_right_rounded,
-                                              color: Color(0xFF57636C),
+                                              color: Color.fromARGB(
+                                                  255, 55, 61, 66),
                                               size: 24,
                                             ),
                                           ],

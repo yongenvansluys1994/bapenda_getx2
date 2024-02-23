@@ -5,7 +5,6 @@ import 'package:bapenda_getx2/app/modules/lapor_pajak/models/model_getpelaporanu
 import 'package:bapenda_getx2/app/modules/lapor_pajak/models/model_objekku.dart';
 import 'package:bapenda_getx2/app/modules/myprofil/models/model_ads.dart';
 import 'package:dio/dio.dart';
-import 'package:http/http.dart' as http;
 
 //const baseUrl = 'https://yongen-bisa.com/bapenda_app/api';
 const baseUrl = 'https://yongen-bisa.com/bapenda_app/api_ver2';

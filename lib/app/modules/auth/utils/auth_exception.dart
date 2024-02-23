@@ -3,7 +3,6 @@
 import 'dart:convert';
 
 import 'package:bapenda_getx2/core/app_exception.dart';
-import 'package:bapenda_getx2/core/app_exception.dart';
 
 class AuthException extends AppException {
   String message;

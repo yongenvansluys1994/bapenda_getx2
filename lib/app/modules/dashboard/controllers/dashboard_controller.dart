@@ -103,6 +103,7 @@ class DashboardController extends GetxController with AuthCacheService {
 
     print("Tesss");
     Get.offNamed(Routes.LOGIN);
+
     //Get.delete<DashboardController>(force: true);
   }
 

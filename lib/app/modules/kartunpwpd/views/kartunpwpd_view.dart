@@ -88,13 +88,13 @@ class KartunpwpdView extends GetView<KartunpwpdController> {
                                 arguments: controller.datalist[index]);
                           },
                           child: Container(
-                            height: 90.h,
+                            height: 110.h,
                             width: MediaQuery.of(context).size.width,
                             child: Stack(
                               children: [
                                 Container(
                                   width: MediaQuery.of(context).size.width,
-                                  height: 110,
+                                  height: 110.h,
                                   decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(20),
                                       image: DecorationImage(
@@ -115,7 +115,7 @@ class KartunpwpdView extends GetView<KartunpwpdController> {
                                       ]),
                                 ),
                                 Container(
-                                  height: 100,
+                                  height: 100.h,
                                   margin: EdgeInsets.only(
                                       left: 20, top: 8, right: 17),
                                   child: Column(
@@ -154,7 +154,7 @@ class KartunpwpdView extends GetView<KartunpwpdController> {
                                 ),
                                 Container(
                                   width: double.maxFinite,
-                                  height: 100,
+                                  height: 100.h,
                                   margin: EdgeInsets.only(
                                     left: 130,
                                     top: 8,

@@ -6,8 +6,6 @@ import 'package:bapenda_getx2/widgets/snackbar.dart';
 import 'package:bapenda_getx2/widgets/texts.dart';
 import 'package:bapenda_getx2/widgets/theme/app_theme.dart';
 import 'package:dio/dio.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -191,7 +189,7 @@ class LaporPajakController extends GetxController {
     Alert(
             context: context,
             content: Container(
-              height: MediaQuery.of(context).size.height / 2.2,
+              //height: MediaQuery.of(context).size.height / 2.2,
               width: MediaQuery.of(context).size.width,
               child: Center(
                 child: Column(
@@ -296,7 +294,6 @@ class LaporPajakController extends GetxController {
       required String pajak}) {
     return Container(
       width: 100.w,
-      height: 100.h,
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(

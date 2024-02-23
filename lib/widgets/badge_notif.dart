@@ -10,9 +10,9 @@ class notif extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Transform.scale(
-      scale: 0.98,
+      scale: 0.65.r,
       child: Transform.translate(
-          offset: Offset(30.r, -93.r),
+          offset: Offset(63.r, -25.r),
           child: badges.Badge(
             showBadge: showbadge,
             badgeStyle: badges.BadgeStyle(badgeColor: Colors.red),
@@ -22,7 +22,7 @@ class notif extends StatelessWidget {
               alignment: Alignment.center,
               child: Text(
                 '$number',
-                style: TextStyle(color: Colors.white),
+                style: TextStyle(color: Colors.white, fontSize: 17.sp),
               ),
             ),
           )),

@@ -91,7 +91,7 @@ class PembayaranView extends GetView<PembayaranController> {
                         return Padding(
                             padding: EdgeInsetsDirectional.fromSTEB(0, 0, 0, 1),
                             child: Container(
-                              height: 90.h,
+                              height: 120.h,
                               decoration: BoxDecoration(
                                 image: DecorationImage(
                                     image: AssetImage(
@@ -187,7 +187,7 @@ class PembayaranView extends GetView<PembayaranController> {
                                               children: [
                                                 Container(
                                                   width: 300.w,
-                                                  height: 20.h,
+                                                  height: 30.h,
                                                   child: Stack(
                                                     children: [
                                                       Texts.caption(

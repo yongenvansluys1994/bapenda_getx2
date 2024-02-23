@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:badges/badges.dart' as badges;
 
 class customButtomBar extends StatelessWidget {
   const customButtomBar({

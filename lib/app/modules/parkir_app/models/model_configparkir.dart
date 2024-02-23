@@ -11,12 +11,14 @@ String modelConfigParkirToJson(ModelConfigParkir data) =>
     json.encode(data.toJson());
 
 class ModelConfigParkir {
+  String npwpd;
   String namaUsaha;
   String alamatUsaha;
   String hargaRoda2;
   String hargaRoda4;
 
   ModelConfigParkir({
+    required this.npwpd,
     required this.namaUsaha,
     required this.alamatUsaha,
     required this.hargaRoda2,
@@ -25,6 +27,7 @@ class ModelConfigParkir {
 
   factory ModelConfigParkir.fromJson(Map<String, dynamic> json) =>
       ModelConfigParkir(
+        npwpd: json["npwpd"],
         namaUsaha: json["nama_usaha"],
         alamatUsaha: json["alamat_usaha"],
         hargaRoda2: json["harga_roda2"],
@@ -32,6 +35,7 @@ class ModelConfigParkir {
       );
 
   Map<String, dynamic> toJson() => {
+        "npwpd": npwpd,
         "nama_usaha": namaUsaha,
         "alamat_usaha": alamatUsaha,
         "harga_roda2": hargaRoda2,

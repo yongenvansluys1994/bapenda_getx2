@@ -51,5 +51,6 @@ mixin AuthCacheService {
   Future<void> removeUserdata() async {
     final box = GetStorage();
     await box.remove(STORAGE_LOGIN_USER_DATA);
+    await box.remove("config_parkir");
   }
 }

@@ -3,12 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:bapenda_getx2/app/modules/dashboard/controllers/dashboard_controller.dart';
 import 'package:bapenda_getx2/app/routes/app_pages.dart';
-import 'package:bapenda_getx2/widgets/shimmer.dart';
 import 'package:bapenda_getx2/widgets/texts.dart';
 import 'package:bapenda_getx2/widgets/theme/app_theme.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:badges/badges.dart' as badges;
 
 // ignore: must_be_immutable

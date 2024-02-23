@@ -58,7 +58,7 @@ class PelaporanHistoryController extends GetxController {
   Future<void> GetHistoryPajak(int tahun, bool notiflunas) async {
     notiflunas == false
         ? EasyLoading.show(
-            status: "Sedang membuat data", maskType: EasyLoadingMaskType.black)
+            status: "Sedang memuat data", maskType: EasyLoadingMaskType.black)
         : null;
 
     try {

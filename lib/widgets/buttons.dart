@@ -101,7 +101,7 @@ class Buttons {
           shadowColor: Colors.transparent,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(borderRadius),
-            side: borderSide!
+            side: borderSide
                 ? BorderSide(
                     color: borderSideColor!,
                     width: borderSideWidth,

@@ -1,5 +1,4 @@
 import 'package:bapenda_getx2/app/modules/tambah_npwpd/controllers/tambah_npwpd_controller.dart';
-import 'package:bapenda_getx2/app/modules/tambah_npwpdbaru/controllers/tambah_npwpdbaru_controller.dart';
 import 'package:bapenda_getx2/core/location_service.dart';
 import 'package:bapenda_getx2/widgets/custom_appbar.dart';
 
