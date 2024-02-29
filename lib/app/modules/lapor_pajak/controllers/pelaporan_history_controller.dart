@@ -1,6 +1,7 @@
 import 'package:bapenda_getx2/app/core/api/api.dart';
 import 'package:bapenda_getx2/app/modules/lapor_pajak/models/model_getpelaporanuser.dart';
 import 'package:bapenda_getx2/app/modules/lapor_pajak/models/model_objekku.dart';
+import 'package:bapenda_getx2/widgets/getdialog.dart';
 import 'package:bapenda_getx2/widgets/snackbar.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -93,11 +94,20 @@ class PelaporanHistoryController extends GetxController {
           ex.type == DioErrorType.receiveTimeout ||
           ex.type == DioErrorType.sendTimeout) {
         errorMessage = "Limit Connection, Koneksi anda bermasalah";
+        getDefaultDialog().onFixWithHandler(
+          title: "Mohon maaf jaringan anda tidak baik",
+          desc: "Periksa jaringan dan coba kembali ",
+          kategori: "warning",
+          handler: () {
+            Get.back();
+            Get.back();
+          },
+        );
       } else {
         errorMessage = "$ex";
       }
       notiflunas == false ? EasyLoading.dismiss() : null;
-      RawSnackbar_top(message: "$errorMessage", kategori: "error", duration: 4);
+      //RawSnackbar_top(message: "$errorMessage", kategori: "error", duration: 4);
       update();
     }
     update();

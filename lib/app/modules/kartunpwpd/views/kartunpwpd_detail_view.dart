@@ -47,162 +47,155 @@ class KartunpwpdDetailView extends GetView<KartunpwpdDetailController> {
                     height: 280.h,
                     width: MediaQuery.of(context).size.width / 1.15,
                     decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(15),
-                        image: DecorationImage(
-                            image:
-                                AssetImage("assets/images/npwpd_flutter.png"),
-                            fit: BoxFit.fill),
-                        boxShadow: [
-                          BoxShadow(
-                              blurRadius: 10,
-                              offset: Offset(8, 6),
-                              color: lightGreenColor.withOpacity(0.3)),
-                          BoxShadow(
-                              blurRadius: 10,
-                              offset: Offset(-1, -5),
-                              color: lightGreenColor.withOpacity(0.3))
-                        ]),
+                      borderRadius: BorderRadius.circular(15),
+                      image: DecorationImage(
+                          image: AssetImage("assets/images/npwpd_flutter.png"),
+                          fit: BoxFit.contain),
+                    ),
                   ),
                   Positioned(
-                    top: 60,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Container(
-                              width: 95.w,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Texts.caption(
-                                    maxLines: 1,
-                                    "NPWPD/RD",
-                                    color: Color.fromARGB(255, 59, 59, 59),
-                                  ),
-                                ],
+                    top: 95,
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 10.r),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Container(
+                                width: 95.w,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Texts.caption(
+                                      maxLines: 1,
+                                      "NPWPD/RD",
+                                      color: Color.fromARGB(255, 59, 59, 59),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                            Container(
-                              width: 180.w,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Texts.caption(
-                                    maxLines: 1,
-                                    ": ${controller.dataArgument.npwpd}",
-                                    color: Color.fromARGB(255, 59, 59, 59),
-                                  ),
-                                ],
+                              Container(
+                                width: 180.w,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Texts.caption(
+                                      maxLines: 1,
+                                      ": ${controller.dataArgument.npwpd}",
+                                      color: Color.fromARGB(255, 59, 59, 59),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            Container(
-                              width: 95.w,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Texts.caption(
-                                    maxLines: 1,
-                                    "Nama WP",
-                                    color: Color.fromARGB(255, 59, 59, 59),
-                                  ),
-                                ],
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              Container(
+                                width: 95.w,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Texts.caption(
+                                      maxLines: 1,
+                                      "Nama WP",
+                                      color: Color.fromARGB(255, 59, 59, 59),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                            Container(
-                              width: 180.w,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Texts.caption(
-                                    maxLines: 2,
-                                    ": ${controller.dataArgument.namaUsaha}",
-                                    color: Color.fromARGB(255, 59, 59, 59),
-                                  ),
-                                ],
+                              Container(
+                                width: 180.w,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Texts.caption(
+                                      maxLines: 2,
+                                      ": ${controller.dataArgument.namaUsaha}",
+                                      color: Color.fromARGB(255, 59, 59, 59),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            Container(
-                              width: 95.w,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Texts.caption(
-                                    maxLines: 1,
-                                    "Nama Pemilik",
-                                    color: Color.fromARGB(255, 59, 59, 59),
-                                  ),
-                                ],
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              Container(
+                                width: 95.w,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Texts.caption(
+                                      maxLines: 1,
+                                      "Nama Pemilik",
+                                      color: Color.fromARGB(255, 59, 59, 59),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                            Container(
-                              width: 180.w,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Texts.caption(
-                                    maxLines: 1,
-                                    ": ${controller.dataArgument.namaPemilik}",
-                                    color: Color.fromARGB(255, 59, 59, 59),
-                                  ),
-                                ],
+                              Container(
+                                width: 180.w,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Texts.caption(
+                                      maxLines: 1,
+                                      ": ${controller.dataArgument.namaPemilik}",
+                                      color: Color.fromARGB(255, 59, 59, 59),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            Container(
-                              width: 95.w,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Texts.caption(
-                                    maxLines: 1,
-                                    "Alamat",
-                                    color: Color.fromARGB(255, 59, 59, 59),
-                                  ),
-                                ],
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              Container(
+                                width: 95.w,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Texts.caption(
+                                      maxLines: 1,
+                                      "Alamat",
+                                      color: Color.fromARGB(255, 59, 59, 59),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                            Container(
-                              width: 180.w,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Texts.caption(
-                                    maxLines: 2,
-                                    ": ${controller.dataArgument.alamatUsaha}",
-                                    color: Color.fromARGB(255, 59, 59, 59),
-                                  ),
-                                ],
+                              Container(
+                                width: 180.w,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Texts.caption(
+                                      maxLines: 2,
+                                      ": ${controller.dataArgument.alamatUsaha}",
+                                      color: Color.fromARGB(255, 59, 59, 59),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                        Image(
-                          height: 40,
-                          width: 40,
-                          fit: BoxFit.cover,
-                          image: AssetImage('assets/images/QR-CODE.png'),
-                        ),
-                      ],
+                            ],
+                          ),
+                          Image(
+                            height: 40,
+                            width: 40,
+                            fit: BoxFit.cover,
+                            image: AssetImage('assets/images/QR-CODE.png'),
+                          ),
+                        ],
+                      ),
                     ),
                   )
                 ],
