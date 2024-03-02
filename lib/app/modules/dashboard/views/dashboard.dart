@@ -97,11 +97,22 @@ class Dashboard extends StatelessWidget {
                 children: [
                   SizedBox(height: 9.h),
                   Padding(
-                    padding: const EdgeInsets.only(left: 25),
+                    padding: EdgeInsets.only(left: 25.r),
                     child: Text(
-                      "Selamat Datang, ${controller.authModel.nama}",
+                      'Selamat Datang, ${controller.authModel.nama}',
                       style: TextStyle(
-                          fontWeight: FontWeight.w500, color: MainColor),
+                        foreground: Paint()
+                          ..shader = LinearGradient(
+                            colors: <Color>[
+                              Color(0xFF03045e),
+                              Color(0xFF1ed8a2)
+                            ],
+                          ).createShader(
+                            Rect.fromLTWH(60.0, 0.0, 140.0, 0.0),
+                          ),
+                        fontSize: 12.7.sp,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                   SizedBox(height: 5),

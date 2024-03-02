@@ -375,9 +375,9 @@ void GetDialogContent(
                   topLeft: Radius.circular(10.w),
                   topRight: Radius.circular(10.w)),
             ),
-            height: 40.h,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Padding(
                   padding: EdgeInsets.all(4.w),
@@ -386,12 +386,13 @@ void GetDialogContent(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Texts.captionXs(
+                        Texts.captionXs2(
                           "NAMA",
                           isBold: true,
                           color: Color.fromARGB(255, 71, 80, 90),
                         ),
-                        Texts.captionXs(
+                        Texts.captionXs2(
+                          maxLines: 2,
                           "${item.namaUsaha}",
                           color: Color.fromARGB(255, 59, 59, 59),
                         ),
@@ -407,12 +408,12 @@ void GetDialogContent(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Texts.captionXs(
+                        Texts.captionXs2(
                           "NPWPD",
                           isBold: true,
                           color: Color.fromARGB(255, 71, 80, 90),
                         ),
-                        Texts.captionXs(
+                        Texts.captionXs2(
                           "${item.npwpd}",
                           color: Color.fromARGB(255, 59, 59, 59),
                         ),
@@ -426,7 +427,6 @@ void GetDialogContent(
           Container(
             decoration:
                 BoxDecoration(color: Color.fromARGB(255, 248, 248, 248)),
-            height: 40.h,
             child: Row(
               children: [
                 Padding(
@@ -436,12 +436,12 @@ void GetDialogContent(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Texts.captionXs(
+                        Texts.captionXs2(
                           "ALAMAT",
                           isBold: true,
                           color: Color.fromARGB(255, 71, 80, 90),
                         ),
-                        Texts.captionXs(
+                        Texts.captionXs2(
                           "${item.alamatUsaha}",
                           color: Color.fromARGB(255, 59, 59, 59),
                         ),
@@ -456,7 +456,6 @@ void GetDialogContent(
             decoration: BoxDecoration(
               color: Color.fromARGB(255, 230, 230, 230),
             ),
-            height: 40.h,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -467,12 +466,12 @@ void GetDialogContent(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Texts.captionXs(
+                        Texts.captionXs2(
                           "Jenis Pajak",
                           isBold: true,
                           color: Color.fromARGB(255, 71, 80, 90),
                         ),
-                        Texts.captionXs(
+                        Texts.captionXs2(
                           "${item.nmRekening}",
                           color: Color.fromARGB(255, 59, 59, 59),
                         ),
@@ -488,12 +487,12 @@ void GetDialogContent(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Texts.captionXs(
+                        Texts.captionXs2(
                           "No. Kohir",
                           isBold: true,
                           color: Color.fromARGB(255, 71, 80, 90),
                         ),
-                        Texts.captionXs(
+                        Texts.captionXs2(
                           "${item.nomorKohir}",
                           color: Color.fromARGB(255, 59, 59, 59),
                         ),
@@ -511,7 +510,6 @@ void GetDialogContent(
                   topLeft: Radius.circular(10.w),
                   topRight: Radius.circular(10.w)),
             ),
-            height: 40.h,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -522,12 +520,12 @@ void GetDialogContent(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Texts.captionXs(
+                        Texts.captionXs2(
                           "Periode Awal",
                           isBold: true,
                           color: Color.fromARGB(255, 71, 80, 90),
                         ),
-                        Texts.captionXs(
+                        Texts.captionXs2(
                           "${item.masaPajak2}",
                           color: Color.fromARGB(255, 59, 59, 59),
                         ),
@@ -543,12 +541,12 @@ void GetDialogContent(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Texts.captionXs(
+                        Texts.captionXs2(
                           "Periode Akhir",
                           isBold: true,
                           color: Color.fromARGB(255, 71, 80, 90),
                         ),
-                        Texts.captionXs(
+                        Texts.captionXs2(
                           "${item.masaAkhir2}",
                           color: Color.fromARGB(255, 59, 59, 59),
                         ),
@@ -563,7 +561,6 @@ void GetDialogContent(
             decoration: BoxDecoration(
               color: Color.fromARGB(255, 230, 230, 230),
             ),
-            height: 40.h,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -574,12 +571,12 @@ void GetDialogContent(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Texts.captionXs(
+                        Texts.captionXs2(
                           "Jml Pajak",
                           isBold: true,
                           color: Color.fromARGB(255, 71, 80, 90),
                         ),
-                        Texts.captionXs(
+                        Texts.captionXs2(
                           "${item.pajak}",
                           color: Color.fromARGB(255, 59, 59, 59),
                         ),
@@ -595,12 +592,12 @@ void GetDialogContent(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Texts.captionXs(
+                        Texts.captionXs2(
                           "Denda",
                           isBold: true,
                           color: Color.fromARGB(255, 71, 80, 90),
                         ),
-                        Texts.captionXs(
+                        Texts.captionXs2(
                           "${denda_pajak}",
                           color: Color.fromARGB(255, 59, 59, 59),
                         ),
@@ -618,7 +615,6 @@ void GetDialogContent(
                   topLeft: Radius.circular(10.w),
                   topRight: Radius.circular(10.w)),
             ),
-            height: 40.h,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -629,12 +625,12 @@ void GetDialogContent(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Texts.captionXs(
+                        Texts.captionXs2(
                           "Batas Bayar",
                           isBold: true,
                           color: Color.fromARGB(255, 71, 80, 90),
                         ),
-                        Texts.captionXs(
+                        Texts.captionXs2(
                           "${DateFormat('yyyy-MM-dd').format(item.batasBayar)}",
                           color: Color.fromARGB(255, 59, 59, 59),
                         ),
@@ -650,12 +646,12 @@ void GetDialogContent(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Texts.captionXs(
+                        Texts.captionXs2(
                           "Tanggal Lunas",
                           isBold: true,
                           color: Color.fromARGB(255, 71, 80, 90),
                         ),
-                        Texts.captionXs(
+                        Texts.captionXs2(
                           "${item.tanggalLunas}",
                           color: Color.fromARGB(255, 59, 59, 59),
                         ),
