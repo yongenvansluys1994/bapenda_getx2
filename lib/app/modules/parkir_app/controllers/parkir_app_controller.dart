@@ -3,9 +3,13 @@ import 'dart:convert';
 import 'package:bapenda_getx2/app/core/api/api.dart';
 import 'package:bapenda_getx2/app/modules/dashboard/models/auth_model_model.dart';
 import 'package:bapenda_getx2/app/modules/parkir_app/models/model_configparkir.dart';
+import 'package:bapenda_getx2/app/modules/parkir_app/models/model_parkir_lhp.dart';
 import 'package:bapenda_getx2/app/modules/parkir_app/models/model_parkirtrans.dart';
+import 'package:bapenda_getx2/core/pdf/pdf_helper.dart';
+import 'package:bapenda_getx2/core/pdf/pdf_lhp_parkir_helper.dart';
 import 'package:bapenda_getx2/widgets/snackbar.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
@@ -46,9 +50,13 @@ class ParkirAppController extends GetxController {
   bool isFailed = false;
   final controllerScroll = ScrollController();
   RxList<ModelParkirTrans> datalist = <ModelParkirTrans>[].obs;
+  RxList<ModelParkirLhp> datalist_cetakLHP = <ModelParkirLhp>[].obs;
 
   List<Map<String, dynamic>> myList = [];
-
+  DateTime? selectedDate;
+  DateTime? selectedDate_akhir;
+  var FinalDate;
+  var FinalDate_akhir;
   String formNum(String s) {
     return NumberFormat.decimalPattern().format(
       int.parse(s),
@@ -395,6 +403,26 @@ class ParkirAppController extends GetxController {
     }
   }
 
+  Future cetakLHP(nik) async {
+    datalist_cetakLHP.clear(); //setiap cetakLHP di clear terlebih dahulu
+    final url = Uri.parse(
+        '${URL_APP}/parkir_app/get_lhp.php?nik_user=$nik&tgl_awal=$selectedDate&tgl_akhir=$selectedDate_akhir');
+    final response = await http.get(url);
+    if (response.statusCode == 200) {
+      List newItems =
+          (json.decode(response.body) as Map<String, dynamic>)["data"];
+      final list =
+          newItems.map<ModelParkirLhp>((json) => ModelParkirLhp.fromJson(json));
+
+      datalist_cetakLHP.addAll(list);
+      //proses Export LHP ke PDF
+      final pdfFile = await PdfLHPParkirHelper.generate(datalist_cetakLHP,
+          selectedDate, selectedDate_akhir, modelConfigParkir.namaUsaha);
+      PdfHelper.openFile(pdfFile);
+      update();
+    }
+  }
+
   final Dio dio = Dio(
     BaseOptions(
       baseUrl: baseUrl,
@@ -439,6 +467,42 @@ class ParkirAppController extends GetxController {
   Future<bool> isInternetConnected() async {
     var connectivityResult = await Connectivity().checkConnectivity();
     return connectivityResult != ConnectivityResult.none;
+  }
+
+  void date_picker_awal(BuildContext context) {
+    showDatePicker(
+      context: context,
+      initialDate:
+          DateTime.now(), // The initial date when the date picker is opened.
+      firstDate: DateTime(2021), // The earliest date that can be selected.
+      lastDate: DateTime(2025), // The latest date that can be selected.
+    ).then((date) {
+      if (date != null) {
+        selectedDate = date;
+        var ubahyear = DateFormat('dd-MM-yyyy').format(selectedDate!);
+        FinalDate = ubahyear.toString();
+        update();
+      }
+    });
+    update();
+  }
+
+  void date_picker_akhir(BuildContext context) {
+    showDatePicker(
+      context: context,
+      initialDate:
+          DateTime.now(), // The initial date when the date picker is opened.
+      firstDate: DateTime(2021), // The earliest date that can be selected.
+      lastDate: DateTime(2025), // The latest date that can be selected.
+    ).then((date) {
+      if (date != null) {
+        selectedDate_akhir = date;
+        var ubahyear = DateFormat('dd-MM-yyyy').format(selectedDate_akhir!);
+        FinalDate_akhir = ubahyear.toString();
+        update();
+      }
+    });
+    update();
   }
 
   @override

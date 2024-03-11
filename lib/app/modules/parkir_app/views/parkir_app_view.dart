@@ -1,4 +1,3 @@
-import 'package:bapenda_getx2/widgets/custom_appbar.dart';
 import 'package:bapenda_getx2/widgets/easythrottle.dart';
 import 'package:bapenda_getx2/widgets/nodata.dart';
 import 'package:bapenda_getx2/widgets/shimmer.dart';
@@ -20,7 +19,62 @@ class ParkirAppView extends GetView<ParkirAppController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(title: "Parkir App", leading: true, isLogin: true),
+      appBar: AppBar(
+          title: Texts.appBarText("Parkir App", color: MainColor),
+          automaticallyImplyLeading: false,
+          centerTitle: true,
+          elevation: 0,
+          backgroundColor: Colors.white,
+          actions: [
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: 5.h, horizontal: 5.w),
+              child: Container(
+                height: 40.h,
+                width: 40.w,
+                decoration: BoxDecoration(
+                  color: lightColor,
+                  border: Border.all(width: 2.w, color: shadowColor2),
+                  borderRadius: BorderRadius.circular(8.r),
+                ),
+                child: IconButton(
+                  icon: const Icon(
+                    Icons.picture_as_pdf,
+                    color: primaryColor,
+                  ),
+                  onPressed: () {
+                    cetakLap(context: context);
+                  },
+                ),
+              ),
+            ),
+          ],
+          leading: Padding(
+            padding:
+                EdgeInsets.only(top: 5.h, bottom: 5.h, left: 6.w, right: 3.7.w),
+            child: Container(
+              height: 40.h,
+              width: 40.w,
+              decoration: BoxDecoration(
+                color: lightColor,
+                border: Border.all(width: 2.w, color: shadowColor2),
+                borderRadius: BorderRadius.circular(8.r),
+              ),
+              child: IconButton(
+                icon: Icon(
+                  Icons.arrow_back_ios_new_outlined,
+                  color: primaryColor,
+                ),
+                tooltip: "Open notifications menu",
+                onPressed: () {
+                  Get.back();
+                  //Get.offNamed(Routes.DASHBOARD);
+                },
+              ),
+            ),
+          )
+
+          // actions: menuWidget != null ? [menuWidget] : null,
+          ),
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
@@ -197,6 +251,176 @@ class ParkirAppView extends GetView<ParkirAppController> {
     );
   }
 
+  cetakLap({required BuildContext context}) {
+    Get.bottomSheet(
+      GetBuilder<ParkirAppController>(
+        init: ParkirAppController(),
+        builder: (controller) {
+          return Container(
+            height: 180.h,
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.only(
+                  topRight: Radius.circular(16),
+                  topLeft: Radius.circular(16),
+                ),
+                color: Colors.white),
+            child: Padding(
+              padding: EdgeInsets.only(
+                  left: 16.r, right: 16.r, top: 16.r, bottom: 16.r),
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    topline_bottomsheet(),
+                    SizedBox(
+                      height: 8.h,
+                    ),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(4),
+                                child: Texts.caption("Tanggal Awal",
+                                    isBold: true, color: MainColor),
+                              ),
+                              Stack(
+                                children: [
+                                  TextFormField(
+                                    readOnly: true,
+                                    decoration: InputDecoration(
+                                      isDense: true,
+                                      contentPadding:
+                                          EdgeInsets.fromLTRB(10, 30, 10, 0),
+                                      fillColor: Colors.white,
+                                      filled: true,
+                                      hintText: '',
+                                      enabledBorder: const OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: Colors.grey, width: 0.0),
+                                      ),
+                                      focusedBorder: const OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: lightGreenColor, width: 2),
+                                      ),
+                                    ),
+                                    onTap: () {
+                                      controller.date_picker_awal(context);
+                                    },
+                                  ),
+                                  GestureDetector(
+                                    child: Container(
+                                      child: Text(
+                                        controller.FinalDate == null
+                                            ? ""
+                                            : "${controller.FinalDate}",
+                                        style: TextStyle(fontSize: 14.sp),
+                                      ),
+                                      margin:
+                                          EdgeInsets.only(left: 10, top: 13),
+                                    ),
+                                    onTap: () {
+                                      controller.date_picker_awal(context);
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(width: 10.0),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(4),
+                                child: Texts.caption("Tanggal Akhir",
+                                    isBold: true, color: MainColor),
+                              ),
+                              Stack(
+                                children: [
+                                  TextFormField(
+                                    readOnly: true,
+                                    decoration: InputDecoration(
+                                      isDense: true,
+                                      contentPadding:
+                                          EdgeInsets.fromLTRB(10, 30, 10, 0),
+                                      fillColor: Colors.white,
+                                      filled: true,
+                                      hintText: '',
+                                      enabledBorder: const OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: Colors.grey, width: 0.0),
+                                      ),
+                                      focusedBorder: const OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: lightGreenColor, width: 2),
+                                      ),
+                                    ),
+                                    onTap: () {
+                                      controller.date_picker_akhir(context);
+                                    },
+                                  ),
+                                  GestureDetector(
+                                    child: Container(
+                                      child: Text(
+                                        controller.FinalDate_akhir == null
+                                            ? ""
+                                            : "${controller.FinalDate_akhir}",
+                                        style: TextStyle(fontSize: 14.sp),
+                                      ),
+                                      margin:
+                                          EdgeInsets.only(left: 10, top: 13),
+                                    ),
+                                    onTap: () {
+                                      controller.date_picker_akhir(context);
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(width: 10.0),
+                    SizedBox(
+                      width: 130.w,
+                      child: OutlinedButton.icon(
+                          //Handle button press event
+                          onPressed: () {
+                            easyThrottle(
+                              handler: () async {
+                                //  final pdfFile =
+                                //                           await PdfLHPParkirHelper
+                                //                               .generate(controller.);
+                                //                       PdfHelper.openFile(pdfFile);
+                                controller.cetakLHP(controller.authModel.nik);
+                              },
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            side: const BorderSide(
+                              color: lightBlueColor,
+                              width: 1,
+                            ),
+                            onPrimary: lightBlueColor,
+                          ),
+                          icon: const Icon(Icons.save_alt),
+                          label: const Text("Cetak LHP")),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
   addBottomSheet({required BuildContext context}) {
     Get.bottomSheet(GetBuilder<ParkirAppController>(
         init: ParkirAppController(),
@@ -212,8 +436,8 @@ class ParkirAppView extends GetView<ParkirAppController> {
                   ),
                   color: Colors.white),
               child: Padding(
-                padding: const EdgeInsets.only(
-                    left: 16, right: 16, top: 16, bottom: 16),
+                padding: EdgeInsets.only(
+                    left: 16.r, right: 16.r, top: 16.r, bottom: 16.r),
                 child: Form(
                   //key: berita_C.formKey,
                   autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -222,6 +446,9 @@ class ParkirAppView extends GetView<ParkirAppController> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         topline_bottomsheet(),
+                        SizedBox(
+                          height: 8.h,
+                        ),
                         Padding(
                           padding: EdgeInsets.symmetric(horizontal: 12),
                           child: Column(

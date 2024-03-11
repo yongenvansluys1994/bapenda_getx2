@@ -35,6 +35,7 @@ class ModelGetpelaporanUser {
   String tarifPersen;
   String status;
   DateTime batasBayar;
+  String metodeBayar;
 
   ModelGetpelaporanUser({
     required this.idDaftarwp,
@@ -61,6 +62,7 @@ class ModelGetpelaporanUser {
     required this.tarifPersen,
     required this.status,
     required this.batasBayar,
+    required this.metodeBayar,
   });
 
   factory ModelGetpelaporanUser.fromJson(Map<String, dynamic> json) =>
@@ -89,6 +91,7 @@ class ModelGetpelaporanUser {
         tarifPersen: json["TARIF_PERSEN"],
         status: json["STATUS"],
         batasBayar: DateTime.parse(json["BATAS_BAYAR"]),
+        metodeBayar: json["METODE_BAYAR"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -118,5 +121,6 @@ class ModelGetpelaporanUser {
         "STATUS": status,
         "BATAS_BAYAR":
             "${batasBayar.year.toString().padLeft(4, '0')}-${batasBayar.month.toString().padLeft(2, '0')}-${batasBayar.day.toString().padLeft(2, '0')}",
+        "METODE_BAYAR": metodeBayar,
       };
 }

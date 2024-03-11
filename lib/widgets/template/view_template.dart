@@ -46,3 +46,21 @@ class LaporPajakView extends GetView<LaporPajakController> {
     );
   }
 }
+
+// class Widget_historyparkir extends StatelessWidget {
+//   final ParkirAppController controller;
+//   const Widget_historyparkir({
+//     super.key,
+//     required this.controller,
+//   });
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return GetBuilder<ParkirAppController>(
+//       init: ParkirAppController(),
+//       builder: (controller) {
+        
+//       },
+//     );
+//   }
+// }

@@ -2,7 +2,6 @@ import 'package:bapenda_getx2/app/core/api/api.dart';
 import 'package:bapenda_getx2/app/modules/lapor_pajak/models/model_getpelaporanuser.dart';
 import 'package:bapenda_getx2/app/modules/lapor_pajak/models/model_objekku.dart';
 import 'package:bapenda_getx2/widgets/getdialog.dart';
-import 'package:bapenda_getx2/widgets/snackbar.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 

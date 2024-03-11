@@ -577,7 +577,7 @@ void GetDialogContent(
                           color: Color.fromARGB(255, 71, 80, 90),
                         ),
                         Texts.captionXs2(
-                          "${item.pajak}",
+                          "${NumberFormat.currency(locale: 'id', symbol: 'Rp. ', decimalDigits: 0).format(int.parse(item.pajak.toString()))}",
                           color: Color.fromARGB(255, 59, 59, 59),
                         ),
                       ],
@@ -598,7 +598,7 @@ void GetDialogContent(
                           color: Color.fromARGB(255, 71, 80, 90),
                         ),
                         Texts.captionXs2(
-                          "${denda_pajak}",
+                          "${NumberFormat.currency(locale: 'id', symbol: 'Rp. ', decimalDigits: 0).format(int.parse(denda_pajak.toString()))}",
                           color: Color.fromARGB(255, 59, 59, 59),
                         ),
                       ],
@@ -662,6 +662,62 @@ void GetDialogContent(
               ],
             ),
           ),
+          item.tanggalLunas != "0"
+              ? Container(
+                  decoration: BoxDecoration(
+                    color: Color.fromARGB(255, 248, 248, 248),
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(10.w),
+                        topRight: Radius.circular(10.w)),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.all(4.w),
+                        child: Container(
+                          width: 115.w,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Texts.captionXs2(
+                                "Metode Pembayaran",
+                                isBold: true,
+                                color: Color.fromARGB(255, 71, 80, 90),
+                              ),
+                              Texts.captionXs2(
+                                "${item.metodeBayar == "QRIS" ? item.metodeBayar : item.metodeBayar == "VA" ? item.metodeBayar : "Teller atau lainnya"}",
+                                color: Color.fromARGB(255, 59, 59, 59),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 0.5.w),
+                      Padding(
+                        padding: EdgeInsets.all(4.w),
+                        child: Container(
+                          width: 115.w,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Texts.captionXs2(
+                                " ",
+                                isBold: true,
+                                color: Color.fromARGB(255, 71, 80, 90),
+                              ),
+                              Texts.captionXs2(
+                                " ",
+                                color: Color.fromARGB(255, 59, 59, 59),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              : SizedBox()
         ],
       ),
     ),
