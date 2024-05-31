@@ -1,6 +1,7 @@
 import 'package:bapenda_getx2/app/core/api/api.dart';
 import 'package:bapenda_getx2/app/modules/login/services/login_services.dart';
 import 'package:bapenda_getx2/app/routes/app_pages.dart';
+import 'package:bapenda_getx2/utils/app_const.dart';
 import 'package:bapenda_getx2/widgets/dismiss_keyboard.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:bapenda_getx2/app/modules/login/controllers/login_controller.dart';
@@ -167,7 +168,7 @@ class LoginView extends GetView<LoginController> {
                         ),
                       ),
                       Texts.caption(
-                        "Application Version 1.0.873 (873)",
+                        "Application Version 1.${currentversion})",
                         textAlign: TextAlign.center,
                       ),
                     ],

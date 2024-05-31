@@ -161,9 +161,9 @@ class LoginController extends GetxController with AuthCacheService {
           setFetchingState(false);
 
           setFetchingState(true);
-          await getTokenMsg(
-              userInfo.nik, userInfo.noHp, userInfo.foto, userInfo.nama);
-          await InsertTokenFcm(userInfo.nik, tokenMsg);
+          // await getTokenMsg(
+          //     userInfo.nik, userInfo.noHp, userInfo.foto, userInfo.nama);
+          // await InsertTokenFcm(userInfo.nik, tokenMsg);
           setFetchingState(false);
 
           log("Logged in as ${userInfo.nama}");
@@ -241,7 +241,7 @@ class LoginController extends GetxController with AuthCacheService {
 
       print(tokenMsg);
       print(nik);
-      //saveTokenMsg(token, nik, noHp, foto, nama);
+      saveTokenMsg(token, nik, noHp, foto, nama);
     });
   }
 
