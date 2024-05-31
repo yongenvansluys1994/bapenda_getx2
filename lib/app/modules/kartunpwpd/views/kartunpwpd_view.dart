@@ -82,95 +82,98 @@ class KartunpwpdView extends GetView<KartunpwpdController> {
                       itemBuilder: (context, index) {
                         var dataobjek = controller.datalist[index];
 
-                        return InkWell(
-                          onTap: () {
-                            Get.toNamed(Routes.KARTUNPWPD_DETAIL,
-                                arguments: controller.datalist[index]);
-                          },
-                          child: Container(
-                            height: 110.h,
-                            width: MediaQuery.of(context).size.width,
-                            child: Stack(
-                              children: [
-                                Container(
-                                  width: MediaQuery.of(context).size.width,
-                                  height: 110.h,
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(20),
-                                      image: DecorationImage(
-                                          image: AssetImage(
-                                              "assets/images/listview2.png"),
-                                          fit: BoxFit.fill),
-                                      boxShadow: [
-                                        BoxShadow(
-                                            blurRadius: 10,
-                                            offset: Offset(8, 6),
-                                            color: lightGreenColor
-                                                .withOpacity(0.3)),
-                                        BoxShadow(
-                                            blurRadius: 10,
-                                            offset: Offset(-1, -5),
-                                            color: lightGreenColor
-                                                .withOpacity(0.3))
-                                      ]),
-                                ),
-                                Container(
-                                  height: 100.h,
-                                  margin: EdgeInsets.only(
-                                      left: 20, top: 8, right: 17),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        "${dataobjek.jenispajak}",
-                                        maxLines: 1,
-                                        overflow: TextOverflow.clip,
-                                        style: TextStyle(
-                                            fontSize: 13,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.blueGrey[800]),
-                                      ),
-                                      Text(
-                                        "${dataobjek.npwpd}",
-                                        maxLines: 1,
-                                        overflow: TextOverflow.clip,
-                                        style: TextStyle(
-                                            fontSize: 13,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.blueGrey[800]),
-                                      ),
-                                      Text(
-                                        "${dataobjek.namaUsaha}",
-                                        maxLines: 1,
-                                        overflow: TextOverflow.clip,
-                                        style: TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.blueGrey[800]),
-                                      ),
-                                    ],
+                        return Padding(
+                          padding: EdgeInsets.symmetric(vertical: 5.r),
+                          child: InkWell(
+                            onTap: () {
+                              Get.toNamed(Routes.KARTUNPWPD_DETAIL,
+                                  arguments: controller.datalist[index]);
+                            },
+                            child: Container(
+                              height: 110.h,
+                              width: MediaQuery.of(context).size.width,
+                              child: Stack(
+                                children: [
+                                  Container(
+                                    width: MediaQuery.of(context).size.width,
+                                    height: 110.h,
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(20),
+                                        image: DecorationImage(
+                                            image: AssetImage(
+                                                "assets/images/listview2.png"),
+                                            fit: BoxFit.fill),
+                                        boxShadow: [
+                                          BoxShadow(
+                                              blurRadius: 10,
+                                              offset: Offset(8, 6),
+                                              color: lightGreenColor
+                                                  .withOpacity(0.3)),
+                                          BoxShadow(
+                                              blurRadius: 10,
+                                              offset: Offset(-1, -5),
+                                              color: lightGreenColor
+                                                  .withOpacity(0.3))
+                                        ]),
                                   ),
-                                ),
-                                Container(
-                                  width: double.maxFinite,
-                                  height: 100.h,
-                                  margin: EdgeInsets.only(
-                                    left: 130,
-                                    top: 8,
-                                    right: 3,
-                                  ),
-                                  child: Align(
-                                    alignment: Alignment.centerRight,
-                                    child: Icon(
-                                      Icons.arrow_forward_ios,
-                                      size: 22,
-                                      color: Colors.white,
+                                  Container(
+                                    height: 100.h,
+                                    margin: EdgeInsets.only(
+                                        left: 20, top: 8, right: 17),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "${dataobjek.jenispajak}",
+                                          maxLines: 1,
+                                          overflow: TextOverflow.clip,
+                                          style: TextStyle(
+                                              fontSize: 13,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.blueGrey[800]),
+                                        ),
+                                        Text(
+                                          "${dataobjek.npwpd}",
+                                          maxLines: 1,
+                                          overflow: TextOverflow.clip,
+                                          style: TextStyle(
+                                              fontSize: 13,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.blueGrey[800]),
+                                        ),
+                                        Text(
+                                          "${dataobjek.namaUsaha}",
+                                          maxLines: 1,
+                                          overflow: TextOverflow.clip,
+                                          style: TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.blueGrey[800]),
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                ),
-                                new Container(width: 0, height: 0),
-                              ],
+                                  Container(
+                                    width: double.maxFinite,
+                                    height: 100.h,
+                                    margin: EdgeInsets.only(
+                                      left: 130,
+                                      top: 8,
+                                      right: 3,
+                                    ),
+                                    child: Align(
+                                      alignment: Alignment.centerRight,
+                                      child: Icon(
+                                        Icons.arrow_forward_ios,
+                                        size: 22,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                  new Container(width: 0, height: 0),
+                                ],
+                              ),
                             ),
                           ),
                         );

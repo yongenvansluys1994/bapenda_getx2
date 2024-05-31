@@ -41,6 +41,7 @@ dependencies:
   equatable: ^2.0.5
   external_app_launcher: ^3.1.0
   faker: ^2.1.0
+  file_picker: ^7.0.2
   firebase_core: ^2.15.1
   firebase_messaging: ^14.6.7
   firebase_storage: ^11.2.8

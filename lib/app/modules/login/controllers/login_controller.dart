@@ -252,9 +252,7 @@ class LoginController extends GetxController with AuthCacheService {
       'image': foto,
       'nama': nama,
     });
-    noHp == "staff_pendaftaran" || noHp == "staff_pendataan" || noHp == "admin"
-        ? FirebaseMessaging.instance.subscribeToTopic("operatorpejabat")
-        : FirebaseMessaging.instance.subscribeToTopic("user");
+    FirebaseMessaging.instance.subscribeToTopic("user");
   }
 
   // @override

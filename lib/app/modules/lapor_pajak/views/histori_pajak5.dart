@@ -70,7 +70,7 @@ class HistoryPajak5 extends StatelessWidget {
                 child: Padding(
                     padding: EdgeInsetsDirectional.fromSTEB(0, 0, 0, 1),
                     child: Container(
-                      height: 120.h,
+                      height: 110.h,
                       decoration: BoxDecoration(
                         image: DecorationImage(
                             image: AssetImage(item.status == "0"

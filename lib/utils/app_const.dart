@@ -1,5 +1,5 @@
 // ignore_for_file: constant_identifier_names
-const int currentversion = 30;
+const int currentversion = 31;
 const String PENDAFTARAN_MASUK = "pendaftaran_masuk";
 const String PELAPORAN_MASUK = "pelaporan_masuk";
 const String CHAT = "chat";

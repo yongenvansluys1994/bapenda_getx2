@@ -555,7 +555,7 @@ class PelaporanDetailViewCath extends GetView<PelaporanDetailController> {
                             tabs: Tabs,
                           ),
                           SizedBox(
-                            height: 1280.h, // Adjust the height as needed
+                            height: 1350.h, // Adjust the height as needed
                             child: TabBarView(
                               children: [
                                 HistoryPajak(

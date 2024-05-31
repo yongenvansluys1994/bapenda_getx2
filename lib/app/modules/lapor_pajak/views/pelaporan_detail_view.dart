@@ -191,7 +191,7 @@ class PelaporanDetailView extends GetView<PelaporanDetailController> {
                                   children: [
                                     SizedBox(height: 5),
                                     Texts.headline6(
-                                        "Pelaporan Pajak ${controller.jenispajak}",
+                                        "E-SPTPD Pajak ${controller.jenispajak}",
                                         isBold: true,
                                         color: Colors.white),
                                     Padding(
@@ -450,7 +450,7 @@ class PelaporanDetailView extends GetView<PelaporanDetailController> {
                             tabs: Tabs,
                           ),
                           SizedBox(
-                            height: 1280.h, // Adjust the height as needed
+                            height: 1350.h, // Adjust the height as needed
                             child: TabBarView(
                               children: [
                                 HistoryPajak(

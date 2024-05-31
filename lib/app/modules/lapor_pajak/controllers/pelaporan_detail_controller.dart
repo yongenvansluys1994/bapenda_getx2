@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bapenda_getx2/app/core/api/api.dart';
 import 'package:bapenda_getx2/app/modules/lapor_pajak/controllers/pelaporan_history_controller.dart';
 import 'package:bapenda_getx2/app/modules/lapor_pajak/models/model_objekku.dart';
@@ -5,6 +7,7 @@ import 'package:bapenda_getx2/core/push_notification/push_notif_topic.dart';
 import 'package:bapenda_getx2/utils/app_const.dart';
 import 'package:bapenda_getx2/widgets/getdialog.dart';
 import 'package:bapenda_getx2/widgets/snackbar.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -229,109 +232,139 @@ class PelaporanDetailController extends GetxController {
   }
 
   Future<void> InputPelaporan() async {
-    //Awal Loading Disini-------------------------------
-    var request = http.MultipartRequest(
-        "POST", Uri.parse("${URL_APP}/pelaporan/${dataArgument.idDaftarwp}"));
-    request.fields['id_wajib_pajak'] = dataArgument.idWajibPajak;
-    request.fields['masa_pajak'] = "${selectedDate}";
-    request.fields['pendapatan'] = pendapatan.text;
-    request.fields['nik'] = dataArgument.nikUser;
-    request.fields['jenispajak'] = jenispajak;
-    request.fields['id_daftarwp'] = dataArgument.idDaftarwp;
+    // Awal Loading Disini-------------------------------
+    var client = http.Client();
+    try {
+      var request = http.MultipartRequest(
+          "POST", Uri.parse("${URL_APP}/pelaporan/${dataArgument.idDaftarwp}"));
+      request.fields['id_wajib_pajak'] = dataArgument.idWajibPajak;
+      request.fields['masa_pajak'] = "${selectedDate}";
+      request.fields['pendapatan'] = pendapatan.text;
+      request.fields['nik'] = dataArgument.nikUser;
+      request.fields['jenispajak'] = jenispajak;
+      request.fields['id_daftarwp'] = dataArgument.idDaftarwp;
 
-    if (imageFile == null) {
-    } else {
-      var pic = await http.MultipartFile.fromPath("image", imageFile!.path);
-      request.files.add(pic);
-    }
-
-    var response = await request.send();
-    final responseData = await response.stream.toBytes();
-    final respStr = String.fromCharCodes(responseData);
-    EasyLoading.dismiss();
-
-    if (response.statusCode == 200) {
-      if (respStr == "Berhasil") {
-        FinalDate = null;
-        pendapatan.text = "";
-        imageFile = null;
-        pelaporanHistoryC.GetHistoryPajak(
-            tahunhistory[0], false); //update history pelaporan
-        update();
-        //-------------------------
-        getDefaultDialog().onFix(
-            title: "Terima Kasih!",
-            desc:
-                "Pelaporan Pajak Berhasil! Petugas Kami akan melakukan Verifikasi dan setelahnya Anda dapat membayar.",
-            kategori: "success");
-        sendPushMessage_topic(
-            "operatorpejabat",
-            "Pelaporan Pajak Masuk!",
-            "Terdapat Pelaporan Pajak baru, Buka aplikasi untuk melihat detailnya",
-            PELAPORAN_MASUK);
-      } else if (respStr == "SudahAda") {
-        getDefaultDialog().onFixWithoutIcon(
-            title: "Data Sudah Ada!",
-            desc:
-                "Anda Telah melapor pada Masa Pajak yang sama sebelumnya! Pastikan anda memilih Masa Pajak dengan Benar");
-      } else {
-        RawSnackbar_top(
-            message: "Oops.. Kesalahan Koneksi",
-            kategori: "error",
-            duration: 2);
+      if (imageFile != null) {
+        var pic = await http.MultipartFile.fromPath("image", imageFile!.path);
+        request.files.add(pic);
       }
+
+      var response = await client.send(request).timeout(Duration(seconds: 12));
+      final responseData = await response.stream.toBytes();
+      final respStr = String.fromCharCodes(responseData);
+
+      if (response.statusCode == 200) {
+        if (respStr == "Berhasil") {
+          FinalDate = null;
+          pendapatan.text = "";
+          imageFile = null;
+          pelaporanHistoryC.GetHistoryPajak(
+              tahunhistory[0], false); //update history pelaporan
+          update();
+          //-------------------------
+          getDefaultDialog().onFix(
+              title: "Terima Kasih!",
+              desc:
+                  "Pelaporan Pajak Berhasil! Petugas Kami akan melakukan Verifikasi dan setelahnya Anda dapat membayar.",
+              kategori: "success");
+          sendPushMessage_topic(
+              "operatorpejabat",
+              "Pelaporan Pajak Masuk!",
+              "Terdapat Pelaporan Pajak baru, Buka aplikasi untuk melihat detailnya",
+              PELAPORAN_MASUK);
+        } else if (respStr == "SudahAda") {
+          getDefaultDialog().onFixWithoutIcon(
+              title: "Data Sudah Ada!",
+              desc:
+                  "Anda Telah melapor pada Masa Pajak yang sama sebelumnya! Pastikan anda memilih Masa Pajak dengan Benar");
+        } else {
+          RawSnackbar_top(
+              message: "Oops.. Kesalahan Koneksi",
+              kategori: "error",
+              duration: 2);
+        }
+      } else {
+        // Handle other status codes if needed
+      }
+    } on TimeoutException catch (_) {
+      // Handle timeout
+      RawSnackbar_top(
+          message: "Koneksi gagal, harap periksa kembali koneksi internet Anda",
+          kategori: "error",
+          duration: 2);
+    } catch (e) {
+      // Handle other errors
+      print('Error: $e');
+    } finally {
+      client.close(); // Close the client when finished
+      EasyLoading.dismiss();
     }
   }
 
   Future<void> InputPelaporanCath() async {
-    //Awal Loading Disini-------------------------------
-    var request = http.MultipartRequest(
-        "POST", Uri.parse("${URL_APP}/pelaporan/${dataArgument.idDaftarwp}"));
-    request.fields['id_wajib_pajak'] = dataArgument.idWajibPajak;
-    request.fields['masa_pajak'] = "${selectedDate}";
-    request.fields['masa_pajak_akhir'] = "${selectedDate_akhir}";
-    request.fields['pendapatan'] = pendapatan.text;
-    request.fields['nik'] = dataArgument.nikUser;
-    request.fields['jenispajak'] = jenispajak;
-    request.fields['id_daftarwp'] = dataArgument.idDaftarwp;
+    // Awal Loading Disini-------------------------------
+    var client = http.Client();
+    try {
+      var request = http.MultipartRequest(
+          "POST", Uri.parse("${URL_APP}/pelaporan/${dataArgument.idDaftarwp}"));
+      request.fields['id_wajib_pajak'] = dataArgument.idWajibPajak;
+      request.fields['masa_pajak'] = "${selectedDate}";
+      request.fields['masa_pajak_akhir'] = "${selectedDate_akhir}";
+      request.fields['pendapatan'] = pendapatan.text;
+      request.fields['nik'] = dataArgument.nikUser;
+      request.fields['jenispajak'] = jenispajak;
+      request.fields['id_daftarwp'] = dataArgument.idDaftarwp;
 
-    if (imageFile == null) {
-    } else {
-      var pic = await http.MultipartFile.fromPath("image", imageFile!.path);
-      request.files.add(pic);
-    }
-
-    var response = await request.send();
-    final responseData = await response.stream.toBytes();
-    final respStr = String.fromCharCodes(responseData);
-    EasyLoading.dismiss();
-
-    if (response.statusCode == 200) {
-      if (respStr == "Berhasil") {
-        FinalDate = null;
-        FinalDate_akhir = null;
-        pendapatan.text = "";
-        imageFile = null;
-        pelaporanHistoryC.GetHistoryPajak(
-            tahunhistory[0], false); //update history pelaporan
-        update();
-        //-------------------------
-        getDefaultDialog().onFix(
-            title: "Terima Kasih!",
-            desc:
-                "Pelaporan Pajak Berhasil! Petugas Kami akan melakukan Verifikasi dan setelahnya Anda dapat membayar.",
-            kategori: "success");
-        sendPushMessage_topic(
-            "operatorpejabat",
-            "Pelaporan Pajak Masuk!",
-            "Terdapat Pelaporan Pajak baru, Buka aplikasi untuk melihat detailnya",
-            "pelaporan_masuk");
-      } else {
-        RawSnackbar_top(
-            message: "Oops.. Kesalahan Koneksi",
-            kategori: "error",
-            duration: 2);
+      if (imageFile != null) {
+        var pic = await http.MultipartFile.fromPath("image", imageFile!.path);
+        request.files.add(pic);
       }
+
+      var response = await client.send(request).timeout(Duration(seconds: 12));
+      final responseData = await response.stream.toBytes();
+      final respStr = String.fromCharCodes(responseData);
+
+      if (response.statusCode == 200) {
+        if (respStr == "Berhasil") {
+          FinalDate = null;
+          FinalDate_akhir = null;
+          pendapatan.text = "";
+          imageFile = null;
+          pelaporanHistoryC.GetHistoryPajak(
+              tahunhistory[0], false); //update history pelaporan
+          update();
+          //-------------------------
+          getDefaultDialog().onFix(
+              title: "Terima Kasih!",
+              desc:
+                  "Pelaporan Pajak Berhasil! Petugas Kami akan melakukan Verifikasi dan setelahnya Anda dapat membayar.",
+              kategori: "success");
+          sendPushMessage_topic(
+              "operatorpejabat",
+              "Pelaporan Pajak Masuk!",
+              "Terdapat Pelaporan Pajak baru, Buka aplikasi untuk melihat detailnya",
+              "pelaporan_masuk");
+        } else {
+          RawSnackbar_top(
+              message: "Oops.. Kesalahan Koneksi",
+              kategori: "error",
+              duration: 2);
+        }
+      } else {
+        // Handle other status codes if needed
+      }
+    } on TimeoutException catch (_) {
+      // Handle timeout
+      RawSnackbar_top(
+          message: "Koneksi gagal, harap periksa kembali koneksi internet Anda",
+          kategori: "error",
+          duration: 2);
+    } catch (e) {
+      // Handle other errors
+      print('Error: $e');
+    } finally {
+      client.close(); // Close the client when finished
+      EasyLoading.dismiss();
     }
   }
 
@@ -415,7 +448,7 @@ class PelaporanDetailController extends GetxController {
                       _openGallery(context);
                       update();
                     },
-                    title: Text("Gallery"),
+                    title: Text("Gallery/File"),
                     leading: Icon(
                       Icons.account_box,
                       color: Colors.blue,
@@ -436,6 +469,21 @@ class PelaporanDetailController extends GetxController {
                       color: Colors.blue,
                     ),
                   ),
+                  // Divider(
+                  //   height: 1,
+                  //   color: Colors.blue,
+                  // ),
+                  // ListTile(
+                  //   onTap: () {
+                  //     _filePicker(context);
+                  //     update();
+                  //   },
+                  //   title: Text("File"),
+                  //   leading: Icon(
+                  //     Icons.camera,
+                  //     color: Colors.blue,
+                  //   ),
+                  // ),
                 ],
               ),
             ),
@@ -458,6 +506,16 @@ class PelaporanDetailController extends GetxController {
     Get.back();
     update();
   }
+
+  // void _filePicker(BuildContext context) async {
+  //   FilePickerResult? result = await FilePicker.platform.pickFiles(
+  //     type: FileType.custom,
+  //     allowedExtensions: ['pdf', 'xls', 'xlsx'], // Ekstensi file yang diizinkan
+  //   );
+  //   imageFile = XFile(result!.files.single.path!);
+  //   Get.back();
+  //   update();
+  // }
 
   void listenFCM() async {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {

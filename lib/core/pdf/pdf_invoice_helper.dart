@@ -394,7 +394,7 @@ class PdfInvoicePdfHelper {
       Row(mainAxisAlignment: MainAxisAlignment.end, children: [
         Column(children: [
           SizedBox(height: 1 * PdfPageFormat.cm),
-          Text("Kabid Pelayanan Pajak Daerah"),
+          Text("KABID. PENGELOLAAN PENDAPATAN DAERAH"),
           SizedBox(height: 0.4 * PdfPageFormat.cm),
           Container(
             height: 50,
@@ -405,7 +405,7 @@ class PdfInvoicePdfHelper {
             ),
           ),
           SizedBox(height: 0.4 * PdfPageFormat.cm),
-          Text("Yasur S.Sos")
+          Text("SYAPRIANSYAH, S.Hut")
         ])
       ]);
 
