@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:bapenda_getx2/app/core/api/api.dart';
 import 'package:bapenda_getx2/widgets/theme/app_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -34,6 +35,9 @@ void main() async {
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   await GetStorage.init();
   HttpOverrides.global = new MyHttpOverrides();
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp, // Hanya mode potret ke atas diizinkan
+  ]);
   runApp(
     ScreenUtilInit(
       designSize: const Size(360, 800),

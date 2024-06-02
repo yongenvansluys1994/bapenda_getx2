@@ -30,14 +30,15 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       // ),
       actions: [
         Padding(
-          padding: EdgeInsets.symmetric(vertical: 5.h, horizontal: 5.w),
+          padding: EdgeInsets.symmetric(
+              vertical: Get.height * 0.006, horizontal: Get.width * 0.015),
           child: Container(
-            height: 40.h,
-            width: 40.w,
+            width: 42.w, // Atur lebar sesuai kebutuhan
+            height: 42.h, // Atur tinggi sesuai kebutuhan
             decoration: BoxDecoration(
               color: lightColor,
               border: Border.all(width: 2.w, color: shadowColor2),
-              borderRadius: BorderRadius.circular(8.r),
+              borderRadius: BorderRadius.circular(11.r),
             ),
             child: IconButton(
               icon: const Icon(
@@ -52,15 +53,15 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       ],
       leading: leading == true
           ? Padding(
-              padding: EdgeInsets.only(
-                  top: 5.h, bottom: 5.h, left: 6.w, right: 3.7.w),
+              padding: EdgeInsets.symmetric(
+                  vertical: Get.height * 0.006, horizontal: Get.width * 0.009),
               child: Container(
-                height: 40.h,
-                width: 40.w,
+                width: 42.w, // Atur lebar sesuai kebutuhan
+                height: 42.h, // Atur tinggi sesuai kebutuhan
                 decoration: BoxDecoration(
                   color: lightColor,
                   border: Border.all(width: 2.w, color: shadowColor2),
-                  borderRadius: BorderRadius.circular(8.r),
+                  borderRadius: BorderRadius.circular(11.r),
                 ),
                 child: IconButton(
                   icon: Icon(

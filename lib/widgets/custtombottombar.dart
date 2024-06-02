@@ -25,7 +25,7 @@ class customButtomBar extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 MaterialButton(
-                  minWidth: 40,
+                  minWidth: 40.w,
                   onPressed: () {
                     Get.currentRoute == Routes.DASHBOARD
                         ? null
@@ -52,7 +52,7 @@ class customButtomBar extends StatelessWidget {
                   ),
                 ),
                 MaterialButton(
-                  minWidth: 40,
+                  minWidth: 40.w,
                   onPressed: () {
                     Get.currentRoute == Routes.KARTUNPWPD
                         ? null
@@ -69,10 +69,10 @@ class customButtomBar extends StatelessWidget {
                       Text(
                         "Kartu NPWPD",
                         style: TextStyle(
-                            color: Get.currentRoute == Routes.KARTUNPWPD
-                                ? Colors.blue
-                                : Colors.grey,
-                            fontSize: 11.sp),
+                          color: Get.currentRoute == Routes.KARTUNPWPD
+                              ? Colors.blue
+                              : Colors.grey,
+                        ),
                       ),
                     ],
                   ),
@@ -83,7 +83,7 @@ class customButtomBar extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 MaterialButton(
-                  minWidth: 40,
+                  minWidth: 40.w,
                   onPressed: () {
                     Get.currentRoute == Routes.MYPROFIL
                         ? null
@@ -111,7 +111,7 @@ class customButtomBar extends StatelessWidget {
                   ),
                 ),
                 MaterialButton(
-                  minWidth: 40,
+                  minWidth: 40.w,
                   onPressed: () {
                     Get.currentRoute == Routes.OBJEKKU
                         ? null

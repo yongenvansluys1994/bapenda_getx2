@@ -90,13 +90,13 @@ class KartunpwpdView extends GetView<KartunpwpdController> {
                                   arguments: controller.datalist[index]);
                             },
                             child: Container(
-                              height: 110.h,
+                              height: Get.height * 0.12,
                               width: MediaQuery.of(context).size.width,
                               child: Stack(
                                 children: [
                                   Container(
                                     width: MediaQuery.of(context).size.width,
-                                    height: 110.h,
+                                    height: Get.height * 0.12,
                                     decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(20),
                                         image: DecorationImage(
@@ -129,7 +129,7 @@ class KartunpwpdView extends GetView<KartunpwpdController> {
                                           maxLines: 1,
                                           overflow: TextOverflow.clip,
                                           style: TextStyle(
-                                              fontSize: 13,
+                                              fontSize: 13.sp,
                                               fontWeight: FontWeight.bold,
                                               color: Colors.blueGrey[800]),
                                         ),
@@ -138,7 +138,7 @@ class KartunpwpdView extends GetView<KartunpwpdController> {
                                           maxLines: 1,
                                           overflow: TextOverflow.clip,
                                           style: TextStyle(
-                                              fontSize: 13,
+                                              fontSize: 13.sp,
                                               fontWeight: FontWeight.bold,
                                               color: Colors.blueGrey[800]),
                                         ),
@@ -147,7 +147,7 @@ class KartunpwpdView extends GetView<KartunpwpdController> {
                                           maxLines: 1,
                                           overflow: TextOverflow.clip,
                                           style: TextStyle(
-                                              fontSize: 18,
+                                              fontSize: 18.sp,
                                               fontWeight: FontWeight.bold,
                                               color: Colors.blueGrey[800]),
                                         ),
@@ -166,7 +166,7 @@ class KartunpwpdView extends GetView<KartunpwpdController> {
                                       alignment: Alignment.centerRight,
                                       child: Icon(
                                         Icons.arrow_forward_ios,
-                                        size: 22,
+                                        size: 22.sp,
                                         color: Colors.white,
                                       ),
                                     ),

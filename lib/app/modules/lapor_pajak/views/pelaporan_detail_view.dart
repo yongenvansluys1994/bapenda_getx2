@@ -58,7 +58,7 @@ class PelaporanDetailView extends GetView<PelaporanDetailController> {
                         children: [
                           Container(
                             width: MediaQuery.of(context).size.width,
-                            height: 85.h,
+                            height: Get.height * 0.106,
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(20),
                                 image: DecorationImage(
@@ -78,7 +78,7 @@ class PelaporanDetailView extends GetView<PelaporanDetailController> {
                           ),
                           Container(
                             width: double.maxFinite,
-                            height: 90.h,
+                            height: Get.height * 0.115,
                             margin: EdgeInsets.only(
                                 left: 130.sp, top: 8.sp, right: 17.sp),
                             child: Column(
@@ -427,7 +427,10 @@ class PelaporanDetailView extends GetView<PelaporanDetailController> {
                               backgroundColor: Colors.transparent,
                               shadowColor: Colors.transparent,
                             ),
-                            child: Text("Simpan"),
+                            child: Text(
+                              "Simpan",
+                              style: TextStyle(fontSize: 14.sp),
+                            ),
                             onPressed: () {
                               easyThrottle(
                                 handler: () {
@@ -447,10 +450,19 @@ class PelaporanDetailView extends GetView<PelaporanDetailController> {
                             unselectedLabelColor: MainColor,
                             indicatorColor: lightBlueColor,
                             //isScrollable: true,
+                            labelStyle: TextStyle(
+                              fontSize:
+                                  16.sp, // Ukuran teks untuk tab yang dipilih
+                            ),
+                            unselectedLabelStyle: TextStyle(
+                              fontSize: 14
+                                  .sp, // Ukuran teks untuk tab yang tidak dipilih
+                            ),
                             tabs: Tabs,
                           ),
                           SizedBox(
-                            height: 110.h * 13,
+                            height: (Get.height * 0.136) *
+                                12, // Adjust the height as needed
                             child: TabBarView(
                               children: [
                                 HistoryPajak(

@@ -124,7 +124,7 @@ class LaporPajakView extends GetView<LaporPajakController> {
                                   children: [
                                     Container(
                                       width: MediaQuery.of(context).size.width,
-                                      height: 85.h,
+                                      height: Get.height * 0.11,
                                       decoration: BoxDecoration(
                                           borderRadius:
                                               BorderRadius.circular(20.r),

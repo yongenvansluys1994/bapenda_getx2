@@ -41,11 +41,12 @@ class Dashboard extends StatelessWidget {
               leading: Builder(
                 builder: (BuildContext context) {
                   return Padding(
-                    padding:
-                        EdgeInsets.symmetric(vertical: 8.h, horizontal: 5.w),
+                    padding: EdgeInsets.symmetric(
+                        vertical: Get.height * 0.009,
+                        horizontal: Get.width * 0.012),
                     child: Container(
-                      height: 40.h,
-                      width: 40.w,
+                      height: 42.h,
+                      width: 42.w,
                       decoration: BoxDecoration(
                         color: lightColor,
                         border: Border.all(width: 2.w, color: shadowColor2),
@@ -69,10 +70,12 @@ class Dashboard extends StatelessWidget {
               ),
               actions: [
                 Padding(
-                  padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 5.w),
+                  padding: EdgeInsets.symmetric(
+                      vertical: Get.height * 0.009,
+                      horizontal: Get.width * 0.014),
                   child: Container(
-                    height: 40.h,
-                    width: 40.w,
+                    height: 42.h,
+                    width: 42.w,
                     decoration: BoxDecoration(
                       color: lightColor,
                       border: Border.all(width: 2.w, color: shadowColor2),
@@ -123,7 +126,7 @@ class Dashboard extends StatelessWidget {
                         SizedBox(height: 10.h),
                         Container(
                           width: MediaQuery.of(context).size.width,
-                          height: 150.h,
+                          height: Get.height * 0.182,
                           decoration: BoxDecoration(
                               // border: Border.all(
                               //     color: Colors.black12.withOpacity(0.04)),
@@ -377,14 +380,13 @@ class Dashboard extends StatelessWidget {
                     children: [
                       Container(
                         margin: EdgeInsets.symmetric(horizontal: 20.r),
-                        height: 220.h,
+                        height: Get.height * 0.245,
                         decoration: BoxDecoration(
                           // color: const Color.fromARGB(255, 255, 255, 255),
                           borderRadius: BorderRadius.circular(15),
                         ),
                         child: GridView.count(
                           physics: NeverScrollableScrollPhysics(),
-                          childAspectRatio: (9 / 10),
                           crossAxisCount: 4,
                           padding: EdgeInsets.only(top: 2.h),
                           children: <Widget>[
@@ -906,7 +908,7 @@ class Dashboard extends StatelessWidget {
                           return Padding(
                             padding: EdgeInsets.symmetric(horizontal: 10.r),
                             child: SizedBox(
-                              height: 145.h,
+                              height: Get.height * 0.18,
                               width: 500.w,
                               child: ListView.builder(
                                   scrollDirection: Axis.horizontal,
@@ -1011,7 +1013,7 @@ class Dashboard extends StatelessWidget {
                           return Padding(
                             padding: EdgeInsets.symmetric(horizontal: 10.r),
                             child: SizedBox(
-                              height: 145.h,
+                              height: Get.height * 0.17,
                               width: 500.w,
                               child: ListView.builder(
                                   scrollDirection: Axis.horizontal,
@@ -1087,7 +1089,7 @@ class Dashboard extends StatelessWidget {
                       Padding(
                         padding: EdgeInsets.symmetric(horizontal: 10.r),
                         child: SizedBox(
-                            height: 155.h,
+                            height: Get.height * 0.18,
                             width: 500.w,
                             child: ListView(
                               scrollDirection: Axis.horizontal,

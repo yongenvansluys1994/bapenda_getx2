@@ -6,6 +6,8 @@ import 'package:bapenda_getx2/app/modules/lapor_pajak/models/model_getpelaporanu
 import 'package:bapenda_getx2/app/modules/lapor_pajak/models/model_objekku.dart';
 import 'package:bapenda_getx2/widgets/snackbar.dart';
 import 'package:dio/dio.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 
 class PembayaranController extends GetxController {
@@ -26,10 +28,12 @@ class PembayaranController extends GetxController {
     super.onInit();
     authModel = Get.arguments;
     getPajak().then((value) => fetchSPT());
+    listenFCM();
     update();
   }
 
   Future<void> getPajak() async {
+    list_id_wajib_pajak.clear();
     try {
       isLoading = true;
 
@@ -65,6 +69,7 @@ class PembayaranController extends GetxController {
   }
 
   Future<void> fetchSPT() async {
+    datalist.clear();
     List list_wajibpajak = list_id_wajib_pajak.toList();
     try {
       isLoading = true;
@@ -95,6 +100,21 @@ class PembayaranController extends GetxController {
       RawSnackbar_top(message: "$errorMessage", kategori: "error", duration: 4);
       update();
     }
+  }
+
+  void listenFCM() async {
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      RemoteNotification? notification = message.notification;
+      AndroidNotification? android = message.notification?.android;
+      if (notification != null && android != null && !kIsWeb) {
+        if (message.data['desc'] == "bayar_lunas") {
+          getPajak().then((value) => fetchSPT());
+          update();
+        }
+
+        //Get.toNamed(Routes.LAPOR_PAJAK, arguments: authModel);
+      }
+    });
   }
 
   @override
