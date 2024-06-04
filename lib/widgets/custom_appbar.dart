@@ -1,5 +1,6 @@
 import 'package:bapenda_getx2/widgets/texts.dart';
 import 'package:bapenda_getx2/widgets/theme/app_theme.dart';
+import 'package:bapenda_getx2/widgets/utils/helper/responsive_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -83,5 +84,11 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   @override
-  Size get preferredSize => Size(1170, GetPlatform.isDesktop ? 70 : 50);
+  Size get preferredSize => Size(
+      1170.w,
+      GetPlatform.isDesktop
+          ? 70.h
+          : ResponsiveHelper.isTablet()
+              ? 60.h
+              : 50.h);
 }
