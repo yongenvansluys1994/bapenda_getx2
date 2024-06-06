@@ -388,6 +388,8 @@ class Dashboard extends StatelessWidget {
                         child: GridView.count(
                           physics: NeverScrollableScrollPhysics(),
                           crossAxisCount: 4,
+                          mainAxisSpacing: 20.0, // Jarak vertikal antar baris
+                          crossAxisSpacing: 10.0, // Jarak horizontal antar kolom
                           padding: EdgeInsets.only(top: 2.h),
                           children: <Widget>[
                             Container(

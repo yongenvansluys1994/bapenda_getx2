@@ -25,7 +25,7 @@ class customButtomBar extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 MaterialButton(
-                  minWidth: 40.w,
+                  minWidth: Get.width * 0.2,
                   onPressed: () {
                     Get.currentRoute == Routes.DASHBOARD
                         ? null
@@ -52,7 +52,7 @@ class customButtomBar extends StatelessWidget {
                   ),
                 ),
                 MaterialButton(
-                  minWidth: 40.w,
+                  minWidth: Get.width * 0.2,
                   onPressed: () {
                     Get.currentRoute == Routes.KARTUNPWPD
                         ? null
@@ -83,7 +83,7 @@ class customButtomBar extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 MaterialButton(
-                  minWidth: 40.w,
+                  minWidth: Get.width * 0.2,
                   onPressed: () {
                     Get.currentRoute == Routes.MYPROFIL
                         ? null
@@ -111,7 +111,7 @@ class customButtomBar extends StatelessWidget {
                   ),
                 ),
                 MaterialButton(
-                  minWidth: 40.w,
+                  minWidth: Get.width * 0.2,
                   onPressed: () {
                     Get.currentRoute == Routes.OBJEKKU
                         ? null
