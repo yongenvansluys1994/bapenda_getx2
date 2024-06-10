@@ -42,6 +42,7 @@ abstract class Routes {
   static const TAMBAH_NPWPDBARU = _Paths.TAMBAH_NPWPDBARU;
   static const TAMBAH_NPWPD = _Paths.TAMBAH_NPWPD;
   static const PARKIR_APP = _Paths.PARKIR_APP;
+  static const NOTIFIKASI = _Paths.NOTIFIKASI;
 }
 
 abstract class _Paths {
@@ -80,4 +81,5 @@ abstract class _Paths {
   static const TAMBAH_NPWPDBARU = '/tambah-npwpdbaru';
   static const TAMBAH_NPWPD = '/tambah-npwpd';
   static const PARKIR_APP = '/parkir-app';
+  static const NOTIFIKASI = '/notifikasi';
 }

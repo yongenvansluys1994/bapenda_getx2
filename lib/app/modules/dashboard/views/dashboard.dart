@@ -87,7 +87,7 @@ class Dashboard extends StatelessWidget {
                         color: primaryColor,
                       ),
                       tooltip: "Open notifications menu",
-                      onPressed: () => Get.toNamed(Routes.DASHBOARD),
+                      onPressed: () => Get.toNamed(Routes.NOTIFIKASI),
                     ),
                   ),
                 ),
@@ -389,7 +389,8 @@ class Dashboard extends StatelessWidget {
                           physics: NeverScrollableScrollPhysics(),
                           crossAxisCount: 4,
                           mainAxisSpacing: 20.0, // Jarak vertikal antar baris
-                          crossAxisSpacing: 10.0, // Jarak horizontal antar kolom
+                          crossAxisSpacing:
+                              10.0, // Jarak horizontal antar kolom
                           padding: EdgeInsets.only(top: 2.h),
                           children: <Widget>[
                             Container(

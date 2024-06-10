@@ -1,4 +1,3 @@
-import 'package:bapenda_getx2/app/modules/lapor_pajak/views/pelaporan_detail_view_ppj.dart';
 import 'package:get/get.dart';
 
 import '../modules/ads_detail/bindings/ads_detail_binding.dart';
@@ -27,6 +26,7 @@ import '../modules/lapor_pajak/views/lapor_pajak_view.dart';
 import '../modules/lapor_pajak/views/lengkapi_data_view.dart';
 import '../modules/lapor_pajak/views/pelaporan_detail_view.dart';
 import '../modules/lapor_pajak/views/pelaporan_detail_view_cath.dart';
+import '../modules/lapor_pajak/views/pelaporan_detail_view_ppj.dart';
 import '../modules/lapor_pajak/views/qris_page_view.dart';
 import '../modules/lapor_pajak/views/va_page_view.dart';
 import '../modules/login/bindings/login_binding.dart';
@@ -39,6 +39,8 @@ import '../modules/myprofil/bindings/myprofil_binding.dart';
 import '../modules/myprofil/views/ads.dart';
 import '../modules/myprofil/views/myprofil_view.dart';
 import '../modules/myprofil/views/profilku_view.dart';
+import '../modules/notifikasi/bindings/notifikasi_binding.dart';
+import '../modules/notifikasi/views/notifikasi_view.dart';
 import '../modules/objekku/bindings/objekku_binding.dart';
 import '../modules/objekku/views/objekku_view.dart';
 import '../modules/panduan/bindings/panduan_binding.dart';
@@ -249,6 +251,11 @@ class AppPages {
       name: _Paths.PARKIR_APP,
       page: () => const ParkirAppView(),
       binding: ParkirAppBinding(),
+    ),
+    GetPage(
+      name: _Paths.NOTIFIKASI,
+      page: () => const NotifikasiView(),
+      binding: NotifikasiBinding(),
     ),
   ];
 }
