@@ -87,7 +87,8 @@ class Dashboard extends StatelessWidget {
                         color: primaryColor,
                       ),
                       tooltip: "Open notifications menu",
-                      onPressed: () => Get.toNamed(Routes.NOTIFIKASI),
+                      onPressed: () => Get.toNamed(Routes.NOTIFIKASI,arguments:
+                                                    controller.authModel),
                     ),
                   ),
                 ),

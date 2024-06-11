@@ -78,7 +78,7 @@ dependencies:
   shimmer: ^3.0.0
   sleek_circular_slider: ^2.0.1
   sunmi_printer_plus: ^2.1.2
-  timeago: ^3.5.0
+  timeago: ^3.6.1
   url_launcher: ^6.1.14
 
 dev_dependencies:

@@ -256,6 +256,21 @@ class DashboardController extends GetxController with AuthCacheService {
     }
   }
 
+  void checkNotifikasi() async {
+    var response = await http.get(Uri.parse("${URL_APPSIMPATDA}/notifikasi/cek_notifikasi.php?nik=${authModel.nik}"));
+    List data = (json.decode(response.body) as Map<String, dynamic>)["data"];
+    String? DBVersion = data[0]["version"];
+    if (int.parse(DBVersion!) > currentversion) {
+      print("tampilkan dialog");
+      GetDialogDismissible(
+          currentversion: currentversion, DBVersion: DBVersion);
+    } else {
+      if (Get.arguments == "login" || Get.arguments == "autologin") {
+        showBanner();
+      }
+    }
+  }
+
   fetchPajak() {
     //EasyLoading.show(status: 'loading...');
     update();

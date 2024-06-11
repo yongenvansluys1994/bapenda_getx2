@@ -4,14 +4,27 @@ import 'package:bapenda_getx2/app/modules/kartunpwpd/models/model_kartudata.dart
 import 'package:bapenda_getx2/app/modules/lapor_pajak/models/model_getpelaporanuser.dart';
 import 'package:bapenda_getx2/app/modules/lapor_pajak/models/model_objekku.dart';
 import 'package:bapenda_getx2/app/modules/myprofil/models/model_ads.dart';
+import 'package:bapenda_getx2/app/modules/notifikasi/models/model_notifikasi.dart';
 import 'package:dio/dio.dart';
 
 //const baseUrl = 'https://yongen-bisa.com/bapenda_app/api';
 const baseUrl = 'https://yongen-bisa.com/bapenda_app/api_ver2';
 const URL_APP = "https://yongen-bisa.com/bapenda_app/api_ver2";
 const URL_SIMPATDA = "http://simpatda.bontangkita.id/simpatda";
+const URL_APPSIMPATDA = "http://simpatda.bontangkita.id/api_ver2";
 const String ApiFCM =
     "AAAAB69wS5U:APA91bGHHGdo_FzlMJlzO0rc4SUPIMt10OZLqzT60DwVdIU_SSmYkDVu5LRofJR3u9_AS8_ptJ-S5dHIB-7BYWoOTrHUY-pe04UKfLDuAH1ezeY7ohWZalRdShAfJOchSVR9wDuusnnj";
+
+final Dio dio3 = Dio(
+  BaseOptions(
+    baseUrl: URL_APPSIMPATDA,
+    connectTimeout: Duration(seconds: 10),
+    receiveTimeout: Duration(seconds: 10),
+    headers: {'Content-Type': 'application/json'},
+  ),
+);
+
+
 
 class Api {
   final Dio dio = Dio(
@@ -36,6 +49,8 @@ class Api {
   //   return dio
   //       .get("/v1/api/rest/material-movement/$number?isReadableField=true");
   // }
+
+  
 
   Future<Response> insertData(data) {
     return dio.post(
@@ -65,6 +80,8 @@ class Api {
       return null;
     }
   }
+
+  
 
   Future<List<ModelKartuData>?> getNPWPD(nik) async {
     var response = await dio.get("/kartudata/$nik");
