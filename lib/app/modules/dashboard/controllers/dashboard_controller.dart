@@ -7,6 +7,7 @@ import 'package:bapenda_getx2/app/modules/dashboard/models/auth_model_model.dart
 import 'package:bapenda_getx2/app/modules/lapor_pajak/models/model_getpelaporanuser.dart';
 import 'package:bapenda_getx2/app/modules/lapor_pajak/models/model_objekku.dart';
 import 'package:bapenda_getx2/app/modules/myprofil/models/model_ads.dart';
+import 'package:bapenda_getx2/app/modules/notifikasi/models/model_notifikasi.dart';
 import 'package:bapenda_getx2/core/push_notification/push_notif_single.dart';
 import 'package:bapenda_getx2/utils/app_const.dart';
 import 'package:bapenda_getx2/widgets/getdialog.dart';
@@ -32,6 +33,7 @@ class DashboardController extends GetxController with AuthCacheService {
   bool isFailedPPID = false;
   RxList<ModelAds> datalistAds = <ModelAds>[].obs;
   RxList<ModelAds> datalistPPID = <ModelAds>[].obs;
+  RxList<ModelListNotifikasi> datalistNotifikasi = <ModelListNotifikasi>[].obs;
   RxInt countUnseenChat = 0.obs;
 
   late String tokenMsg;
@@ -62,6 +64,7 @@ class DashboardController extends GetxController with AuthCacheService {
     loadFCM();
     listenFCM();
 
+    checkNotifikasi();
     checkLatestVersion();
     fetchPajak();
     fetchAds();
@@ -257,18 +260,21 @@ class DashboardController extends GetxController with AuthCacheService {
   }
 
   void checkNotifikasi() async {
-    var response = await http.get(Uri.parse("${URL_APPSIMPATDA}/notifikasi/cek_notifikasi.php?nik=${authModel.nik}"));
-    List data = (json.decode(response.body) as Map<String, dynamic>)["data"];
-    String? DBVersion = data[0]["version"];
-    if (int.parse(DBVersion!) > currentversion) {
-      print("tampilkan dialog");
-      GetDialogDismissible(
-          currentversion: currentversion, DBVersion: DBVersion);
-    } else {
-      if (Get.arguments == "login" || Get.arguments == "autologin") {
-        showBanner();
+    final datauser = await getNotifikasi('6474014308840007');
+
+      if (datauser == null) {
+        
+      } else if (datauser.isEmpty) {
+        
+      } else {
+        datalistNotifikasi.addAll(datauser);
+        bool hasStatusZero = datalistNotifikasi.any((notifikasi) => notifikasi.status == 0);
+      if (hasStatusZero) {
+      
+      print('There is a notification with status = 0');
+      
       }
-    }
+      }
   }
 
   fetchPajak() {

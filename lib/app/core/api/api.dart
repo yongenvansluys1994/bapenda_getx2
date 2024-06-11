@@ -24,7 +24,16 @@ final Dio dio3 = Dio(
   ),
 );
 
+Future<List<ModelListNotifikasi>?> getNotifikasi(nik) async {
+    var response = await dio3.get("/notifikasi/cek_notifikasi.php?nik=$nik");
+    if (response.statusCode == 200) {
+      List data = (json.decode(response.data) as Map<String, dynamic>)["data"];
 
+      return data.map((e) => ModelListNotifikasi.fromJson(e)).toList();
+    } else {
+      return null;
+    }
+  }
 
 class Api {
   final Dio dio = Dio(
