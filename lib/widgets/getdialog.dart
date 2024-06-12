@@ -1,4 +1,5 @@
 import 'package:bapenda_getx2/app/modules/lapor_pajak/models/model_getpelaporanuser.dart';
+import 'package:bapenda_getx2/app/modules/notifikasi/models/model_notifikasi.dart';
 import 'package:bapenda_getx2/widgets/buttons.dart';
 import 'package:bapenda_getx2/widgets/texts.dart';
 import 'package:bapenda_getx2/widgets/theme/app_theme.dart';
@@ -9,6 +10,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:open_store/open_store.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class getDefaultDialog {
   void onConfirm({
@@ -154,6 +156,86 @@ class getDefaultDialog {
               textAlign: TextAlign.center,
             ),
           )
+        ],
+      ),
+      actions: [
+        SizedBox(
+          width: 80.w,
+          child: Buttons.gradientButton(
+            handler: () {
+              Get.back();
+            },
+            widget: Texts.button("Ok"),
+            borderSide: false,
+            gradient: [Colors.cyan, Colors.indigo],
+          ),
+        ),
+      ],
+    );
+  }
+
+  void onFixNotifikasi({
+    required String title,
+    required String kategori,
+    required RxList<ModelListNotifikasi> data,
+  }) {
+    Get.defaultDialog(
+      radius: 12.r,
+      titlePadding: EdgeInsets.zero,
+      content: Column(
+        children: [
+          Padding(
+            padding: EdgeInsets.symmetric(vertical: 0.r, horizontal: 10.r),
+            child: Text(
+              "${title}",
+              style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18.sp),
+              textAlign: TextAlign.center,
+            ),
+          ),
+          Container(
+            height: Get.height * 0.3, // Change as per your requirement
+            width: Get.width * 1,
+            child: ListView.builder(
+              itemCount: data.length,
+              itemBuilder: (context, index) {
+                var datatitem = data[index];
+                String titlekategori;
+                if (datatitem.kategori == 'pelaporan_dikembalikan') {
+                  titlekategori = 'Pelaporan Pajak ditolak';
+                } else if (datatitem.kategori == 'notif_jatuhtempo') {
+                  titlekategori = 'Notifikasi Jatuh Tempo';
+                } else {
+                  titlekategori = 'Notifikasi';
+                }
+                return ListTile(
+                  leading: CircleAvatar(
+                      backgroundColor:
+                          datatitem.kategori == "pelaporan_dikembalikan"
+                              ? Colors.amber[300]
+                              : null,
+                      child: datatitem.kategori == "pelaporan_dikembalikan"
+                          ? Icon(Icons.autorenew)
+                          : Icon(Icons.notification_important)),
+                  title: Text('${titlekategori}',
+                      style: TextStyle(
+                          fontWeight: FontWeight.w600, fontSize: 13.5.sp),
+                      maxLines:
+                          1), // Assuming 'kategori' is the category of notification
+                  subtitle: Text(
+                    '${datatitem.keterangan}',
+                    style: TextStyle(fontSize: 11.5.sp),
+                  ), // Assuming 'keterangan' is the description of notification
+                  trailing: Container(
+                    width: Get.width * 0.1,
+                    child: Text(
+                      '${timeago.format(datatitem.date, locale: 'en_short')}', // Assuming 'date' is the date of notification
+                      style: TextStyle(fontSize: 10.sp),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
         ],
       ),
       actions: [

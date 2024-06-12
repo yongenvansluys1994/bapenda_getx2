@@ -260,21 +260,19 @@ class DashboardController extends GetxController with AuthCacheService {
   }
 
   void checkNotifikasi() async {
-    final datauser = await getNotifikasi('6474014308840007');
+    final datauser = await getNotifikasi(authModel.nik);
 
-      if (datauser == null) {
-        
-      } else if (datauser.isEmpty) {
-        
-      } else {
-        datalistNotifikasi.addAll(datauser);
-        bool hasStatusZero = datalistNotifikasi.any((notifikasi) => notifikasi.status == 0);
-      if (hasStatusZero) {
-      
-      print('There is a notification with status = 0');
-      
-      }
-      }
+    if (datauser == null) {
+      print("tidak ada notifikasi");
+    } else if (datauser.isEmpty) {
+      print("tidak ada notifikasi");
+    } else {
+      datalistNotifikasi.addAll(datauser);
+      getDefaultDialog().onFixNotifikasi(
+          title: "Notifikasi Untuk Anda",
+          kategori: "warning",
+          data: datalistNotifikasi);
+    }
   }
 
   fetchPajak() {
