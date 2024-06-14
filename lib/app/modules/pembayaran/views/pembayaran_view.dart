@@ -22,7 +22,7 @@ class PembayaranView extends GetView<PembayaranController> {
         appBar: CustomAppBar(
           title: "Pembayaran Pajak",
           leading: true,
-          isLogin: true,
+          isLogin: true,authModel:controller.authModel
         ),
         body: SingleChildScrollView(
           physics: ScrollPhysics(),

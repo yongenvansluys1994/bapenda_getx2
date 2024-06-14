@@ -25,6 +25,7 @@ class LaporPajakView extends GetView<LaporPajakController> {
         title: "Pelaporan Pajak",
         leading: true,
         isLogin: true,
+        authModel:controller.authModel
       ),
       body: SingleChildScrollView(
         physics: ScrollPhysics(),

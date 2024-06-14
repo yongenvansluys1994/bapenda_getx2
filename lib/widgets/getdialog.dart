@@ -20,6 +20,7 @@ class getDefaultDialog {
     required VoidCallback handler,
   }) {
     Get.defaultDialog(
+      title: "",
       radius: 12.r,
       titlePadding: EdgeInsets.zero,
       content: Column(
@@ -77,7 +78,7 @@ class getDefaultDialog {
     required String desc,
     required VoidCallback handler,
   }) {
-    Get.defaultDialog(
+    Get.defaultDialog( title: "",
       radius: 12.r,
       titlePadding: EdgeInsets.zero,
       content: Column(
@@ -133,7 +134,7 @@ class getDefaultDialog {
     required String desc,
     required String kategori,
   }) {
-    Get.defaultDialog(
+    Get.defaultDialog( title: "",
       radius: 12.r,
       titlePadding: EdgeInsets.zero,
       content: Column(
@@ -179,7 +180,7 @@ class getDefaultDialog {
     required String kategori,
     required RxList<ModelListNotifikasi> data,
   }) {
-    Get.defaultDialog(
+    Get.defaultDialog( title: "",
       radius: 12.r,
       titlePadding: EdgeInsets.zero,
       content: Column(
@@ -193,7 +194,7 @@ class getDefaultDialog {
             ),
           ),
           Container(
-            height: Get.height * 0.3, // Change as per your requirement
+            height: (Get.height * 0.1) * (data.length >= 3 ? 2 : data.length), // Change as per your requirement
             width: Get.width * 1,
             child: ListView.builder(
               itemCount: data.length,
@@ -220,18 +221,26 @@ class getDefaultDialog {
                       style: TextStyle(
                           fontWeight: FontWeight.w600, fontSize: 13.5.sp),
                       maxLines:
-                          1), // Assuming 'kategori' is the category of notification
-                  subtitle: Text(
-                    '${datatitem.keterangan}',
-                    style: TextStyle(fontSize: 11.5.sp),
-                  ), // Assuming 'keterangan' is the description of notification
-                  trailing: Container(
+                          1), 
+                  subtitle: Row(
+                    children: [
+                      Container(
+                        width: Get.width * 0.43,
+                        child: Text(
+                          '${datatitem.keterangan}',maxLines: 3,
+                          style: TextStyle(fontSize: 10.5.sp),
+                        ),
+                      ),
+                      Container(
                     width: Get.width * 0.1,
                     child: Text(
-                      '${timeago.format(datatitem.date, locale: 'en_short')}', // Assuming 'date' is the date of notification
+                      '${timeago.format(datatitem.date, locale: 'en_short')}', 
                       style: TextStyle(fontSize: 10.sp),
                     ),
-                  ),
+                  )
+                    ],
+                  ), 
+                  
                 );
               },
             ),
@@ -260,7 +269,7 @@ class getDefaultDialog {
     required String kategori,
     required VoidCallback handler,
   }) {
-    Get.defaultDialog(
+    Get.defaultDialog( title: "",
       barrierDismissible: false,
       radius: 12.r,
       titlePadding: EdgeInsets.zero,
@@ -304,7 +313,7 @@ class getDefaultDialog {
     required String title,
     required String desc,
   }) {
-    Get.defaultDialog(
+    Get.defaultDialog( title: "",
       radius: 12.r,
       titlePadding: EdgeInsets.zero,
       content: Column(
@@ -346,7 +355,7 @@ class getDefaultDialog {
     required String title,
     required String desc,
   }) {
-    Get.defaultDialog(
+    Get.defaultDialog( title: "",
         backgroundColor: Colors.transparent,
         titlePadding: EdgeInsets.zero,
         content: Stack(
@@ -444,7 +453,7 @@ void GetDialogDismissible(
 
 void GetDialogContent(
     ModelGetpelaporanUser item, int? totalPajak, int? denda_pajak) {
-  Get.defaultDialog(
+  Get.defaultDialog( title: "",
     radius: 12.r,
     titlePadding: EdgeInsets.zero,
     content: Container(

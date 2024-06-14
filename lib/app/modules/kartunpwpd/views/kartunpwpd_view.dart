@@ -183,21 +183,21 @@ class KartunpwpdView extends GetView<KartunpwpdController> {
             ],
           ),
         ),
-        floatingActionButton: FloatingActionButton(
-          child: Container(
-            width: 60.w,
-            height: 60.h,
-            child: Icon(
-              Icons.add,
-              size: 40,
-            ),
-            decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: LinearGradient(colors: gradientColor)),
-          ),
-          onPressed: () {},
-        ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        // floatingActionButton: FloatingActionButton(
+        //   child: Container(
+        //     width: 60.w,
+        //     height: 60.h,
+        //     child: Icon(
+        //       Icons.add,
+        //       size: 40,
+        //     ),
+        //     decoration: BoxDecoration(
+        //         shape: BoxShape.circle,
+        //         gradient: LinearGradient(colors: gradientColor)),
+        //   ),
+        //   onPressed: () {},
+        // ),
+        // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         bottomNavigationBar: customButtomBar());
   }
 }

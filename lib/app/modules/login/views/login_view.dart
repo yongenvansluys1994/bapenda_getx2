@@ -42,7 +42,7 @@ class LoginView extends GetView<LoginController> {
                           if (index == 0) {
                             return controller.buildCarousel();
                           } else if (index == 1) {
-                            return controller.buildCarousel2();
+                            return controller.buildCarousel();
                           } else if (index == 2) {
                             return controller.buildCarousel();
                           } else {

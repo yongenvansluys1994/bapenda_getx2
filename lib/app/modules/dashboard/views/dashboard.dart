@@ -381,7 +381,7 @@ class Dashboard extends StatelessWidget {
                     children: [
                       Container(
                         margin: EdgeInsets.symmetric(horizontal: 20.r),
-                        height: Get.height * 0.245,
+                        height: Get.height * 0.260,
                         decoration: BoxDecoration(
                           // color: const Color.fromARGB(255, 255, 255, 255),
                           borderRadius: BorderRadius.circular(15),
@@ -389,9 +389,9 @@ class Dashboard extends StatelessWidget {
                         child: GridView.count(
                           physics: NeverScrollableScrollPhysics(),
                           crossAxisCount: 4,
-                          mainAxisSpacing: 20.0, // Jarak vertikal antar baris
+                          mainAxisSpacing: 10.h, // Jarak vertikal antar baris
                           crossAxisSpacing:
-                              10.0, // Jarak horizontal antar kolom
+                              2.h, // Jarak horizontal antar kolom
                           padding: EdgeInsets.only(top: 2.h),
                           children: <Widget>[
                             Container(
@@ -974,7 +974,7 @@ class Dashboard extends StatelessWidget {
                           );
                         },
                       ),
-                      SizedBox(height: 10.h),
+                       
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -1043,7 +1043,7 @@ class Dashboard extends StatelessWidget {
                                                   BorderRadius.circular(5.w),
                                               child: CachedNetworkImage(
                                                 imageUrl:
-                                                    "https://cdn.pixabay.com/photo/2014/12/02/08/09/info-553635_1280.jpg", // "${URL_APP}/upload/${dataitem.urlImage}",
+                                                    "https://yongen-bisa.com/bapenda_app/upload/${dataitem.urlImage}", // "${URL_APP}/upload/${dataitem.urlImage}",
                                                 height: 100.h,
                                                 width: 160.w,
                                                 fit: BoxFit.fill,
@@ -1067,7 +1067,7 @@ class Dashboard extends StatelessWidget {
                                               height: 1.5.h,
                                             ),
                                             Texts.captionSm(
-                                              "Promosi Usaha Wajib Pajak", //${dataitem.judul}
+                                              "${dataitem.judul}", //${dataitem.judul}
                                               maxLines: 2,
                                             ),
                                           ],
@@ -1079,7 +1079,7 @@ class Dashboard extends StatelessWidget {
                           );
                         },
                       ),
-                      SizedBox(height: 2.h),
+                      SizedBox(height: 10.h),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -1135,22 +1135,22 @@ class Dashboard extends StatelessWidget {
                 ],
               ),
             ),
-            floatingActionButton: FloatingActionButton(
-              child: Container(
-                width: 60.w,
-                height: 60.h,
-                child: Icon(
-                  Icons.add,
-                  size: 40,
-                ),
-                decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: LinearGradient(colors: gradientColor)),
-              ),
-              onPressed: () {},
-            ),
-            floatingActionButtonLocation:
-                FloatingActionButtonLocation.centerDocked,
+            // floatingActionButton: FloatingActionButton(
+            //   child: Container(
+            //     width: 60.w,
+            //     height: 60.h,
+            //     child: Icon(
+            //       Icons.add,
+            //       size: 40,
+            //     ),
+            //     decoration: BoxDecoration(
+            //         shape: BoxShape.circle,
+            //         gradient: LinearGradient(colors: gradientColor)),
+            //   ),
+            //   onPressed: () {},
+            // ),
+            // floatingActionButtonLocation:
+            //     FloatingActionButtonLocation.centerDocked,
             bottomNavigationBar: customButtomBar());
       },
     );

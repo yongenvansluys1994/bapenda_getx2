@@ -1,3 +1,5 @@
+import 'package:bapenda_getx2/app/modules/dashboard/models/auth_model_model.dart';
+import 'package:bapenda_getx2/app/routes/app_pages.dart';
 import 'package:bapenda_getx2/widgets/texts.dart';
 import 'package:bapenda_getx2/widgets/theme/app_theme.dart';
 import 'package:bapenda_getx2/widgets/utils/helper/responsive_helper.dart';
@@ -9,8 +11,9 @@ import 'package:get/get.dart';
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final bool leading;
+  final AuthModel? authModel;
   CustomAppBar(
-      {required this.title, required this.leading, required bool isLogin});
+      {required this.title, required this.leading, required bool isLogin,   this.authModel});
 
   @override
   Widget build(BuildContext context) {
@@ -30,28 +33,33 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       //   ),
       // ),
       actions: [
-        Padding(
-          padding: EdgeInsets.symmetric(
-              vertical: Get.height * 0.006, horizontal: Get.width * 0.015),
-          child: Container(
-            width: 42.w, // Atur lebar sesuai kebutuhan
-            height: 42.h, // Atur tinggi sesuai kebutuhan
-            decoration: BoxDecoration(
-              color: lightColor,
-              border: Border.all(width: 2.w, color: shadowColor2),
-              borderRadius: BorderRadius.circular(11.r),
-            ),
-            child: IconButton(
-              icon: const Icon(
-                Icons.notifications,
-                color: primaryColor,
-              ),
-              tooltip: "Open notifications menu",
-              onPressed: () {},
-            ),
-          ),
+  if (authModel != null) 
+    Padding(
+      padding: EdgeInsets.symmetric(
+        vertical: Get.height * 0.006, 
+        horizontal: Get.width * 0.015
+      ),
+      child: Container(
+        width: 42.w, // Adjust width as needed
+        height: 42.h, // Adjust height as needed
+        decoration: BoxDecoration(
+          color: lightColor,
+          border: Border.all(width: 2.w, color: shadowColor2),
+          borderRadius: BorderRadius.circular(11.r),
         ),
-      ],
+        child: IconButton(
+          icon: const Icon(
+            Icons.notifications,
+            color: primaryColor,
+          ),
+          tooltip: "Open notifications menu",
+          onPressed: () {
+            Get.toNamed(Routes.NOTIFIKASI, arguments: authModel);
+          },
+        ),
+      ),
+    ),
+],
       leading: leading == true
           ? Padding(
               padding: EdgeInsets.symmetric(

@@ -87,44 +87,44 @@ class LoginController extends GetxController with AuthCacheService {
     );
   }
 
-  buildCarousel2() {
-    return SizedBox(
-      height: Get.height.h,
-      width: Get.width.w,
-      child: ListView(
-        padding: EdgeInsets.all(16.sp),
-        children: [
-          ClipRRect(
-            borderRadius:
-                BorderRadius.circular(15.r), // Adjust the radius as needed
-            child: Image.asset(
-              'assets/images/login-char2.jpg',
-              fit: BoxFit.cover,
-              // width: 100, // Adjust the width as needed
-              // height: 100, // Adjust the height as needed
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: 8.h),
-            child: Texts.body1(
-                "Jatuh Tempo Pembayaran PBB Thn 2023 di Perpanjang!",
-                textAlign: TextAlign.center,
-                color: const Color(0XFF006298),
-                maxLines: 2),
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: 8.h),
-            child: Texts.body2(
-              "Jatuh Tempo Pembayaran PBB 2023 di perpanjang sampai 24 Desember 2023, Ayo Manfaatkan Waktu Bayar PBB Tahun 2023 tanpa Denda.",
-              textAlign: TextAlign.center,
-              color: shadowColor,
-              textOverflow: TextOverflow.visible,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  // buildCarousel2() {
+  //   return SizedBox(
+  //     height: Get.height.h,
+  //     width: Get.width.w,
+  //     child: ListView(
+  //       padding: EdgeInsets.all(16.sp),
+  //       children: [
+  //         ClipRRect(
+  //           borderRadius:
+  //               BorderRadius.circular(15.r), // Adjust the radius as needed
+  //           child: Image.asset(
+  //             'assets/images/login-char2.jpg',
+  //             fit: BoxFit.cover,
+  //             // width: 100, // Adjust the width as needed
+  //             // height: 100, // Adjust the height as needed
+  //           ),
+  //         ),
+  //         Padding(
+  //           padding: EdgeInsets.symmetric(vertical: 8.h),
+  //           child: Texts.body1(
+  //               "Jatuh Tempo Pembayaran PBB Thn 2023 di Perpanjang!",
+  //               textAlign: TextAlign.center,
+  //               color: const Color(0XFF006298),
+  //               maxLines: 2),
+  //         ),
+  //         Padding(
+  //           padding: EdgeInsets.symmetric(vertical: 8.h),
+  //           child: Texts.body2(
+  //             "Jatuh Tempo Pembayaran PBB 2023 di perpanjang sampai 24 Desember 2023, Ayo Manfaatkan Waktu Bayar PBB Tahun 2023 tanpa Denda.",
+  //             textAlign: TextAlign.center,
+  //             color: shadowColor,
+  //             textOverflow: TextOverflow.visible,
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   changeCarouselIndicator(index, reason) {
     activeIndex = index;
