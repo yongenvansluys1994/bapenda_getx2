@@ -10,7 +10,7 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
 class NotifikasiController extends GetxController {
-   late AuthModel authModel; 
+  late AuthModel authModel;
   bool isLoading = false;
   bool isEmpty = false;
   bool isFailed = false;
@@ -36,14 +36,14 @@ class NotifikasiController extends GetxController {
   Future fetch() async {
     if (isLoading) return;
     const limit = 10;
-    final url =
-        Uri.parse('${URL_APPSIMPATDA}/notifikasi/riwayat_notifikasi.php?nik=${authModel.nik}&page=$page&limit=$limit');
+    final url = Uri.parse(
+        '${URL_APPSIMPATDA}/notifikasi/riwayat_notifikasi.php?nik=${authModel.nik}&page=$page&limit=$limit');
     final response = await http.get(url);
     if (response.statusCode == 200) {
       List newItems =
           (json.decode(response.body) as Map<String, dynamic>)["data"];
-      final list =
-          newItems.map<ModelListNotifikasi>((json) => ModelListNotifikasi.fromJson(json));
+      final list = newItems.map<ModelListNotifikasi>(
+          (json) => ModelListNotifikasi.fromJson(json));
       page++;
       isLoading = false;
 
@@ -56,7 +56,6 @@ class NotifikasiController extends GetxController {
     }
   }
 
-
   @override
   void onReady() {
     super.onReady();
@@ -66,6 +65,4 @@ class NotifikasiController extends GetxController {
   void onClose() {
     super.onClose();
   }
-
-   
 }

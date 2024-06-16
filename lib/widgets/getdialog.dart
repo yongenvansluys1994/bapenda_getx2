@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:bapenda_getx2/app/core/api/api.dart';
 import 'package:bapenda_getx2/app/modules/lapor_pajak/models/model_getpelaporanuser.dart';
 import 'package:bapenda_getx2/app/modules/notifikasi/models/model_notifikasi.dart';
 import 'package:bapenda_getx2/widgets/buttons.dart';
@@ -78,7 +81,8 @@ class getDefaultDialog {
     required String desc,
     required VoidCallback handler,
   }) {
-    Get.defaultDialog( title: "",
+    Get.defaultDialog(
+      title: "",
       radius: 12.r,
       titlePadding: EdgeInsets.zero,
       content: Column(
@@ -134,7 +138,8 @@ class getDefaultDialog {
     required String desc,
     required String kategori,
   }) {
-    Get.defaultDialog( title: "",
+    Get.defaultDialog(
+      title: "",
       radius: 12.r,
       titlePadding: EdgeInsets.zero,
       content: Column(
@@ -178,9 +183,12 @@ class getDefaultDialog {
   void onFixNotifikasi({
     required String title,
     required String kategori,
-    required RxList<ModelListNotifikasi> data,
-  }) {
-    Get.defaultDialog( title: "",
+    required RxList<ModelListNotifikasi> datalist,
+  }) async {
+    final filteredList = datalist.where((item) => item.status == '0').toList();
+
+    await Get.defaultDialog(
+      title: "",
       radius: 12.r,
       titlePadding: EdgeInsets.zero,
       content: Column(
@@ -194,12 +202,15 @@ class getDefaultDialog {
             ),
           ),
           Container(
-            height: (Get.height * 0.1) * (data.length >= 3 ? 2 : data.length), // Change as per your requirement
+            height: (Get.height * 0.1) *
+                (filteredList.length >= 3
+                    ? 2
+                    : filteredList.length), // Change as per your requirement
             width: Get.width * 1,
             child: ListView.builder(
-              itemCount: data.length,
+              itemCount: filteredList.length,
               itemBuilder: (context, index) {
-                var datatitem = data[index];
+                var datatitem = filteredList[index];
                 String titlekategori;
                 if (datatitem.kategori == 'pelaporan_dikembalikan') {
                   titlekategori = 'Pelaporan Pajak ditolak';
@@ -210,37 +221,39 @@ class getDefaultDialog {
                 }
                 return ListTile(
                   leading: CircleAvatar(
-                      backgroundColor:
-                          datatitem.kategori == "pelaporan_dikembalikan"
-                              ? Colors.amber[300]
-                              : null,
-                      child: datatitem.kategori == "pelaporan_dikembalikan"
-                          ? Icon(Icons.autorenew)
-                          : Icon(Icons.notification_important)),
-                  title: Text('${titlekategori}',
-                      style: TextStyle(
-                          fontWeight: FontWeight.w600, fontSize: 13.5.sp),
-                      maxLines:
-                          1), 
+                    backgroundColor:
+                        datatitem.kategori == "pelaporan_dikembalikan"
+                            ? Colors.amber[300]
+                            : null,
+                    child: datatitem.kategori == "pelaporan_dikembalikan"
+                        ? Icon(Icons.autorenew)
+                        : Icon(Icons.notification_important),
+                  ),
+                  title: Text(
+                    '${titlekategori}',
+                    style: TextStyle(
+                        fontWeight: FontWeight.w600, fontSize: 13.5.sp),
+                    maxLines: 1,
+                  ),
                   subtitle: Row(
                     children: [
                       Container(
-                        width: Get.width * 0.43,
+                        width: Get.width * 0.42,
                         child: Text(
-                          '${datatitem.keterangan}',maxLines: 3,
+                          '${datatitem.keterangan}',
+                          maxLines: 3,
                           style: TextStyle(fontSize: 10.5.sp),
                         ),
                       ),
                       Container(
-                    width: Get.width * 0.1,
-                    child: Text(
-                      '${timeago.format(datatitem.date, locale: 'en_short')}', 
-                      style: TextStyle(fontSize: 10.sp),
-                    ),
-                  )
+                        width: Get.width * 0.1,
+                        child: Text(
+                          '${timeago.format(datatitem.date, locale: 'en_short')}',
+                          style: TextStyle(fontSize: 10.sp),
+                        ),
+                      )
                     ],
-                  ), 
-                  
+                  ),
                 );
               },
             ),
@@ -252,7 +265,7 @@ class getDefaultDialog {
           width: 80.w,
           child: Buttons.gradientButton(
             handler: () {
-              Get.back();
+              Get.back(); // This closes the dialog
             },
             widget: Texts.button("Ok"),
             borderSide: false,
@@ -261,6 +274,13 @@ class getDefaultDialog {
         ),
       ],
     );
+
+    List<String> idList = filteredList.map((item) => item.id).toList();
+    //print(jsonEncode(idList));
+    // After the dialog is closed
+    updateDataNotifikasi(idList);
+    print('Dialog closed, update all notifikasi status to 1');
+    // You can perform additional actions here after the dialog is closed
   }
 
   void onFixWithHandler({
@@ -269,7 +289,8 @@ class getDefaultDialog {
     required String kategori,
     required VoidCallback handler,
   }) {
-    Get.defaultDialog( title: "",
+    Get.defaultDialog(
+      title: "",
       barrierDismissible: false,
       radius: 12.r,
       titlePadding: EdgeInsets.zero,
@@ -313,7 +334,8 @@ class getDefaultDialog {
     required String title,
     required String desc,
   }) {
-    Get.defaultDialog( title: "",
+    Get.defaultDialog(
+      title: "",
       radius: 12.r,
       titlePadding: EdgeInsets.zero,
       content: Column(
@@ -355,7 +377,8 @@ class getDefaultDialog {
     required String title,
     required String desc,
   }) {
-    Get.defaultDialog( title: "",
+    Get.defaultDialog(
+        title: "",
         backgroundColor: Colors.transparent,
         titlePadding: EdgeInsets.zero,
         content: Stack(
@@ -453,7 +476,8 @@ void GetDialogDismissible(
 
 void GetDialogContent(
     ModelGetpelaporanUser item, int? totalPajak, int? denda_pajak) {
-  Get.defaultDialog( title: "",
+  Get.defaultDialog(
+    title: "",
     radius: 12.r,
     titlePadding: EdgeInsets.zero,
     content: Container(

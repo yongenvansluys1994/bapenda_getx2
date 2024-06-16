@@ -15,6 +15,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:bapenda_getx2/widgets/theme/app_theme.dart';
 import 'package:get/get.dart';
 import 'package:sleek_circular_slider/sleek_circular_slider.dart';
+import 'package:badges/badges.dart' as badges;
 
 class Dashboard extends StatelessWidget {
   final DashboardController controller = Get.find();
@@ -82,9 +83,18 @@ class Dashboard extends StatelessWidget {
                       borderRadius: BorderRadius.circular(10.r),
                     ),
                     child: IconButton(
-                      icon: const Icon(
-                        Icons.notifications,
-                        color: primaryColor,
+                      icon: badges.Badge(
+                        showBadge: controller.datalistNotifikasi.length == 0
+                            ? false
+                            : true,
+                        badgeContent: Text(
+                          '${controller.datalistNotifikasi.length}',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        child: Icon(
+                          Icons.notifications,
+                          color: primaryColor,
+                        ),
                       ),
                       tooltip: "Open notifications menu",
                       onPressed: () => Get.toNamed(Routes.NOTIFIKASI,
@@ -390,8 +400,7 @@ class Dashboard extends StatelessWidget {
                           physics: NeverScrollableScrollPhysics(),
                           crossAxisCount: 4,
                           mainAxisSpacing: 10.h, // Jarak vertikal antar baris
-                          crossAxisSpacing:
-                              2.h, // Jarak horizontal antar kolom
+                          crossAxisSpacing: 2.h, // Jarak horizontal antar kolom
                           padding: EdgeInsets.only(top: 2.h),
                           children: <Widget>[
                             Container(
@@ -867,7 +876,7 @@ class Dashboard extends StatelessWidget {
                       ),
                     ],
                   ),
-                  SizedBox(height: 10.h),
+                  SizedBox(height: 13.h),
                   Column(
                     children: [
                       Row(
@@ -974,7 +983,6 @@ class Dashboard extends StatelessWidget {
                           );
                         },
                       ),
-                       
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [

@@ -45,6 +45,10 @@ class NotifikasiView extends GetView<NotifikasiController> {
 
                 return Card(
                   child: ListTile(
+                    tileColor:
+                        (datatitem.status == "0" || datatitem.status == "1")
+                            ? Color.fromARGB(248, 230, 243, 255)
+                            : null,
                     leading: CircleAvatar(
                         backgroundColor:
                             datatitem.kategori == "pelaporan_dikembalikan"

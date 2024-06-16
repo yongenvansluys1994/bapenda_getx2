@@ -39,12 +39,12 @@ class EbillingController extends GetxController {
     interval = dateNow!.difference(dateBatasBayar!);
     int selisih = interval!.inDays;
     int daysPerStep = 30; // Number of days for each step
-    int maxDenda = 48; // Maximum denda value
+    int maxDenda = 24; // Maximum denda value
     int steps = (selisih / daysPerStep).floor();
 
     int amount =
         int.parse(dataArgument.pajak); // Replace with the actual amount
-    persenDenda = (steps * 2).clamp(0, maxDenda);
+    persenDenda = (steps * 1).clamp(0, maxDenda);
     denda_pajak = (amount * persenDenda! / 100).toInt();
     totalPajak = (denda_pajak! + int.parse(dataArgument.pajak));
     update();
@@ -52,7 +52,7 @@ class EbillingController extends GetxController {
 
   Future saveAndShare(Uint8List bytes) async {
     final directory = await getApplicationDocumentsDirectory();
-    final image = File('${directory.path}/flutter.png');
+    final image = File('${directory.path}/ebilling.png');
     image.writeAsBytesSync(bytes);
 
     final text = "tes";

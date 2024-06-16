@@ -268,10 +268,16 @@ class DashboardController extends GetxController with AuthCacheService {
       print("tidak ada notifikasi");
     } else {
       datalistNotifikasi.addAll(datauser);
-      getDefaultDialog().onFixNotifikasi(
-          title: "Notifikasi Untuk Anda",
-          kategori: "warning",
-          data: datalistNotifikasi);
+      // Check if any notification has a status of '0'
+      bool hasStatusZero =
+          datalistNotifikasi.any((notifikasi) => notifikasi.status == '0');
+
+      if (hasStatusZero) {
+        getDefaultDialog().onFixNotifikasi(
+            title: "Notifikasi Untuk Anda",
+            kategori: "warning",
+            datalist: datalistNotifikasi);
+      }
     }
   }
 

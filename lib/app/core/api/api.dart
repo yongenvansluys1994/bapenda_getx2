@@ -25,15 +25,30 @@ final Dio dio3 = Dio(
 );
 
 Future<List<ModelListNotifikasi>?> getNotifikasi(nik) async {
-    var response = await dio3.get("/notifikasi/cek_notifikasi.php?nik=$nik");
-    if (response.statusCode == 200) {
-      List data = (json.decode(response.data) as Map<String, dynamic>)["data"];
+  var response = await dio3.get("/notifikasi/cek_notifikasi.php?nik=$nik");
+  if (response.statusCode == 200) {
+    List data = (json.decode(response.data) as Map<String, dynamic>)["data"];
 
-      return data.map((e) => ModelListNotifikasi.fromJson(e)).toList();
-    } else {
-      return null;
-    }
+    return data.map((e) => ModelListNotifikasi.fromJson(e)).toList();
+  } else {
+    return null;
   }
+}
+
+Future<Response> updateDataNotifikasi(List<String> idList) {
+  return dio3.put(
+    "/notifikasi/update_notifikasi.php",
+    data: {
+      'ids': idList,
+    },
+  );
+}
+
+Future<Response> updateDataNotifikasi2(nik) {
+  return dio3.put(
+    "/notifikasi/update_notifikasi2.php?nik=$nik",
+  );
+}
 
 class Api {
   final Dio dio = Dio(
@@ -58,8 +73,6 @@ class Api {
   //   return dio
   //       .get("/v1/api/rest/material-movement/$number?isReadableField=true");
   // }
-
-  
 
   Future<Response> insertData(data) {
     return dio.post(
@@ -89,8 +102,6 @@ class Api {
       return null;
     }
   }
-
-  
 
   Future<List<ModelKartuData>?> getNPWPD(nik) async {
     var response = await dio.get("/kartudata/$nik");
