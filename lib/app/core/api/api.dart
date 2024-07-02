@@ -1,10 +1,13 @@
 import 'dart:convert';
 
+import 'package:bapenda_getx2/app/modules/chat/models/model_chat.dart';
+import 'package:bapenda_getx2/app/modules/chat/models/model_checkroom.dart';
 import 'package:bapenda_getx2/app/modules/kartunpwpd/models/model_kartudata.dart';
 import 'package:bapenda_getx2/app/modules/lapor_pajak/models/model_getpelaporanuser.dart';
 import 'package:bapenda_getx2/app/modules/lapor_pajak/models/model_objekku.dart';
 import 'package:bapenda_getx2/app/modules/myprofil/models/model_ads.dart';
 import 'package:bapenda_getx2/app/modules/notifikasi/models/model_notifikasi.dart';
+import 'package:bapenda_getx2/widgets/logger.dart';
 import 'package:dio/dio.dart';
 
 //const baseUrl = 'https://yongen-bisa.com/bapenda_app/api';
@@ -23,6 +26,49 @@ final Dio dio3 = Dio(
     headers: {'Content-Type': 'application/json'},
   ),
 );
+
+final Dio dioChat = Dio(
+  BaseOptions(
+    baseUrl: baseUrl,
+    connectTimeout: Duration(seconds: 10),
+    receiveTimeout: Duration(seconds: 10),
+    headers: {'Content-Type': 'application/json'},
+  ),
+);
+
+Future<List<ModelCheckRoom>?> checkRoom(id_userwp) async {
+  var response = await dioChat.get("/chat/check_room.php?id_userwp=204");
+  if (response.statusCode == 200) {
+    List data = (json.decode(response.data) as Map<String, dynamic>)["data"];
+    return data.map((e) => ModelCheckRoom.fromJson(e)).toList();
+  } else {
+    return null;
+  }
+}
+
+Future<List<ModelChat>?> getChat(roomID) async {
+  var response = await dioChat.get("/chat/isi_chat.php?room_id=$roomID");
+  if (response.statusCode == 200) {
+    List data = (json.decode(response.data) as Map<String, dynamic>)["data"];
+
+    return data.map((e) => ModelChat.fromJson(e)).toList();
+  } else {
+    return null;
+  }
+}
+
+Future<Response> readChat(int id_userwp, roomID) {
+  return dioChat.put(
+    "/chat/read_chat.php?id_userwp=$id_userwp&room_id=$roomID",
+  );
+}
+
+Future<Response> sendChat(data) {
+  return dioChat.post(
+    "/chat/send_chat.php",
+    data: data,
+  );
+}
 
 Future<List<ModelListNotifikasi>?> getNotifikasi(nik) async {
   var response = await dio3.get("/notifikasi/cek_notifikasi.php?nik=$nik");

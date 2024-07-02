@@ -31,7 +31,6 @@ abstract class Routes {
       _Paths.LAPOR_PAJAK + _Paths.OPENMAP_NPWPDBARU;
   static const OPENMAP_NPWPD = _Paths.LAPOR_PAJAK + _Paths.OPENMAP_NPWPD;
   static const ADS_DETAIL = _Paths.ADS_DETAIL;
-  static const CHAT = _Paths.CHAT;
   static const PANDUAN = _Paths.PANDUAN;
   static const PANDUAN_DETAIL = _Paths.PANDUAN_DETAIL;
   static const LOKASI_KANTOR = _Paths.LOKASI_KANTOR;
@@ -43,6 +42,7 @@ abstract class Routes {
   static const TAMBAH_NPWPD = _Paths.TAMBAH_NPWPD;
   static const PARKIR_APP = _Paths.PARKIR_APP;
   static const NOTIFIKASI = _Paths.NOTIFIKASI;
+  static const CHAT = _Paths.CHAT;
 }
 
 abstract class _Paths {
@@ -70,7 +70,6 @@ abstract class _Paths {
   static const OPENMAP_NPWPDBARU = '/openmap_npwpdbaru';
   static const OPENMAP_NPWPD = '/openmap_npwpd';
   static const ADS_DETAIL = '/ads-detail';
-  static const CHAT = '/chat';
   static const PANDUAN = '/panduan';
   static const PANDUAN_DETAIL = '/panduan-detail';
   static const LOKASI_KANTOR = '/lokasi-kantor';
@@ -82,4 +81,5 @@ abstract class _Paths {
   static const TAMBAH_NPWPD = '/tambah-npwpd';
   static const PARKIR_APP = '/parkir-app';
   static const NOTIFIKASI = '/notifikasi';
+  static const CHAT = '/chat';
 }

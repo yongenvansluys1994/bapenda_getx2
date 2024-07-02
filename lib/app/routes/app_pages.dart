@@ -203,11 +203,6 @@ class AppPages {
       binding: AdsDetailBinding(),
     ),
     GetPage(
-      name: _Paths.CHAT,
-      page: () => ChatView(),
-      binding: ChatBinding(),
-    ),
-    GetPage(
       name: _Paths.PANDUAN,
       page: () => const PanduanView(),
       binding: PanduanBinding(),
@@ -256,6 +251,11 @@ class AppPages {
       name: _Paths.NOTIFIKASI,
       page: () => const NotifikasiView(),
       binding: NotifikasiBinding(),
+    ),
+    GetPage(
+      name: _Paths.CHAT,
+      page: () => const ChatView(),
+      binding: ChatBinding(),
     ),
   ];
 }

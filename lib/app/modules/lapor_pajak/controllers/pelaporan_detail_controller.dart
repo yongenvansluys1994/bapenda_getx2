@@ -267,11 +267,11 @@ class PelaporanDetailController extends GetxController {
               desc:
                   "Pelaporan Pajak Berhasil! Petugas Kami akan melakukan Verifikasi dan setelahnya Anda dapat membayar.",
               kategori: "success");
-          sendPushMessage_topic(
-              "operatorpejabat",
-              "Pelaporan Pajak Masuk!",
-              "Terdapat Pelaporan Pajak baru, Buka aplikasi untuk melihat detailnya",
-              PELAPORAN_MASUK);
+          // sendPushMessage_topic(
+          //     "operatorpejabat",
+          //     "Pelaporan Pajak Masuk!",
+          //     "Terdapat Pelaporan Pajak baru, Buka aplikasi untuk melihat detailnya",
+          //     PELAPORAN_MASUK);
         } else if (respStr == "SudahAda") {
           getDefaultDialog().onFixWithoutIcon(
               title: "Data Sudah Ada!",

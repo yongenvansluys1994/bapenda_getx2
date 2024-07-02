@@ -33,3 +33,35 @@ void sendPushMessage(
     print("error push notification");
   }
 }
+
+void sendPushMessageChat(String token, String title, String body, String desc,
+    [jsonDecode]) async {
+  try {
+    await http.post(
+      Uri.parse('https://fcm.googleapis.com/fcm/send'),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Authorization': 'key=${ApiFCM}',
+      },
+      body: jsonEncode(
+        <String, dynamic>{
+          'notification': <String, dynamic>{
+            'body': body,
+            'title': title,
+          },
+          'priority': 'high',
+          'data': <String, dynamic>{
+            'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+            'id': '1',
+            'status': 'done',
+            'desc': desc,
+            'json_value': jsonDecode
+          },
+          "to": token,
+        },
+      ),
+    );
+  } catch (e) {
+    print("error push notification");
+  }
+}
