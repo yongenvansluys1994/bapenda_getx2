@@ -7,7 +7,6 @@ import 'package:bapenda_getx2/app/modules/lapor_pajak/models/model_getpelaporanu
 import 'package:bapenda_getx2/app/modules/lapor_pajak/models/model_objekku.dart';
 import 'package:bapenda_getx2/app/modules/myprofil/models/model_ads.dart';
 import 'package:bapenda_getx2/app/modules/notifikasi/models/model_notifikasi.dart';
-import 'package:bapenda_getx2/widgets/logger.dart';
 import 'package:dio/dio.dart';
 
 //const baseUrl = 'https://yongen-bisa.com/bapenda_app/api';
@@ -29,7 +28,7 @@ final Dio dio3 = Dio(
 
 final Dio dioChat = Dio(
   BaseOptions(
-    baseUrl: baseUrl,
+    baseUrl: URL_APPSIMPATDA,
     connectTimeout: Duration(seconds: 10),
     receiveTimeout: Duration(seconds: 10),
     headers: {'Content-Type': 'application/json'},

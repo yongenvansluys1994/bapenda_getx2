@@ -3,8 +3,6 @@ import 'dart:convert';
 import 'package:bapenda_getx2/app/core/api/api.dart';
 import 'package:bapenda_getx2/app/modules/dashboard/models/auth_model_model.dart';
 import 'package:bapenda_getx2/app/modules/notifikasi/models/model_notifikasi.dart';
-import 'package:bapenda_getx2/widgets/snackbar.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;

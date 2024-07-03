@@ -1,8 +1,6 @@
 import 'package:bapenda_getx2/widgets/custom_appbar.dart';
 import 'package:bapenda_getx2/widgets/custtombottombar.dart';
-import 'package:bapenda_getx2/widgets/theme/app_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:get/get.dart';
 

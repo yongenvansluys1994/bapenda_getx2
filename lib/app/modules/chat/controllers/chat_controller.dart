@@ -77,6 +77,7 @@ class ChatController extends GetxController {
           'text': '${textController.text}',
           'type': typeChat,
           'type_room': '${typeRoom}',
+          'target_id_userwp': '',
           'chat_room': 'wp',
         });
         print(response);

@@ -2,7 +2,6 @@ import 'package:bapenda_getx2/app/modules/dashboard/controllers/dashboard_contro
 import 'package:bapenda_getx2/app/routes/app_pages.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 class customButtomBar extends StatelessWidget {

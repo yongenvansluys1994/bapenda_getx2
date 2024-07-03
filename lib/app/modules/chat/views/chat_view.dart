@@ -1,9 +1,7 @@
 import 'package:bapenda_getx2/app/modules/chat/models/model_chat.dart';
 import 'package:bapenda_getx2/app/modules/dashboard/models/auth_model_model.dart';
-import 'package:bapenda_getx2/widgets/custom_appbar.dart';
 import 'package:bapenda_getx2/widgets/dismiss_keyboard.dart';
 import 'package:bapenda_getx2/widgets/easythrottle.dart';
-import 'package:bapenda_getx2/widgets/logger.dart';
 import 'package:bapenda_getx2/widgets/nodata.dart';
 import 'package:bapenda_getx2/widgets/shimmer.dart';
 import 'package:bapenda_getx2/widgets/texts.dart';
@@ -77,7 +75,7 @@ class ChatView extends GetView<ChatController> {
                       padding: const EdgeInsets.all(8.0),
                       child: SizedBox(
                         height:
-                            Get.height * 0.84, // Adjust the height as needed
+                            Get.height * 0.834, // Adjust the height as needed
                         child: controller.isHaveRoom == true ||
                                 controller.isFirstOpen == false
                             ? GetBuilder<ChatController>(
@@ -406,7 +404,7 @@ class ChatTo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.find<ChatController>();
+    //final controller = Get.find<ChatController>();
     return GetBuilder<ChatController>(
         init: ChatController(),
         builder: (controller) {
@@ -519,7 +517,7 @@ class ChatFrom extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ChatController controller = Get.find();
+    //final ChatController controller = Get.find();
     return GetBuilder<ChatController>(
         init: ChatController(),
         builder: (controller) {

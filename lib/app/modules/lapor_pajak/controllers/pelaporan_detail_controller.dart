@@ -7,7 +7,6 @@ import 'package:bapenda_getx2/core/push_notification/push_notif_topic.dart';
 import 'package:bapenda_getx2/utils/app_const.dart';
 import 'package:bapenda_getx2/widgets/getdialog.dart';
 import 'package:bapenda_getx2/widgets/snackbar.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
