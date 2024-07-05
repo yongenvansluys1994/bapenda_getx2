@@ -53,7 +53,7 @@ class PpidView extends GetView<PpidController> {
                           borderRadius: BorderRadius.circular(8.w),
                           child: CachedNetworkImage(
                             imageUrl:
-                                "https://yongen-bisa.com/bapenda_app/upload/${dataitem.urlImage}", // "${URL_APP}/upload/${dataitem.urlImage}",
+                                "http://simpatda.bontangkita.id/upload/${dataitem.urlImage}", // "${URL_APP}/upload/${dataitem.urlImage}",
                             height: 170.h,
                             width: 320.w,
                             fit: BoxFit.fill,

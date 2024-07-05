@@ -1,5 +1,5 @@
 // ignore_for_file: constant_identifier_names
-const int currentversion = 33;
+const int currentversion = 35;
 const String PENDAFTARAN_MASUK = "pendaftaran_masuk";
 const String PELAPORAN_MASUK = "pelaporan_masuk";
 const String CHAT = "chat";
@@ -16,7 +16,7 @@ const String STORAGE_TEAMS_PRIORITY = "priorityteams";
 const KEYCLOAK_HOST_URL =
     "https://dev-auth.gmf-aeroasia.co.id/auth/realms/kitting/protocol/openid-connect/token";
 const YONGENBISA_HOST_URL =
-    "https://yongen-bisa.com/bapenda_app/api_ver2/login/login.php";
+    "http://simpatda.bontangkita.id/api_ver2/login/login.php";
 const KEYCLOAK_CLIENT_ID = "kitting-mobile";
 const GRANT_TYPE_PASSWORD = "password";
 const GRANT_TYPE_REFRESH_TOKEN = "refresh_token";

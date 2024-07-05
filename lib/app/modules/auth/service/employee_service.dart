@@ -18,7 +18,7 @@ class EmployeeService extends GraphQLClientService {
 
   Future<User> getUser(String personalNumber) async {
     String url =
-        "https://yongen-bisa.com/bapenda_app/api_ver2/login/check.php?nik=$personalNumber";
+        "http://simpatda.bontangkita.id/api_ver2/login/check.php?nik=$personalNumber";
 
     final response = await http.get(Uri.parse(url));
     final jsonResponse = jsonDecode(response.body);

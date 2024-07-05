@@ -760,11 +760,8 @@ class Dashboard extends StatelessWidget {
                                     children: [
                                       notif(
                                           showbadge:
-                                              controller.countUnseenChat == 0
-                                                  ? false
-                                                  : true,
-                                          number: controller.countUnseenChat
-                                              .toInt()),
+                                              controller.unread_chat_count != "0" ? true : false,
+                                          number: int.parse(controller.unread_chat_count)),
                                       Ink(
                                         height: 63.h,
                                         width: 62.w,
@@ -947,7 +944,7 @@ class Dashboard extends StatelessWidget {
                                                   BorderRadius.circular(5.w),
                                               child: CachedNetworkImage(
                                                 imageUrl:
-                                                    "https://yongen-bisa.com/bapenda_app/upload/${dataitem.urlImage}", // "${URL_APP}/upload/${dataitem.urlImage}",
+                                                    "http://simpatda.bontangkita.id/upload/${dataitem.urlImage}", // "${URL_APP}/upload/${dataitem.urlImage}",
                                                 height: 100.h,
                                                 width: 160.w,
                                                 fit: BoxFit.fill,
@@ -1051,7 +1048,7 @@ class Dashboard extends StatelessWidget {
                                                   BorderRadius.circular(5.w),
                                               child: CachedNetworkImage(
                                                 imageUrl:
-                                                    "https://yongen-bisa.com/bapenda_app/upload/${dataitem.urlImage}", // "${URL_APP}/upload/${dataitem.urlImage}",
+                                                    "http://simpatda.bontangkita.id/upload/${dataitem.urlImage}", // "${URL_APP}/upload/${dataitem.urlImage}",
                                                 height: 100.h,
                                                 width: 160.w,
                                                 fit: BoxFit.fill,

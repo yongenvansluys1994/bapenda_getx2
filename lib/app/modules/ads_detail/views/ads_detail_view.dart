@@ -54,7 +54,7 @@ class AdsDetailView extends GetView<AdsDetailController> {
                               ),
                               child: CachedNetworkImage(
                                 imageUrl:
-                                    "https://yongen-bisa.com/bapenda_app/upload/${controller.dataArgument.urlImage}", // "${URL_APP}/upload/${dataitem.urlImage}",
+                                    "http://simpatda.bontangkita.id/upload/${controller.dataArgument.urlImage}", // "${URL_APP}/upload/${dataitem.urlImage}",
                                 width: double.infinity,
                                 height: 150.h,
                                 fit: BoxFit.fill,

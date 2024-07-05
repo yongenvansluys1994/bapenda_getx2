@@ -30,7 +30,7 @@ class MyprofilController extends GetxController {
   RxList<ModelAds> datalist = <ModelAds>[].obs;
 
   final Uri _url =
-      Uri.parse('http://yongen-bisa.com/bapenda_app/request_delete.php');
+      Uri.parse('http://simpatda.bontangkita.id/request_delete.php');
   @override
   void onInit() {
     super.onInit();

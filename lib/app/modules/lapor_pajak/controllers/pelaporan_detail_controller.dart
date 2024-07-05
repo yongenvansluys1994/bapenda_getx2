@@ -6,6 +6,7 @@ import 'package:bapenda_getx2/app/modules/lapor_pajak/models/model_objekku.dart'
 import 'package:bapenda_getx2/core/push_notification/push_notif_topic.dart';
 import 'package:bapenda_getx2/utils/app_const.dart';
 import 'package:bapenda_getx2/widgets/getdialog.dart';
+import 'package:bapenda_getx2/widgets/logger.dart';
 import 'package:bapenda_getx2/widgets/snackbar.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
@@ -251,7 +252,6 @@ class PelaporanDetailController extends GetxController {
       var response = await client.send(request).timeout(Duration(seconds: 12));
       final responseData = await response.stream.toBytes();
       final respStr = String.fromCharCodes(responseData);
-
       if (response.statusCode == 200) {
         if (respStr == "Berhasil") {
           FinalDate = null;
@@ -266,11 +266,11 @@ class PelaporanDetailController extends GetxController {
               desc:
                   "Pelaporan Pajak Berhasil! Petugas Kami akan melakukan Verifikasi dan setelahnya Anda dapat membayar.",
               kategori: "success");
-          // sendPushMessage_topic(
-          //     "operatorpejabat",
-          //     "Pelaporan Pajak Masuk!",
-          //     "Terdapat Pelaporan Pajak baru, Buka aplikasi untuk melihat detailnya",
-          //     PELAPORAN_MASUK);
+          sendPushMessage_topic(
+              "operatorpejabat",
+              "Pelaporan Pajak Masuk!",
+              "Terdapat Pelaporan Pajak baru, Buka aplikasi untuk melihat detailnya",
+              PELAPORAN_MASUK);
         } else if (respStr == "SudahAda") {
           getDefaultDialog().onFixWithoutIcon(
               title: "Data Sudah Ada!",

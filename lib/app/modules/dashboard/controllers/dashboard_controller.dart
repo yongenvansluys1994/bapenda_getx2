@@ -24,6 +24,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 
 class DashboardController extends GetxController with AuthCacheService {
+  http.Client httpClient = http.Client();
   late AuthModel authModel;
   bool isLoadingAds = false;
   bool isEmptyAds = false;
@@ -34,8 +35,7 @@ class DashboardController extends GetxController with AuthCacheService {
   RxList<ModelAds> datalistAds = <ModelAds>[].obs;
   RxList<ModelAds> datalistPPID = <ModelAds>[].obs;
   RxList<ModelListNotifikasi> datalistNotifikasi = <ModelListNotifikasi>[].obs;
-  RxInt countUnseenChat = 0.obs;
-
+  String unread_chat_count = "0";
   late String tokenMsg;
   int tot_pelaporan = 0;
 
@@ -70,35 +70,10 @@ class DashboardController extends GetxController with AuthCacheService {
     fetchAds();
     fetchPPID();
     row_pelaporan();
-    CountUnseenChat();
-
+    hasUnreadChat();
     update();
   }
 
-  void CountUnseenChat() {
-    FirebaseFirestore.instance
-        .collection('rooms')
-        .where('participants', arrayContains: authModel.nik)
-        .snapshots()
-        .listen((QuerySnapshot roomQuerySnapshot) {
-      roomQuerySnapshot.docs.forEach((roomDoc) {
-        String roomId = roomDoc.id;
-
-        // Listen for changes in the chats collection of each room
-        FirebaseFirestore.instance
-            .collection('rooms')
-            .doc(roomId)
-            .collection('chats')
-            .where('nikTo', isEqualTo: authModel.nik.toString())
-            .where('read', isEqualTo: false)
-            .snapshots()
-            .listen((QuerySnapshot chatQuerySnapshot) {
-          countUnseenChat.value = chatQuerySnapshot.docs.length;
-          update();
-        });
-      });
-    });
-  }
 
   void logout() {
     removeToken();
@@ -189,6 +164,9 @@ class DashboardController extends GetxController with AuthCacheService {
               Get.back(); //tutup dialog sukses
             },
           );
+        }else if (message.data['desc'] == "chat_masuk") {
+          hasUnreadChat();
+          update();
         }
 
         flutterLocalNotificationsPlugin.show(
@@ -366,6 +344,15 @@ class DashboardController extends GetxController with AuthCacheService {
     getDefaultDialog().BannerDashboard(
         title: "Selamat Datang",
         desc: "Nikmati fitur-fitur terbaru pada Big Update Bapenda Etam");
+    update();
+  }
+
+  void hasUnreadChat() async {
+    unread_chat_count = "0";
+    var response = await httpClient
+        .get(Uri.parse("${URL_APPSIMPATDA}/chat/has_unread.php?id_userwp=${authModel.idUserwp}"));
+    List data = (json.decode(response.body) as Map<String, dynamic>)["data"];
+    unread_chat_count = data[0]["unread_chat_count"];
     update();
   }
 
