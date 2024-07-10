@@ -8,6 +8,7 @@ import 'package:bapenda_getx2/utils/app_const.dart';
 import 'package:bapenda_getx2/widgets/getdialog.dart';
 import 'package:bapenda_getx2/widgets/logger.dart';
 import 'package:bapenda_getx2/widgets/snackbar.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -447,7 +448,7 @@ class PelaporanDetailController extends GetxController {
                       _openGallery(context);
                       update();
                     },
-                    title: Text("Gallery/File"),
+                    title: Text("Gallery"),
                     leading: Icon(
                       Icons.account_box,
                       color: Colors.blue,
@@ -468,21 +469,21 @@ class PelaporanDetailController extends GetxController {
                       color: Colors.blue,
                     ),
                   ),
-                  // Divider(
-                  //   height: 1,
-                  //   color: Colors.blue,
-                  // ),
-                  // ListTile(
-                  //   onTap: () {
-                  //     _filePicker(context);
-                  //     update();
-                  //   },
-                  //   title: Text("File"),
-                  //   leading: Icon(
-                  //     Icons.camera,
-                  //     color: Colors.blue,
-                  //   ),
-                  // ),
+                  Divider(
+                    height: 1,
+                    color: Colors.blue,
+                  ),
+                  ListTile(
+                    onTap: () {
+                      _filePicker(context);
+                      update();
+                    },
+                    title: Text("File Pdf"),
+                    leading: Icon(
+                      Icons.file_copy,
+                      color: Colors.blue,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -506,15 +507,15 @@ class PelaporanDetailController extends GetxController {
     update();
   }
 
-  // void _filePicker(BuildContext context) async {
-  //   FilePickerResult? result = await FilePicker.platform.pickFiles(
-  //     type: FileType.custom,
-  //     allowedExtensions: ['pdf', 'xls', 'xlsx'], // Ekstensi file yang diizinkan
-  //   );
-  //   imageFile = XFile(result!.files.single.path!);
-  //   Get.back();
-  //   update();
-  // }
+  void _filePicker(BuildContext context) async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['pdf'], // Ekstensi file yang diizinkan
+    );
+    imageFile = XFile(result!.files.single.path!);
+    Get.back();
+    update();
+  }
 
   void listenFCM() async {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {

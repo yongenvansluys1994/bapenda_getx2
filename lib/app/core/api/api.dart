@@ -10,8 +10,8 @@ import 'package:bapenda_getx2/app/modules/notifikasi/models/model_notifikasi.dar
 import 'package:dio/dio.dart';
 
 //const baseUrl = 'https://yongen-bisa.com/bapenda_app/api';
-const baseUrl = 'http://simpatda.bontangkita.id/api_ver2';
-const URL_APP = "http://simpatda.bontangkita.id/api_ver2";
+const baseUrl = 'https://yongen-bisa.com/bapenda_app/api_ver2';
+const URL_APP = "https://yongen-bisa.com/bapenda_app/api_ver2";
 const URL_SIMPATDA = "http://simpatda.bontangkita.id/simpatda";
 const URL_APPSIMPATDA = "http://simpatda.bontangkita.id/api_ver2";
 const String ApiFCM =
