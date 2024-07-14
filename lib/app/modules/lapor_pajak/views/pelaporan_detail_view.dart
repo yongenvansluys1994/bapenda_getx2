@@ -14,6 +14,7 @@ import 'package:bapenda_getx2/widgets/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:intl/intl.dart';
 import 'package:month_picker_dialog/month_picker_dialog.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
@@ -440,6 +441,12 @@ class PelaporanDetailView extends GetView<PelaporanDetailController> {
                             }),
                       ),
                     ),
+                    ElevatedButton(
+                        onPressed: () {
+                          controller.checkhistorynow(
+                              DateFormat('dd/MM/yyyy').parse('01/07/2024'));
+                        },
+                        child: Text("asdasd")),
                     //Text("${controller.dataArgument.idWajibPajak}"),
                     DefaultTabController(
                       length: 5, // Number of tabs

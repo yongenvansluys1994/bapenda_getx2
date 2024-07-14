@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:bapenda_getx2/app/core/api/api.dart';
 import 'package:bapenda_getx2/app/modules/lapor_pajak/controllers/pelaporan_history_controller.dart';
+import 'package:bapenda_getx2/app/modules/lapor_pajak/models/model_getpelaporanuser.dart';
 import 'package:bapenda_getx2/app/modules/lapor_pajak/models/model_objekku.dart';
 import 'package:bapenda_getx2/core/push_notification/push_notif_topic.dart';
 import 'package:bapenda_getx2/utils/app_const.dart';
@@ -53,6 +55,49 @@ class PelaporanDetailController extends GetxController {
           tahunSekarang - i); //mengisi list tahunhistory 5 tahun kebelakang
     }
     listenFCM();
+  }
+
+  void checkhistorynow(DateTime newDate) {
+    final controllerhist = Get.find<PelaporanHistoryController>();
+
+    if (controllerhist.datalist.isEmpty) {
+      print('Tidak ada data sebelumnya, Anda bisa memasukkan data baru.');
+      //InputPelaporan();
+    } else {
+      // Check if newDate already exists in controllerhist.datalist
+      bool dateExists = controllerhist.datalist.any((data) {
+        DateTime dataDate = DateFormat('dd/MM/yyyy').parse(data.masaPajak2);
+        return dataDate.year == newDate.year && dataDate.month == newDate.month;
+      });
+
+      if (dateExists) {
+        logInfo('Data Sudah Ada!');
+        getDefaultDialog().onFixWithoutIcon(
+            title: "Data Sudah Ada!",
+            desc:
+                "Anda Telah melapor pada Masa Pajak yang sama sebelumnya! Pastikan anda memilih Masa Pajak dengan Benar");
+      } else {
+        // logInfo("${jsonEncode(controllerhist.datalist)}");
+        ModelGetpelaporanUser lastData = controllerhist.datalist.first;
+        DateTime lastDate = DateFormat('dd/MM/yyyy').parse(lastData.masaAkhir2);
+
+        DateTime nextMonth = DateTime(lastDate.year, lastDate.month + 1);
+        if (newDate.year == nextMonth.year &&
+            newDate.month == nextMonth.month) {
+          // Data bisa dimasukkan
+          logInfo('Data bisa dimasukkan.');
+          //InputPelaporan();
+        } else {
+          // Tampilkan notifikasi tidak bisa melompat bulan
+          logInfo('Anda tidak bisa melompat bulan.');
+          getDefaultDialog().onFixWithoutIcon(
+              title: "Mohon maaf!",
+              desc:
+                  "Pelaporan Pajak tidak bisa melompat bulan, mohon laporkan urutan periode pajak sesuai periode bulan terakhir");
+        }
+        // logInfo("${jsonEncode(controllerhist.datalist.first)}");
+      }
+    }
   }
 
   void month_picker(BuildContext context) {
@@ -159,7 +204,8 @@ class PelaporanDetailController extends GetxController {
             status: "Sedang memproses Pelaporan",
             maskType: EasyLoadingMaskType.clear,
           );
-          InputPelaporan(); //start proses input pelaporan
+          checkhistorynow(selectedDate!);
+          //start proses input pelaporan
           update();
         },
       );
