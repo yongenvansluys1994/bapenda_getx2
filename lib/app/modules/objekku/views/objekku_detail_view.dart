@@ -1,28 +1,31 @@
-import 'dart:io';
-
 import 'package:bapenda_getx2/app/routes/app_pages.dart';
-import 'package:bapenda_getx2/widgets/dismiss_keyboard.dart';
-import 'package:bapenda_getx2/widgets/snackbar.dart';
+import 'package:bapenda_getx2/widgets/logger.dart';
+import 'package:bapenda_getx2/widgets/shimmer.dart';
 import 'package:bapenda_getx2/widgets/texts.dart';
 import 'package:bapenda_getx2/widgets/theme/app_theme.dart';
+import 'package:bapenda_getx2/widgets/utils/helper/responsive_helper.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:lottie/lottie.dart';
 
-import '../controllers/tambah_npwpdbaru_controller.dart';
+import '../controllers/objekku_detail_controller.dart';
 
-class TambahNpwpdbaruView extends StatefulWidget {
-  const TambahNpwpdbaruView({Key? key}) : super(key: key);
+class ObjekkuDetailView extends StatefulWidget {
+  const ObjekkuDetailView({Key? key}) : super(key: key);
 
   @override
-  _TambahNpwpdbaruViewState createState() => _TambahNpwpdbaruViewState();
+  _ObjekkuDetailViewState createState() => _ObjekkuDetailViewState();
 }
 
-class _TambahNpwpdbaruViewState extends State<TambahNpwpdbaruView> {
-  final controller = Get.find<TambahNpwpdbaruController>();
+class _ObjekkuDetailViewState extends State<ObjekkuDetailView> {
+  final controller = Get.find<ObjekkuDetailController>();
+
+  bool buttonsalin = false;
 
   @override
   void initState() {
@@ -35,7 +38,11 @@ class _TambahNpwpdbaruViewState extends State<TambahNpwpdbaruView> {
               ? StepState.editing
               : StepState.complete,
           isActive: controller.activeStepIndex >= 0,
-          title: const Text('USAHA'),
+          title: Text(
+            'USAHA',
+            style:
+                TextStyle(fontSize: ResponsiveHelper.isTablet() ? 10.sp : null),
+          ),
           content: Container(
             decoration: BoxDecoration(
                 color: Colors.white,
@@ -59,83 +66,10 @@ class _TambahNpwpdbaruViewState extends State<TambahNpwpdbaruView> {
                   children: [
                     Padding(
                       padding: const EdgeInsets.all(8),
-                      child: Texts.body2("Jenis Pajak :"),
-                    ),
-                    Container(
-                      child: InputDecorator(
-                        decoration: InputDecoration(
-                          isDense: true,
-                          contentPadding: EdgeInsets.fromLTRB(12, 12, 12, 0),
-                          fillColor: Colors.white,
-                          filled: true,
-                          hintText: '',
-                          enabledBorder: const OutlineInputBorder(
-                            borderSide:
-                                BorderSide(color: Colors.grey, width: 0.0),
-                          ),
-                          focusedBorder: const OutlineInputBorder(
-                            borderSide:
-                                BorderSide(color: lightGreenColor, width: 2),
-                          ),
-                        ),
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButton<String>(
-                            value: controller.ValueJenisPajak,
-                            isDense: true,
-                            isExpanded: true,
-                            onChanged: (String? newValue) {
-                              setState(() {
-                                controller.ValueJenisPajak = newValue!;
-                              });
-                            },
-                            items: <String>[
-                              // 'PT',
-                              // 'CV',
-                              // 'UD',
-                              'HOTEL',
-                              'RESTORAN',
-                              'WARUNG',
-                              'CATERING',
-                              'CAFETARIA',
-                              'HIBURAN',
-                              // 'YAYASAN/KOPERASI',
-                              // 'PERKANTORAN',
-                              // 'PRIBADI',
-                              // 'BENGKEL',
-                              // 'TOKO',
-                              // 'APOTEK',
-                              // 'LAIN-LAIN',
-                              // 'BPHTB',
-                              'Air Bawah T',
-                              'Pajak Penerangan Jalan',
-                              'Sarang Burung Walet',
-                              'Parkir'
-                            ].map<DropdownMenuItem<String>>((String value) {
-                              return DropdownMenuItem<String>(
-                                value: value,
-                                child: Text(
-                                  value,
-                                  style: TextStyle(fontSize: 11.5.sp),
-                                ),
-                              );
-                            }).toList(),
-                          ),
-                        ),
-                      ),
-                      decoration: BoxDecoration(boxShadow: [
-                        BoxShadow(
-                          color: Color.fromARGB(255, 164, 186, 206),
-                          blurRadius: 5,
-                        ),
-                      ]),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8),
                       child: Texts.body2("Nama Usaha :"),
                     ),
                     Container(
                       child: TextFormField(
-                        textCapitalization: TextCapitalization.characters,
                         style: TextStyle(fontSize: 12.sp),
                         controller: controller.nama_usaha,
                         decoration: InputDecoration(
@@ -172,7 +106,6 @@ class _TambahNpwpdbaruViewState extends State<TambahNpwpdbaruView> {
                     ),
                     Container(
                       child: TextFormField(
-                        textCapitalization: TextCapitalization.words,
                         style: TextStyle(fontSize: 12.sp),
                         controller: controller.alamat_usaha,
                         minLines:
@@ -223,7 +156,6 @@ class _TambahNpwpdbaruViewState extends State<TambahNpwpdbaruView> {
                               ),
                               Container(
                                 child: TextFormField(
-                                  textCapitalization: TextCapitalization.words,
                                   style: TextStyle(fontSize: 12.sp),
                                   controller: controller.rt_usaha,
                                   keyboardType: TextInputType.number,
@@ -272,7 +204,6 @@ class _TambahNpwpdbaruViewState extends State<TambahNpwpdbaruView> {
                               ),
                               Container(
                                 child: TextFormField(
-                                  textCapitalization: TextCapitalization.characters,
                                   style: TextStyle(fontSize: 12.sp),
                                   controller: controller.kota_usaha,
                                   decoration: InputDecoration(
@@ -329,11 +260,13 @@ class _TambahNpwpdbaruViewState extends State<TambahNpwpdbaruView> {
                                     isDense: true,
                                     contentPadding: EdgeInsets.fromLTRB(
                                         20.r, 20.r, 20.r, 0),
+                                    fillColor:
+                                        Color.fromARGB(255, 238, 238, 238),
                                     filled: true,
                                     hintText: '',
                                     enabledBorder: const OutlineInputBorder(
                                       borderSide: BorderSide(
-                                          color: Colors.white, width: 0.0),
+                                          color: Colors.grey, width: 0.0),
                                     ),
                                     focusedBorder: const OutlineInputBorder(
                                       borderSide: BorderSide(
@@ -346,9 +279,9 @@ class _TambahNpwpdbaruViewState extends State<TambahNpwpdbaruView> {
                                       isDense: true,
                                       isExpanded: true,
                                       onChanged: (String? newValue) {
-                                        setState(() {
-                                          controller.ValueKelurahan = newValue!;
-                                        });
+                                        // setState(() {
+                                        //   ValueKelurahan = newValue!;
+                                        // });
                                       },
                                       items: <String>[
                                         'LUAR KOTA',
@@ -411,11 +344,13 @@ class _TambahNpwpdbaruViewState extends State<TambahNpwpdbaruView> {
                                     isDense: true,
                                     contentPadding: EdgeInsets.fromLTRB(
                                         20.r, 20.r, 20.r, 0),
+                                    fillColor:
+                                        Color.fromARGB(255, 238, 238, 238),
                                     filled: true,
                                     hintText: '',
                                     enabledBorder: const OutlineInputBorder(
                                       borderSide: BorderSide(
-                                          color: Colors.white, width: 0.0),
+                                          color: Colors.grey, width: 0.0),
                                     ),
                                     focusedBorder: const OutlineInputBorder(
                                       borderSide: BorderSide(
@@ -428,9 +363,9 @@ class _TambahNpwpdbaruViewState extends State<TambahNpwpdbaruView> {
                                       isDense: true,
                                       isExpanded: true,
                                       onChanged: (String? newValue) {
-                                        setState(() {
-                                          controller.ValueKecamatan = newValue!;
-                                        });
+                                        // setState(() {
+                                        //   ValueKecamatan = newValue!;
+                                        // });
                                       },
                                       items: <String>[
                                         'LUAR KOTA',
@@ -476,7 +411,6 @@ class _TambahNpwpdbaruViewState extends State<TambahNpwpdbaruView> {
                               ),
                               Container(
                                 child: TextFormField(
-                                  textCapitalization: TextCapitalization.words,
                                   style: TextStyle(fontSize: 12.sp),
                                   controller: controller.nohp_usaha,
                                   keyboardType: TextInputType.number,
@@ -525,7 +459,6 @@ class _TambahNpwpdbaruViewState extends State<TambahNpwpdbaruView> {
                               ),
                               Container(
                                 child: TextFormField(
-                                  textCapitalization: TextCapitalization.words,
                                   style: TextStyle(fontSize: 12.sp),
                                   controller: controller.email_usaha,
                                   decoration: InputDecoration(
@@ -570,7 +503,9 @@ class _TambahNpwpdbaruViewState extends State<TambahNpwpdbaruView> {
               ? StepState.editing
               : StepState.complete,
           isActive: controller.activeStepIndex >= 1,
-          title: const Text('PEMILIK'),
+          title: Text('PEMILIK',
+              style: TextStyle(
+                  fontSize: ResponsiveHelper.isTablet() ? 10.sp : null)),
           content: Container(
             decoration: BoxDecoration(
                 color: Colors.white,
@@ -598,47 +533,10 @@ class _TambahNpwpdbaruViewState extends State<TambahNpwpdbaruView> {
                           padding: const EdgeInsets.all(8),
                           child: Texts.body2("Nama Pemilik/Pengelola :"),
                         ),
-                        SizedBox(
-                            // <-- Your width
-                            height: 23.h, // <-- Your height
-                            child: controller.buttonsalin
-                                ? ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      primary: Colors.grey[200], // background
-                                      onPrimary: lightTextColor, // foreground
-                                    ),
-                                    onPressed: () {
-                                      controller.hapussalin();
-                                    },
-                                    child: Text(
-                                      "Hapus Salinan",
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                          fontSize: 11.sp,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                  )
-                                : ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      primary: lightBlueColor, // background
-                                      onPrimary: Colors.white, // foreground
-                                    ),
-                                    onPressed: () {
-                                      controller.salin();
-                                    },
-                                    child: Text(
-                                      "Salin dari Usaha",
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                          fontSize: 11.sp,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                  ))
                       ],
                     ),
                     Container(
                       child: TextFormField(
-                        textCapitalization: TextCapitalization.characters,
                         style: TextStyle(fontSize: 12.sp),
                         controller: controller.nama_pemilik,
                         decoration: InputDecoration(
@@ -678,7 +576,6 @@ class _TambahNpwpdbaruViewState extends State<TambahNpwpdbaruView> {
                     ),
                     Container(
                       child: TextFormField(
-                        textCapitalization: TextCapitalization.words,
                         style: TextStyle(fontSize: 12.sp),
                         controller: controller.pekerjaan_pemilik,
                         decoration: InputDecoration(
@@ -723,7 +620,6 @@ class _TambahNpwpdbaruViewState extends State<TambahNpwpdbaruView> {
                     ),
                     Container(
                       child: TextFormField(
-                        textCapitalization: TextCapitalization.words,
                         style: TextStyle(fontSize: 12.sp),
                         controller: controller.alamat_pemilik,
                         minLines:
@@ -774,7 +670,6 @@ class _TambahNpwpdbaruViewState extends State<TambahNpwpdbaruView> {
                               ),
                               Container(
                                 child: TextFormField(
-                                  textCapitalization: TextCapitalization.words,
                                   style: TextStyle(fontSize: 12.sp),
                                   controller: controller.rt_pemilik,
                                   keyboardType: TextInputType.number,
@@ -823,7 +718,6 @@ class _TambahNpwpdbaruViewState extends State<TambahNpwpdbaruView> {
                               ),
                               Container(
                                 child: TextFormField(
-                                  textCapitalization: TextCapitalization.characters,
                                   style: TextStyle(fontSize: 12.sp),
                                   controller: controller.kota_pemilik,
                                   decoration: InputDecoration(
@@ -875,7 +769,6 @@ class _TambahNpwpdbaruViewState extends State<TambahNpwpdbaruView> {
                               ),
                               Container(
                                 child: TextFormField(
-                                  textCapitalization: TextCapitalization.words,
                                   style: TextStyle(fontSize: 12.sp),
                                   controller: controller.kel_pemilik,
                                   decoration: InputDecoration(
@@ -927,7 +820,6 @@ class _TambahNpwpdbaruViewState extends State<TambahNpwpdbaruView> {
                               ),
                               Container(
                                 child: TextFormField(
-                                  textCapitalization: TextCapitalization.words,
                                   style: TextStyle(fontSize: 12.sp),
                                   controller: controller.kec_pemilik,
                                   decoration: InputDecoration(
@@ -979,7 +871,6 @@ class _TambahNpwpdbaruViewState extends State<TambahNpwpdbaruView> {
                               ),
                               Container(
                                 child: TextFormField(
-                                  textCapitalization: TextCapitalization.words,
                                   style: TextStyle(fontSize: 12.sp),
                                   controller: controller.nohp_pemilik,
                                   keyboardType: TextInputType.number,
@@ -1028,7 +919,6 @@ class _TambahNpwpdbaruViewState extends State<TambahNpwpdbaruView> {
                               ),
                               Container(
                                 child: TextFormField(
-                                  textCapitalization: TextCapitalization.words,
                                   style: TextStyle(fontSize: 12.sp),
                                   controller: controller.email_pemilik,
                                   decoration: InputDecoration(
@@ -1072,37 +962,32 @@ class _TambahNpwpdbaruViewState extends State<TambahNpwpdbaruView> {
                               padding: const EdgeInsets.all(8),
                               child: Center(child: Texts.body2("Upload KTP :")),
                             ),
-                            Container(
-                              width: 80,
-                              height: 60,
-                              child: (controller.imageFileKTP == null)
-                                  ? Text("")
-                                  : Image.file(
-                                      File(controller.imageFileKTP!.path)),
-                            ),
-                            SizedBox(
-                              width: 128.w,
-                              height: 33.h,
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  controller.showChoiceDialog(context, "KTP");
-                                },
-                                style: ButtonStyle(
-                                  backgroundColor:
-                                      MaterialStateProperty.all<Color>(
-                                          Color.fromARGB(255, 64, 64, 64)),
-                                ),
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.camera_alt, size: 20),
-                                    SizedBox(
-                                      width: 8,
-                                    ),
-                                    Text(
-                                      'Pilih Gambar',
-                                      style: TextStyle(fontSize: 13),
-                                    )
-                                  ],
+                            InkWell(
+                              onTap: () {
+                                Get.toNamed(Routes.DETAILSCREEN,
+                                    arguments:
+                                        controller.dataArgument.imageKtp);
+                              },
+                              child: ClipRRect(
+                                child: CachedNetworkImage(
+                                  imageUrl:
+                                      "https://yongen-bisa.com/bapenda_app/upload/${controller.dataArgument.imageKtp}",
+                                  width: 80,
+                                  height: 60,
+                                  fit: BoxFit.cover,
+                                  placeholder: (context, url) =>
+                                      ShimmerWidget.rectangular(
+                                    width: 80.h,
+                                    height: 60.h,
+                                    baseColor: shadowColor,
+                                  ),
+                                  errorWidget: ((context, url, error) =>
+                                      Image.asset(
+                                        'images/image.png',
+                                        fit: BoxFit.cover,
+                                        width: 80.h,
+                                        height: 60.h,
+                                      )),
                                 ),
                               ),
                             ),
@@ -1119,38 +1004,32 @@ class _TambahNpwpdbaruViewState extends State<TambahNpwpdbaruView> {
                                 child:
                                     Center(child: Texts.body2("Upload NPWP :")),
                               ),
-                              Container(
-                                width: 80,
-                                height: 60,
-                                child: (controller.imageFileNPWP == null)
-                                    ? Text("")
-                                    : Image.file(
-                                        File(controller.imageFileNPWP!.path)),
-                              ),
-                              SizedBox(
-                                width: 128.w,
-                                height: 33.h,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    controller.showChoiceDialog(
-                                        context, "NPWP");
-                                  },
-                                  style: ButtonStyle(
-                                    backgroundColor:
-                                        MaterialStateProperty.all<Color>(
-                                            Color.fromARGB(255, 64, 64, 64)),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Icon(Icons.camera_alt, size: 20),
-                                      SizedBox(
-                                        width: 8,
-                                      ),
-                                      Text(
-                                        'Pilih Gambar',
-                                        style: TextStyle(fontSize: 13),
-                                      )
-                                    ],
+                              InkWell(
+                                onTap: () {
+                                  Get.toNamed(Routes.DETAILSCREEN,
+                                      arguments:
+                                          controller.dataArgument.imageNpwp);
+                                },
+                                child: ClipRRect(
+                                  child: CachedNetworkImage(
+                                    imageUrl:
+                                        "https://yongen-bisa.com/bapenda_app/upload/${controller.dataArgument.imageNpwp}",
+                                    width: 80,
+                                    height: 60,
+                                    fit: BoxFit.cover,
+                                    placeholder: (context, url) =>
+                                        ShimmerWidget.rectangular(
+                                      width: 80.h,
+                                      height: 60.h,
+                                      baseColor: shadowColor,
+                                    ),
+                                    errorWidget: ((context, url, error) =>
+                                        Image.asset(
+                                          'images/image.png',
+                                          fit: BoxFit.cover,
+                                          width: 80.h,
+                                          height: 60.h,
+                                        )),
                                   ),
                                 ),
                               ),
@@ -1171,7 +1050,9 @@ class _TambahNpwpdbaruViewState extends State<TambahNpwpdbaruView> {
         Step(
           state: StepState.complete,
           isActive: controller.activeStepIndex >= 2,
-          title: const Text('LOKASI'),
+          title: Text('LOKASI',
+              style: TextStyle(
+                  fontSize: ResponsiveHelper.isTablet() ? 10.sp : null)),
           content: Container(
             decoration: BoxDecoration(
                 color: Colors.white,
@@ -1191,54 +1072,28 @@ class _TambahNpwpdbaruViewState extends State<TambahNpwpdbaruView> {
               child: Column(
                 children: [
                   Text(
-                    "Tentukan Titik Lokasi Objek Pajak Anda",
+                    "Titik Lokasi Objek Pajak ",
                     style: TextStyle(
                         color: MainColor,
-                        fontSize: 13.sp,
+                        fontSize: 16.sp,
                         fontWeight: FontWeight.bold),
                   ),
                   SizedBox(
                     height: 1.h,
                   ),
                   SizedBox(
-                    width: 230.w,
-                    height: 35.h,
-                    child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                            primary: Colors.white, // background
-                            onPrimary: Blacksoft, // foreground
-                            elevation: 4,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(15))),
-                        onPressed: () {
-                          Get.toNamed(Routes.OPENMAP_NPWPDBARU);
-                        },
-                        child: Row(
-                          children: [
-                            Image.asset(
-                              'assets/images/mark-google.png',
-                              width: 15.w,
-                            ),
-                            SizedBox(
-                              height: 10.h,
-                            ),
-                            Text('Klik Disini untuk tentukan lokasi')
-                          ],
-                        )),
-                  ),
-                  SizedBox(
                     height: 1.h,
                   ),
-                  GetBuilder<TambahNpwpdbaruController>(
-                    init: TambahNpwpdbaruController(),
+                  GetBuilder<ObjekkuDetailController>(
+                    init: ObjekkuDetailController(),
                     builder: (controller) {
                       return SizedBox(
-                        height: 200.h,
+                        height: 400.h,
                         child: controller.lat == null
                             ? SizedBox()
                             : GoogleMap(
                                 markers: controller.markers2,
-                                mapType: MapType.satellite,
+                                mapType: MapType.hybrid,
                                 initialCameraPosition: CameraPosition(
                                   target: LatLng(
                                       controller.lat == null
@@ -1278,8 +1133,10 @@ class _TambahNpwpdbaruViewState extends State<TambahNpwpdbaruView> {
           backgroundColor: Colors.white,
           elevation: 0,
           title: Text(
-            "Form Pendaftaran Baru NPWPD",
-            style: TextStyle(color: MainColor),
+            "Data Wajib Pajak",
+            style: TextStyle(
+                color: MainColor,
+                fontSize: ResponsiveHelper.isTablet() ? 11.sp : null),
           ),
           actions: [
             Padding(
@@ -1305,159 +1162,160 @@ class _TambahNpwpdbaruViewState extends State<TambahNpwpdbaruView> {
                   },
                   onSelected: (value) {
                     if (value == 0) {
-                      print("My account menu is selected.");
+                      logInfo("My account menu is selected.");
                     } else if (value == 1) {}
                   }),
             ),
           ],
         ),
-        body: GetBuilder<TambahNpwpdbaruController>(
-          init: TambahNpwpdbaruController(),
-          builder: (controller) {
-            return Stepper(
-              type: StepperType.horizontal,
-              currentStep: controller.activeStepIndex,
-              steps: stepList(),
-              onStepContinue: () {
-                if (controller.activeStepIndex < (stepList().length - 1)) {
-                  setState(() {
-                    controller.activeStepIndex += 1;
-                    dismissKeyboard();
-                  });
-                } else {
-                  print('Submited');
-                }
-              },
-              onStepCancel: () {
-                if (controller.activeStepIndex == 0) {
-                  return;
-                }
-                setState(() {
-                  controller.activeStepIndex -= 1;
-                });
-              },
-              onStepTapped: (int index) {
-                setState(() {
-                  controller.activeStepIndex = index;
-                });
-              },
-              controlsBuilder:
-                  (BuildContext context, ControlsDetails controls) {
-                final isLastStep =
-                    controller.activeStepIndex == stepList().length - 1;
-                return Container(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      (isLastStep)
-                          ? SizedBox(
-                              width: 140,
-                              child: ElevatedButton(
-                                  onPressed: () {
-                                    if (controller.ValueJenisPajak == null ||
-                                        controller.nama_usaha.text == "" ||
-                                        controller.alamat_usaha.text == "" ||
-                                        controller.rt_usaha.text == "" ||
-                                        controller.kota_usaha.text == "" ||
-                                        controller.ValueKelurahan == "" ||
-                                        controller.ValueKecamatan == "" ||
-                                        controller.nohp_usaha.text == "" ||
-                                        controller.email_usaha.text == "" ||
-                                        controller.nama_pemilik.text == "" ||
-                                        controller.pekerjaan_pemilik.text ==
-                                            "" ||
-                                        controller.alamat_pemilik.text == "" ||
-                                        controller.rt_pemilik.text == "" ||
-                                        controller.kota_pemilik.text == "" ||
-                                        controller.kel_pemilik.text == "" ||
-                                        controller.kec_pemilik.text == "" ||
-                                        controller.nohp_pemilik.text == "" ||
-                                        controller.email_pemilik.text == "") {
-                                      RawSnackbar_top(
-                                          message:
-                                              "Semua Form Wajib diisi! \nSilahkan Periksa Kembali",
-                                          kategori: "warning",
-                                          duration: 2);
-                                    } else if (controller.imageFileKTP ==
-                                        null) {
-                                      RawSnackbar_top(
-                                          message:
-                                              "Upload KTP Tidak Boleh Kosong!",
-                                          kategori: "warning",
-                                          duration: 2);
-                                    } else if (controller.imageFileNPWP ==
-                                        null) {
-                                      RawSnackbar_top(
-                                          message:
-                                              "Upload NPWP Tidak Boleh Kosong!",
-                                          kategori: "warning",
-                                          duration: 2);
-                                    } else if (controller.lat == null &&
-                                        controller.long == null) {
-                                      RawSnackbar_top(
-                                          message:
-                                              "Lokasi Map Objek Pajak Wajib tentukan",
-                                          kategori: "warning",
-                                          duration: 2);
-                                    } else {
-                                      controller.SimpanData();
-                                    }
-                                  },
-                                  style: ButtonStyle(
-                                    backgroundColor:
-                                        MaterialStateProperty.all<Color>(
-                                            lightBlueColor),
-                                  ),
-                                  child: Text(
-                                    'Simpan Data',
-                                    style: TextStyle(fontSize: 14),
-                                  )),
-                            )
-                          : GestureDetector(
-                              onTap: () {
-                                dismissKeyboard();
-                              },
-                              child: SizedBox(
-                                width: 140,
-                                child: ElevatedButton(
-                                    onPressed: controls.onStepContinue,
-                                    style: ButtonStyle(
-                                      backgroundColor:
-                                          MaterialStateProperty.all<Color>(
-                                              lightBlueColor),
-                                    ),
-                                    child: Text(
-                                      'Selanjutnya',
-                                      style: TextStyle(fontSize: 14),
-                                    )),
-                              ),
-                            ),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      if (controller.activeStepIndex > 0)
-                        SizedBox(
-                          width: 100,
-                          child: ElevatedButton(
-                              onPressed: controls.onStepCancel,
-                              style: ButtonStyle(
-                                backgroundColor:
-                                    MaterialStateProperty.all<Color>(
-                                        veryLightTextColor),
-                              ),
-                              child: Text(
-                                'Kembali',
-                                style: TextStyle(fontSize: 14),
-                              )),
-                        ),
-                    ],
+        body: GestureDetector(
+          child: PageView(
+            controller: controller.pageController,
+            onPageChanged: (int page) {
+              controller.currentPage = page;
+              controller.swipePage();
+            },
+            children: [
+              Stack(
+                children: [
+                  GetBuilder<ObjekkuDetailController>(
+                    init: ObjekkuDetailController(),
+                    builder: (controller) {
+                      return Stepper(
+                        type: StepperType.horizontal,
+                        currentStep: controller.activeStepIndex,
+                        steps: stepList(),
+                        onStepContinue: () {
+                          if (controller.activeStepIndex <
+                              (stepList().length - 1)) {
+                            setState(() {
+                              controller.activeStepIndex += 1;
+                            });
+                          } else {
+                            print('Submited');
+                          }
+                        },
+                        onStepCancel: () {
+                          if (controller.activeStepIndex == 0) {
+                            return;
+                          }
+                          setState(() {
+                            controller.activeStepIndex -= 1;
+                          });
+                        },
+                        onStepTapped: (int index) {
+                          setState(() {
+                            controller.activeStepIndex = index;
+                          });
+                        },
+                        controlsBuilder:
+                            (BuildContext context, ControlsDetails controls) {
+                           
+                          return SizedBox();
+                        },
+                      );
+                    },
                   ),
-                );
-              },
-            );
-          },
+                  // ElevatedButton(
+                  //     onPressed: () {
+                  //       controller.visibleswpe();
+                  //     },
+                  //     child: Text("Test"))
+                ],
+              ),
+              
+            ],
+          ),
         ),
       ),
     );
   }
 }
+
+class swipeLeft extends StatelessWidget {
+  final ObjekkuDetailController controller;
+  const swipeLeft({
+    super.key,
+    required this.controller,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GetBuilder<ObjekkuDetailController>(
+      init: ObjekkuDetailController(),
+      builder: (controller) {
+        return Positioned(
+          right: 0,
+          bottom: 35.r,
+          child: AnimatedOpacity(
+            curve: Curves.linear,
+            opacity: controller.isVisibleSwipe ? 1.0 : 0.0,
+            duration: Duration(milliseconds: 700),
+            child: Container(
+              height: 110.h,
+              width: 130.w,
+              child: Stack(
+                children: [
+                  Positioned(
+                    top: 30.h,
+                    right: 0,
+                    child: Container(
+                      height: Get.width * 0.085,
+                      width: 120.w,
+                      decoration: BoxDecoration(
+                          gradient: LinearGradient(colors: gradientColor),
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(48),
+                            bottomLeft: Radius.circular(48),
+                            bottomRight: Radius.circular(7),
+                            topRight: Radius.circular(7),
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                                blurRadius: 7,
+                                offset: Offset(5, 5),
+                                color: lightBlueColor.withOpacity(0.4)),
+                            BoxShadow(
+                                blurRadius: 7,
+                                offset: Offset(-2, -2),
+                                color: lightBlueColor.withOpacity(0.4))
+                          ]),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Texts.captionSm("Riwayat",
+                                  textAlign: TextAlign.right,
+                                  color: Colors.white),
+                              Texts.captionSm("Pembayaran ",
+                                  textAlign: TextAlign.right,
+                                  color: Colors.white),
+                            ],
+                          ),
+                          SizedBox(
+                            width: 3.w,
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    top: 7.r,
+                    left: 7.r,
+                    child: SizedBox(
+                        child: Lottie.asset('assets/lottie/swipeleft.json',
+                            fit: BoxFit.fill, height: 65.h)),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+

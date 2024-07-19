@@ -6,3 +6,8 @@ easyThrottle({
 }) {
   EasyThrottle.throttle("classic", Duration(milliseconds: 2000), handler);
 }
+easyThrottle5({
+  required VoidCallback handler,
+}) {
+  EasyThrottle.throttle("classic", Duration(milliseconds: 2000), handler);
+}

@@ -194,10 +194,15 @@ class TambahNpwpdbaruController extends GetxController {
     authModel = Get.arguments;
   }
 
-  void PickedLocation(PickedData pickedData) {
+  void PickedLocation(PickedData pickedData) async{
+    EasyLoading.show(status: "Sedang mengambil titik koordinat");
+    lat = null;
+    update();
+    await Future.delayed(Duration(seconds: 1));
     lat = pickedData.latLong.latitude;
     long = pickedData.latLong.longitude;
     update();
+    EasyLoading.dismiss();
     Get.back();
   }
 

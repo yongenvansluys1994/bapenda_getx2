@@ -43,6 +43,8 @@ abstract class Routes {
   static const PARKIR_APP = _Paths.PARKIR_APP;
   static const NOTIFIKASI = _Paths.NOTIFIKASI;
   static const CHAT = _Paths.CHAT;
+  static const OBJEKKU_DETAIL = _Paths.OBJEKKU_DETAIL;
+  static const DETAILSCREEN = _Paths.DETAILSCREEN;
 }
 
 abstract class _Paths {
@@ -82,4 +84,6 @@ abstract class _Paths {
   static const PARKIR_APP = '/parkir-app';
   static const NOTIFIKASI = '/notifikasi';
   static const CHAT = '/chat';
+  static const OBJEKKU_DETAIL = '/objekku-detail';
+  static const DETAILSCREEN = '/detailscreen';
 }

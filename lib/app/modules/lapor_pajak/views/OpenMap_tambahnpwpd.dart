@@ -1,6 +1,7 @@
 import 'package:bapenda_getx2/app/modules/tambah_npwpd/controllers/tambah_npwpd_controller.dart';
 import 'package:bapenda_getx2/core/location_service.dart';
 import 'package:bapenda_getx2/widgets/custom_appbar.dart';
+import 'package:bapenda_getx2/widgets/easythrottle.dart';
 
 import 'package:flutter/material.dart';
 
@@ -30,7 +31,9 @@ class OpenMapTambahNpwpd extends GetView<TambahNpwpdController> {
                   buttonColor: Colors.blue,
                   buttonText: 'Tetapkan Lokasi',
                   onPicked: (pickedData) {
-                    controller.PickedLocation(pickedData);
+                    easyThrottle5(handler: () {
+                      controller.PickedLocation(pickedData);
+                    },);
                   })
               : Dialog(
                   // The background color

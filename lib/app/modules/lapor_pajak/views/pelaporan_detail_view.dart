@@ -441,12 +441,6 @@ class PelaporanDetailView extends GetView<PelaporanDetailController> {
                             }),
                       ),
                     ),
-                    ElevatedButton(
-                        onPressed: () {
-                          controller.checkhistorynow(
-                              DateFormat('dd/MM/yyyy').parse('01/07/2024'));
-                        },
-                        child: Text("asdasd")),
                     //Text("${controller.dataArgument.idWajibPajak}"),
                     DefaultTabController(
                       length: 5, // Number of tabs

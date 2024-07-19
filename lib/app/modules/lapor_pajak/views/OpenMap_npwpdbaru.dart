@@ -1,8 +1,10 @@
 import 'package:bapenda_getx2/app/modules/tambah_npwpdbaru/controllers/tambah_npwpdbaru_controller.dart';
 import 'package:bapenda_getx2/core/location_service.dart';
 import 'package:bapenda_getx2/widgets/custom_appbar.dart';
+import 'package:bapenda_getx2/widgets/easythrottle.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 import 'package:get/get.dart';
 import 'package:open_street_map_search_and_pick/open_street_map_search_and_pick.dart';
@@ -30,7 +32,9 @@ class OpenMapNpwpdBaru extends GetView<TambahNpwpdbaruController> {
                   buttonColor: Colors.blue,
                   buttonText: 'Tetapkan Lokasi',
                   onPicked: (pickedData) {
-                    controller.PickedLocation(pickedData);
+                     easyThrottle5(handler: () {
+                      controller.PickedLocation(pickedData);
+                    },);
                   })
               : Dialog(
                   // The background color

@@ -6,6 +6,8 @@ import '../modules/chat/bindings/chat_binding.dart';
 import '../modules/chat/views/chat_view.dart';
 import '../modules/dashboard/bindings/dashboard_binding.dart';
 import '../modules/dashboard/views/dashboard.dart';
+import '../modules/detailscreen/bindings/detailscreen_binding.dart';
+import '../modules/detailscreen/views/detailscreen_view.dart';
 import '../modules/homepage/bindings/homepage_binding.dart';
 import '../modules/homepage/views/homepage_view.dart';
 import '../modules/kartunpwpd/bindings/kartunpwpd_binding.dart';
@@ -42,6 +44,8 @@ import '../modules/myprofil/views/profilku_view.dart';
 import '../modules/notifikasi/bindings/notifikasi_binding.dart';
 import '../modules/notifikasi/views/notifikasi_view.dart';
 import '../modules/objekku/bindings/objekku_binding.dart';
+import '../modules/objekku/bindings/objekku_detail_binding.dart';
+import '../modules/objekku/views/objekku_detail_view.dart';
 import '../modules/objekku/views/objekku_view.dart';
 import '../modules/panduan/bindings/panduan_binding.dart';
 import '../modules/panduan/views/panduan_view.dart';
@@ -256,6 +260,16 @@ class AppPages {
       name: _Paths.CHAT,
       page: () => const ChatView(),
       binding: ChatBinding(),
+    ),
+    GetPage(
+      name: _Paths.OBJEKKU_DETAIL,
+      page: () => const ObjekkuDetailView(),
+      binding: ObjekkuDetailBinding(),
+    ),
+    GetPage(
+      name: _Paths.DETAILSCREEN,
+      page: () => const DetailscreenView(),
+      binding: DetailscreenBinding(),
     ),
   ];
 }
