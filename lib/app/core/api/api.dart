@@ -36,7 +36,7 @@ final Dio dioChat = Dio(
 );
 
 Future<List<ModelCheckRoom>?> checkRoom(id_userwp) async {
-  var response = await dioChat.get("/chat/check_room.php?id_userwp=204");
+  var response = await dioChat.get("/chat/check_room.php?id_userwp=$id_userwp");
   if (response.statusCode == 200) {
     List data = (json.decode(response.data) as Map<String, dynamic>)["data"];
     return data.map((e) => ModelCheckRoom.fromJson(e)).toList();
