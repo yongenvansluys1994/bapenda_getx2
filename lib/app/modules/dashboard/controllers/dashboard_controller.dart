@@ -50,6 +50,7 @@ class DashboardController extends GetxController with AuthCacheService {
   DashboardServices services;
   //Api api;
   DashboardController(this.services);
+  String accessToken = '';
 
   @override
   void onInit() async {
@@ -73,7 +74,6 @@ class DashboardController extends GetxController with AuthCacheService {
     hasUnreadChat();
     update();
   }
-
 
   void logout() {
     removeToken();
@@ -164,7 +164,7 @@ class DashboardController extends GetxController with AuthCacheService {
               Get.back(); //tutup dialog sukses
             },
           );
-        }else if (message.data['desc'] == "chat_masuk") {
+        } else if (message.data['desc'] == "chat_masuk") {
           hasUnreadChat();
           update();
         }
@@ -349,8 +349,8 @@ class DashboardController extends GetxController with AuthCacheService {
 
   void hasUnreadChat() async {
     unread_chat_count = "0";
-    var response = await httpClient
-        .get(Uri.parse("${URL_APPSIMPATDA}/chat/has_unread.php?id_userwp=${authModel.idUserwp}"));
+    var response = await httpClient.get(Uri.parse(
+        "${URL_APPSIMPATDA}/chat/has_unread.php?id_userwp=${authModel.idUserwp}"));
     List data = (json.decode(response.body) as Map<String, dynamic>)["data"];
     unread_chat_count = data[0]["unread_chat_count"];
     update();

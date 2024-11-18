@@ -53,10 +53,14 @@ import '../modules/panduan_detail/bindings/panduan_detail_binding.dart';
 import '../modules/panduan_detail/views/panduan_detail_view.dart';
 import '../modules/parkir_app/bindings/parkir_app_binding.dart';
 import '../modules/parkir_app/views/parkir_app_view.dart';
+import '../modules/pbb/bindings/pbb_binding.dart';
+import '../modules/pbb/views/pbb_view.dart';
 import '../modules/pembayaran/bindings/pembayaran_binding.dart';
 import '../modules/pembayaran/views/pembayaran_view.dart';
 import '../modules/ppid/bindings/ppid_binding.dart';
 import '../modules/ppid/views/ppid_view.dart';
+import '../modules/qrispbb/bindings/qrispbb_binding.dart';
+import '../modules/qrispbb/views/qrispbb_view.dart';
 import '../modules/register/register_baru/bindings/register_baru_binding.dart';
 import '../modules/register/register_baru/views/register_baru_view.dart';
 import '../modules/register/register_npwpd/bindings/register_npwpd_binding.dart';
@@ -270,6 +274,16 @@ class AppPages {
       name: _Paths.DETAILSCREEN,
       page: () => const DetailscreenView(),
       binding: DetailscreenBinding(),
+    ),
+    GetPage(
+      name: _Paths.PBB,
+      page: () => const PbbView(),
+      binding: PbbBinding(),
+    ),
+    GetPage(
+      name: _Paths.QRISPBB,
+      page: () => const QrispbbView(),
+      binding: QrispbbBinding(),
     ),
   ];
 }

@@ -72,10 +72,11 @@ class ChatView extends GetView<ChatController> {
                   child: SingleChildScrollView(
                     reverse: true,
                     child: Padding(
-                      padding: const EdgeInsets.all(8.0),
+                      padding: EdgeInsets.only(
+                          bottom: 37.w, left: 8.w, right: 8.w, top: 8.w),
                       child: SizedBox(
                         height:
-                            Get.height * 0.834, // Adjust the height as needed
+                            Get.height * 0.934, // Adjust the height as needed
                         child: controller.isHaveRoom == true ||
                                 controller.isFirstOpen == false
                             ? GetBuilder<ChatController>(
@@ -290,8 +291,8 @@ class ChatView extends GetView<ChatController> {
                                         children: [
                                           // Image.asset("assets/images/home_icon/mic.png"),
                                           Container(
-                                            height: 40.h,
-                                            width: 40.w,
+                                            height: 30.h,
+                                            width: 30.w,
                                             decoration: BoxDecoration(
                                               color: lightColor,
                                               borderRadius:

@@ -7,6 +7,8 @@ import 'package:bapenda_getx2/app/modules/lapor_pajak/models/model_getpelaporanu
 import 'package:bapenda_getx2/app/modules/lapor_pajak/models/model_objekku.dart';
 import 'package:bapenda_getx2/app/modules/myprofil/models/model_ads.dart';
 import 'package:bapenda_getx2/app/modules/notifikasi/models/model_notifikasi.dart';
+import 'package:bapenda_getx2/app/modules/pbb/models/model_pbb.dart';
+import 'package:bapenda_getx2/widgets/logger.dart';
 import 'package:dio/dio.dart';
 
 //const baseUrl = 'https://yongen-bisa.com/bapenda_app/api';
@@ -14,6 +16,7 @@ const baseUrl = 'https://yongen-bisa.com/bapenda_app/api_ver2';
 const URL_APP = "https://yongen-bisa.com/bapenda_app/api_ver2";
 const URL_SIMPATDA = "http://simpatda.bontangkita.id/simpatda";
 const URL_APPSIMPATDA = "http://simpatda.bontangkita.id/api_ver2";
+const URL_SISMIOP = "https://dev-b.invinicsoft.com/sismiop/api";
 const String ApiFCM =
     "AAAAB69wS5U:APA91bGHHGdo_FzlMJlzO0rc4SUPIMt10OZLqzT60DwVdIU_SSmYkDVu5LRofJR3u9_AS8_ptJ-S5dHIB-7BYWoOTrHUY-pe04UKfLDuAH1ezeY7ohWZalRdShAfJOchSVR9wDuusnnj";
 
@@ -34,6 +37,56 @@ final Dio dioChat = Dio(
     headers: {'Content-Type': 'application/json'},
   ),
 );
+
+final Dio dioBaseUrl = Dio(
+  BaseOptions(
+    baseUrl: baseUrl,
+    connectTimeout: Duration(seconds: 10),
+    receiveTimeout: Duration(seconds: 10),
+    headers: {'Content-Type': 'application/json'},
+  ),
+);
+final Dio dioSismiop = Dio(
+  BaseOptions(
+    baseUrl: URL_SISMIOP,
+    connectTimeout: Duration(seconds: 10),
+    receiveTimeout: Duration(seconds: 10),
+    headers: {'Content-Type': 'application/json'},
+  ),
+);
+
+Future<Map<String, dynamic>?> get_PBB(NOPTHN) async {
+  var response = await dioSismiop.get("/informasi/piutang/$NOPTHN");
+
+  if (response.statusCode == 200) {
+    // Extract the 'informasi' part as a single object
+    var isError = response.data["is_error"];
+    var message = response.data["message"];
+
+    if (response.data["is_error"] == true) {
+      // Return both in a map
+      return {"isError": isError, "message": message};
+    } else {
+      var informasiData = response.data["data"]["informasi"];
+      var informasi = ModelPbbInformasi.fromJson(informasiData);
+
+      // Extract the 'sppt' part as a list of objects
+      List spptData = response.data["data"]["sppt"];
+      List<ModelPbbSppt> spptList =
+          spptData.map((e) => ModelPbbSppt.fromJson(e)).toList();
+
+      // Return both in a map
+      return {
+        "isError": isError,
+        "informasi": informasi,
+        "sppt": spptList,
+        "message": message
+      };
+    }
+  } else {
+    return null;
+  }
+}
 
 Future<List<ModelCheckRoom>?> checkRoom(id_userwp) async {
   var response = await dioChat.get("/chat/check_room.php?id_userwp=$id_userwp");

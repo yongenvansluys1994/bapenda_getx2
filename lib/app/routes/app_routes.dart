@@ -45,6 +45,8 @@ abstract class Routes {
   static const CHAT = _Paths.CHAT;
   static const OBJEKKU_DETAIL = _Paths.OBJEKKU_DETAIL;
   static const DETAILSCREEN = _Paths.DETAILSCREEN;
+  static const PBB = _Paths.PBB;
+  static const QRISPBB = _Paths.QRISPBB;
 }
 
 abstract class _Paths {
@@ -86,4 +88,6 @@ abstract class _Paths {
   static const CHAT = '/chat';
   static const OBJEKKU_DETAIL = '/objekku-detail';
   static const DETAILSCREEN = '/detailscreen';
+  static const PBB = '/pbb';
+  static const QRISPBB = '/qrispbb';
 }

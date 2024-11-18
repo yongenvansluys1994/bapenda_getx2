@@ -1,4 +1,6 @@
 import 'package:bapenda_getx2/app/routes/app_pages.dart';
+import 'package:bapenda_getx2/core/push_notification/push_notif_single.dart';
+import 'package:bapenda_getx2/core/push_notification/push_notif_topic.dart';
 import 'package:bapenda_getx2/widgets/badge_notif.dart';
 import 'package:bapenda_getx2/widgets/custtombottombar.dart';
 import 'package:bapenda_getx2/widgets/getdialog.dart';
@@ -501,20 +503,22 @@ class Dashboard extends StatelessWidget {
                                             MainAxisAlignment.center,
                                         children: [
                                           Container(
-                                            height: 44.h,
+                                            height: 50.h,
                                             decoration: BoxDecoration(
                                                 image: DecorationImage(
                                                     image: AssetImage(
-                                                        'assets/images/cek_nop.png'))),
+                                                        'assets/icon/pbb-icon.png'))),
                                           ),
                                         ],
                                       ),
                                       onTap: () {
-                                        getDefaultDialog().onFix(
-                                            title: "Mohon Maaf",
-                                            desc:
-                                                "Modul Pelayanan PBB sedang dalam pengembangan",
-                                            kategori: "error");
+                                        // getDefaultDialog().onFix(
+                                        //     title: "Mohon Maaf",
+                                        //     desc:
+                                        //         "Modul Pelayanan PBB sedang dalam pengembangan",
+                                        //     kategori: "error");
+                                        Get.toNamed(Routes.PBB,
+                                            arguments: controller.authModel);
                                       },
                                     ),
                                   ),
@@ -760,8 +764,12 @@ class Dashboard extends StatelessWidget {
                                     children: [
                                       notif(
                                           showbadge:
-                                              controller.unread_chat_count != "0" ? true : false,
-                                          number: int.parse(controller.unread_chat_count)),
+                                              controller.unread_chat_count !=
+                                                      "0"
+                                                  ? true
+                                                  : false,
+                                          number: int.parse(
+                                              controller.unread_chat_count)),
                                       Ink(
                                         height: 63.h,
                                         width: 62.w,
@@ -858,7 +866,15 @@ class Dashboard extends StatelessWidget {
                                           ),
                                         ],
                                       ),
-                                      onTap: () {},
+                                      onTap: () {
+                                        sendPushMessage(
+                                            'czaeZzxJRkmIS4IgxIlS4Q:APA91bE-LyMUG19fT_TRLTDt_I1ersu6Bz6SUYRHVdbFdl21RfAkh9xZibC1ALIL7H6fdLiKHx0EhjqAhUjpfu4gTxWQxlgYY4PiajIDDmZdo2Ile0z9bcM',
+                                            "hai",
+                                            "isi",
+                                            "");
+                                        // sendPushMessage_topic("operatorpejabat",
+                                        //     "title", "body", "desc");
+                                      },
                                     ),
                                   ),
                                   SizedBox(height: 9.h),
