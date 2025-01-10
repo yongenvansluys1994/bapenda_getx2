@@ -517,8 +517,16 @@ class Dashboard extends StatelessWidget {
                                         //     desc:
                                         //         "Modul Pelayanan PBB sedang dalam pengembangan",
                                         //     kategori: "error");
-                                        Get.toNamed(Routes.PBB,
-                                            arguments: controller.authModel);
+                                        if (controller.modul_pbb == 1) {
+                                          Get.toNamed(Routes.PBB,
+                                              arguments: controller.authModel);
+                                        } else {
+                                          getDefaultDialog().onFix(
+                                              title: "Mohon Maaf",
+                                              desc:
+                                                  "Modul Pelayanan PBB sedang dalam pengembangan",
+                                              kategori: "error");
+                                        }
                                       },
                                     ),
                                   ),
@@ -890,6 +898,11 @@ class Dashboard extends StatelessWidget {
                     ],
                   ),
                   SizedBox(height: 13.h),
+                  // ElevatedButton(
+                  //     onPressed: () {
+                  //       controller.tombolpesan();
+                  //     },
+                  //     child: Text("Check Notif")),
                   Column(
                     children: [
                       Row(

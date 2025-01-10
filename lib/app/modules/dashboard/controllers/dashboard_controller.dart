@@ -44,6 +44,7 @@ class DashboardController extends GetxController with AuthCacheService {
 
   RxList<ModelObjekku> datalist2 = <ModelObjekku>[].obs;
   RxList list_id_wajib_pajak = [].obs;
+  int modul_pbb = 0;
 
   RxList<ModelGetpelaporanUser> datalist = <ModelGetpelaporanUser>[].obs;
 
@@ -226,6 +227,7 @@ class DashboardController extends GetxController with AuthCacheService {
     var response = await http.get(Uri.parse("${baseUrl}/cek_utilitas/"));
     List data = (json.decode(response.body) as Map<String, dynamic>)["data"];
     String? DBVersion = data[0]["version"];
+    modul_pbb = int.parse(data[0]["modul_pbb"]);
     if (int.parse(DBVersion!) > currentversion) {
       print("tampilkan dialog");
       GetDialogDismissible(
@@ -235,6 +237,7 @@ class DashboardController extends GetxController with AuthCacheService {
         showBanner();
       }
     }
+    update();
   }
 
   void checkNotifikasi() async {
