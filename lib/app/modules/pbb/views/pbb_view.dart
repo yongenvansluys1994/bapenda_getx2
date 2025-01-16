@@ -401,7 +401,11 @@ class PbbView extends GetView<PbbController> {
                                                                       handler:
                                                                           () async {
                                                                         Get.toNamed(
-                                                                            Routes.QRISPBB);
+                                                                            Routes.QRISPBB,
+                                                                            arguments: [
+                                                                              spptItem.nopthn,
+                                                                              spptItem.jumlahHarusBayar
+                                                                            ]);
                                                                         if (spptItem.statusPembayaran !=
                                                                             "BELUM BAYAR") {
                                                                         } else {}
@@ -409,7 +413,7 @@ class PbbView extends GetView<PbbController> {
                                                                       title: spptItem.statusPembayaran !=
                                                                               "BELUM BAYAR"
                                                                           ? 'Bukti Bayar'
-                                                                          : 'Lihat E-Billing'),
+                                                                          : 'SPPT'),
                                                               Icon(
                                                                 Icons
                                                                     .chevron_right_rounded,

@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:bapenda_getx2/app/core/api/api.dart';
 import 'package:bapenda_getx2/app/modules/dashboard/models/auth_model_model.dart';
 import 'package:bapenda_getx2/app/modules/lapor_pajak/models/model_getpelaporanuser.dart';
+import 'package:bapenda_getx2/widgets/logger.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -23,6 +24,7 @@ import 'package:bapenda_getx2/widgets/snackbar.dart';
 class QrispbbController extends GetxController {
   late AuthModel authModel;
   late ModelGetpelaporanUser dataArgument;
+  String? nomor_pembayaran;
   int? totalpajak;
   String $id_institution_qris =
       "211028001"; //9 digit id_institution khusus QRIS dari BPD
@@ -65,9 +67,9 @@ class QrispbbController extends GetxController {
 
     authModel = AuthModel.fromJson(user);
     super.onInit();
-    //List<dynamic> arguments = Get.arguments;
-    //dataArgument = arguments[0]; //data SPT
-    totalpajak = 92340; //pajak
+    List<dynamic> arguments = Get.arguments;
+    nomor_pembayaran = arguments[0]; //pajak
+    totalpajak = int.parse(arguments[1]); //pajak
 
     CheckQRIS();
     startTimer();
@@ -79,7 +81,7 @@ class QrispbbController extends GetxController {
     //fetch API CHECK QRIS RUMAHWEB
     var url_update = Uri.parse("${URL_APP}/vaqris_dev/check_qris.php");
     var response = await http.post(url_update, body: {
-      "nomor_pembayaran": "2024023389",
+      "nomor_pembayaran": "${nomor_pembayaran}",
     });
     List data = json.decode(response.body);
     if (data[0]["message"] == "null") {
@@ -145,7 +147,7 @@ class QrispbbController extends GetxController {
       var data = json.decode(response.body);
       if (data['message'] == "success") {
         //jika berhasil auth dengan API bankaltimtara
-        ket_loading = "Sedang Generate Virtual Account";
+        ket_loading = "Sedang Generate QRIS";
         var url_update = Uri.parse(
             "${URL_APP}/vaqris_dev/update.php?kategori=${kategoriauth}");
         var response = await http.post(url_update, body: {
@@ -168,7 +170,7 @@ class QrispbbController extends GetxController {
             "institution": "${$id_institution_qris}",
             "amount": "${totalpajak}",
             "method": "12",
-            "kd_tagihan": "2024023389"
+            "kd_tagihan": "${nomor_pembayaran}"
           };
           var url = Uri.parse(
               "https://api-dev.bankaltimtara.co.id:8084/api/qrismpm/generate");
@@ -183,10 +185,10 @@ class QrispbbController extends GetxController {
             ket_loading = "QRIS Berhasil dibuat, Mohon menunggu sebentar lagi";
             var url_update = Uri.parse("${URL_APP}/vaqris_dev/create_qris.php");
             var response = await http.post(url_update, body: {
-              "nomor_pembayaran": "2024023389",
+              "nomor_pembayaran": "${nomor_pembayaran}",
               "amount": "${totalpajak}",
               "method": "12",
-              "kd_tagihan": "2024023389",
+              "kd_tagihan": "${nomor_pembayaran}",
               "creator": "${data_QRIS['creator']}",
               "barcode": "${data_QRIS['barcode']}",
               "expired_time": "${data_QRIS['expired_time']}",
@@ -206,6 +208,28 @@ class QrispbbController extends GetxController {
               barcode_qris = "${data_QRIS['barcode']}";
               isLoading = false;
               update();
+              //-------------------STORE QRIS GENERATED TO SISMIOP------------------------------------
+              String basicAuth =
+                  'Basic ${base64Encode(utf8.encode('QRIS_API:QRIS_API'))}';
+              var Insert_QRIS_to_sismiop = Uri.parse(
+                  "https://dev-b.invinicsoft.com/sismiop/api/Qris/store");
+              var responseStore = await http.post(Insert_QRIS_to_sismiop,
+                  headers: {
+                    "Authorization": basicAuth,
+                    "Content-Type": "application/json" // Gunakan JSON
+                  },
+                  body: jsonEncode({
+                    "QRIS_VAL": "${data_QRIS['barcode']}",
+                    "NOPTHN": "${nomor_pembayaran}",
+                    "QRIS_YG_HARUS_DIBAYAR": "${totalpajak}",
+                    "NMID": "dummy",
+                    "MERCHANTPAN": "${data_QRIS['creator']}",
+                    "INVOICE_NUMBER": "dummy",
+                    "EXPIRED_DATE": "${data_QRIS['expired_time']}"
+                  }));
+              var data_storeto_sismiop = json.decode(responseStore.body);
+              print("${data_storeto_sismiop}");
+              //-------------------END STORE QRIS GENERATED TO SISMIOP------------------------------------
             } else {
               print(
                   "Gagal insert/update number QRIS di table QRIS ke API bapenda ETAM");
@@ -243,7 +267,7 @@ class QrispbbController extends GetxController {
         "institution": "${$id_institution_qris}",
         "amount": "${totalpajak}",
         "method": "12",
-        "kd_tagihan": "2024023389"
+        "kd_tagihan": "${nomor_pembayaran}"
       };
       var url = Uri.parse(
           "https://api-dev.bankaltimtara.co.id:8084/api/qrismpm/generate");
@@ -258,10 +282,10 @@ class QrispbbController extends GetxController {
         ket_loading = "QRIS Berhasil dibuat, Mohon menunggu sebentar lagi";
         var url_update = Uri.parse("${URL_APP}/vaqris_dev/create_qris.php");
         var response = await http.post(url_update, body: {
-          "nomor_pembayaran": "2024023389",
+          "nomor_pembayaran": "${nomor_pembayaran}",
           "amount": "${totalpajak}",
           "method": "12",
-          "kd_tagihan": "2024023389",
+          "kd_tagihan": "${nomor_pembayaran}",
           "creator": "${data_QRIS['creator']}",
           "barcode": "${data_QRIS['barcode']}",
           "expired_time": "${data_QRIS['expired_time']}",
@@ -278,6 +302,28 @@ class QrispbbController extends GetxController {
           barcode_qris = "${data_QRIS['barcode']}";
           isLoading = false;
           update();
+          //-------------------STORE QRIS GENERATED TO SISMIOP------------------------------------
+          String basicAuth =
+              'Basic ${base64Encode(utf8.encode('QRIS_API:QRIS_API'))}';
+          var Insert_QRIS_to_sismiop =
+              Uri.parse("https://dev-b.invinicsoft.com/sismiop/api/Qris/store");
+          var responseStore = await http.post(Insert_QRIS_to_sismiop,
+              headers: {
+                "Authorization": basicAuth,
+                "Content-Type": "application/json" // Gunakan JSON
+              },
+              body: jsonEncode({
+                "QRIS_VAL": "${data_QRIS['barcode']}",
+                "NOPTHN": "${nomor_pembayaran}",
+                "QRIS_YG_HARUS_DIBAYAR": "${totalpajak}",
+                "NMID": "dummy",
+                "MERCHANTPAN": "${data_QRIS['creator']}",
+                "INVOICE_NUMBER": "dummy",
+                "EXPIRED_DATE": "${data_QRIS['expired_time']}"
+              }));
+          var data_storeto_sismiop = json.decode(responseStore.body);
+          print("${data_storeto_sismiop}");
+          //-------------------END STORE QRIS GENERATED TO SISMIOP------------------------------------
         } else {
           print(
               "Gagal insert/update number QRIS di table QRIS ke API bapenda ETAM");
@@ -338,7 +384,7 @@ class QrispbbController extends GetxController {
             'Authorization': 'Bearer ${data['token']}',
           };
           final body = {
-            "kd_tagihan": "2024023389",
+            "kd_tagihan": "${nomor_pembayaran}",
             "institusi": "${$id_institution_qris}"
           };
           var url = Uri.parse(
@@ -419,7 +465,7 @@ class QrispbbController extends GetxController {
         'Authorization': 'Bearer ${data_auth[0]["token"]}',
       };
       final body = {
-        "kd_tagihan": "2024023389",
+        "kd_tagihan": "${nomor_pembayaran}",
         "institusi": "${$id_institution_qris}"
       };
       var url = Uri.parse(
@@ -516,4 +562,29 @@ class QrispbbController extends GetxController {
   void onClose() {
     super.onClose();
   }
+}
+
+void tesStore() async {
+  String basicAuth = 'Basic ${base64Encode(utf8.encode('QRIS_API:QRIS_API'))}';
+  var url = Uri.parse("https://dev-b.invinicsoft.com/sismiop/api/Qris/store");
+
+  var response = await http.post(
+    url,
+    headers: {
+      "Authorization": basicAuth,
+      "Content-Type": "application/json" // Gunakan JSON
+    },
+    body: jsonEncode({
+      "QRIS_VAL":
+          "00020101021226690023ID.CO.BANKALTIMTARA.WWW011893600124021102800102092110280010303UMI51440014ID.CO.QRIS.WWW0215ID10211174888040303UMI52045812530336054061600005802ID5911Merchant TO6009Samarinda610575123622201102024023388070414286304961E",
+      "NOPTHN": "6474010001006156502022",
+      "QRIS_YG_HARUS_DIBAYAR": "7192800",
+      "NMID": "asd",
+      "MERCHANTPAN": "asd",
+      "INVOICE_NUMBER": "asd",
+      "EXPIRED_DATE": "2024-12-24 12:18:51"
+    }),
+  );
+
+  print(response.body); // Cek respon API
 }
