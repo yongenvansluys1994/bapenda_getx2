@@ -1012,4 +1012,145 @@ class TextFields {
       ],
     );
   }
+
+  static Widget textFieldDropdown({
+    Key? key,
+    required TextInputAction textInputAction,
+    required TextInputType textInputType,
+    required bool isLoading,
+    required controller,
+    String? hintText,
+    TextCapitalization? textCapitalization,
+    List<TextInputFormatter>? inputFormatter,
+    String? initialValue,
+    IconData? prefixIcon,
+    bool hasInitialValue = false,
+    bool readOnly = false,
+    bool isRequired = false,
+    bool error = false,
+    String? errorMessage,
+    String? title,
+    Color borderColor = darkColor,
+    bool isDropdown = false,
+    List<String>? dropdownItems,
+    String? dropdownValue,
+    ValueChanged<String?>? onDropdownChanged,
+    bool isSuffixIcon = false,
+    SuffixType suffixType = SuffixType.icon,
+    IconData? suffixIcon,
+    String? suffixText,
+    required bool validator,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (title != null && title.isNotEmpty)
+          Padding(
+            padding: EdgeInsets.only(top: 2.h),
+            child: Row(
+              children: [
+                Texts.body2(title),
+                if (isRequired) Texts.body2("*", color: Colors.red),
+              ],
+            ),
+          ),
+        AnimatedSize(
+          duration: const Duration(milliseconds: 300),
+          child: Padding(
+            padding: EdgeInsets.symmetric(vertical: 2.h),
+            child: isDropdown
+                ? InputDecorator(
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(5.r),
+                        borderSide: BorderSide(width: 1.w, color: borderColor),
+                      ),
+                      contentPadding: EdgeInsets.symmetric(
+                          vertical: 10.h, horizontal: 10.h),
+                      filled: true,
+                      fillColor: readOnly ? readOnlyColor : lightColor,
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(5.r),
+                        borderSide:
+                            BorderSide(width: 1.w, color: MainColorGreen),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(5.r),
+                        borderSide: BorderSide(width: 1.w, color: primaryColor),
+                      ),
+                    ),
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButton<String>(
+                        value: dropdownValue,
+                        isExpanded: true,
+                        isDense: true,
+                        onChanged: isLoading ? null : onDropdownChanged,
+                        items: dropdownItems
+                            ?.map<DropdownMenuItem<String>>((value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child:
+                                Text(value, style: TextStyle(fontSize: 14.sp)),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  )
+                : TextFormField(
+                    controller: controller,
+                    readOnly: readOnly,
+                    cursorColor: Get.theme.primaryColor,
+                    inputFormatters: inputFormatter ?? [],
+                    enabled: !isLoading,
+                    textInputAction: textInputAction,
+                    textCapitalization:
+                        textCapitalization ?? TextCapitalization.none,
+                    keyboardType: textInputType,
+                    validator: validator == true
+                        ? (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Data harus diisi";
+                            } else {
+                              return null;
+                            }
+                          }
+                        : (value) => null,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(5.r),
+                        borderSide: BorderSide(
+                            width: 1.w,
+                            color:
+                                readOnly ? readOnlyBorderColor : borderColor),
+                      ),
+                      contentPadding: EdgeInsets.symmetric(
+                          vertical: 10.h, horizontal: 10.h),
+                      hintText: hintText,
+                      prefixIcon: prefixIcon == null
+                          ? null
+                          : Icon(
+                              prefixIcon,
+                              color: Get.theme.primaryColor,
+                            ),
+                      filled: true,
+                      fillColor: readOnly ? readOnlyColor : lightColor,
+                    ),
+                  ),
+          ),
+        ),
+        if (error)
+          AnimatedSize(
+            duration: const Duration(milliseconds: 300),
+            child: Padding(
+              padding: EdgeInsets.all(1.0.sp),
+              child: Texts.caption(
+                "${errorMessage}",
+                color: Get.theme.colorScheme.error,
+                textOverflow: TextOverflow.visible,
+              ),
+            ),
+          ),
+      ],
+    );
+  }
 }

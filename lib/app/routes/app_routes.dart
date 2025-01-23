@@ -47,6 +47,7 @@ abstract class Routes {
   static const DETAILSCREEN = _Paths.DETAILSCREEN;
   static const PBB = _Paths.PBB;
   static const QRISPBB = _Paths.QRISPBB;
+  static const EKITIRAN = _Paths.EKITIRAN;
 }
 
 abstract class _Paths {
@@ -90,4 +91,5 @@ abstract class _Paths {
   static const DETAILSCREEN = '/detailscreen';
   static const PBB = '/pbb';
   static const QRISPBB = '/qrispbb';
+  static const EKITIRAN = '/ekitiran';
 }

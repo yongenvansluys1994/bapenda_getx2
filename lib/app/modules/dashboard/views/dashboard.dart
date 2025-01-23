@@ -897,7 +897,7 @@ class Dashboard extends StatelessWidget {
                       ),
                     ],
                   ),
-                  SizedBox(height: 13.h),
+                  SizedBox(height: 2.h),
                   // ElevatedButton(
                   //     onPressed: () {
                   //       controller.tombolpesan();
@@ -947,7 +947,7 @@ class Dashboard extends StatelessWidget {
                           return Padding(
                             padding: EdgeInsets.symmetric(horizontal: 10.r),
                             child: SizedBox(
-                              height: Get.height * 0.18,
+                              height: Get.height * 0.165,
                               width: 500.w,
                               child: ListView.builder(
                                   scrollDirection: Axis.horizontal,
@@ -1008,6 +1008,83 @@ class Dashboard extends StatelessWidget {
                             ),
                           );
                         },
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Padding(
+                              padding: EdgeInsets.only(left: 22.r),
+                              child: Texts.caption("Aplikasi Lainnya",
+                                  color: MainColor, isBold: true)),
+                        ],
+                      ),
+                      SizedBox(height: 2.h),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 10.r),
+                        child: SizedBox(
+                            height: Get.height * 0.16,
+                            width: 500.w,
+                            child: ListView(
+                              scrollDirection: Axis.horizontal,
+                              shrinkWrap: true,
+                              padding: EdgeInsets.all(2),
+                              children: [
+                                InkWell(
+                                  onTap: () {
+                                    Get.toNamed(Routes.EKITIRAN,
+                                        arguments: controller.authModel);
+                                  },
+                                  child: Container(
+                                    width: 170.w,
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 10),
+                                    child: Column(
+                                      children: [
+                                        ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(5.w),
+                                            child: Image.asset(
+                                                "assets/images/ekitiran.jpg")),
+                                        SizedBox(
+                                          height: 1.5.h,
+                                        ),
+                                        Texts.captionSm(
+                                          "E-Kitiran PBB RT", //${dataitem.judul}
+                                          maxLines: 2,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    Get.toNamed(Routes.PARKIR_APP,
+                                        arguments: controller.authModel);
+                                  },
+                                  child: Container(
+                                    width: 170.w,
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 10),
+                                    child: Column(
+                                      children: [
+                                        ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(5.w),
+                                            child: Image.asset(
+                                                "assets/images/eparkir.jpg")),
+                                        SizedBox(
+                                          height: 1.5.h,
+                                        ),
+                                        Texts.captionSm(
+                                          "Aplikasi Parkir by Bapenda", //${dataitem.judul}
+                                          maxLines: 2,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            )),
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1113,57 +1190,6 @@ class Dashboard extends StatelessWidget {
                           );
                         },
                       ),
-                      SizedBox(height: 10.h),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Padding(
-                              padding: EdgeInsets.only(left: 22.r),
-                              child: Texts.caption("Aplikasi Lainnya",
-                                  color: MainColor, isBold: true)),
-                        ],
-                      ),
-                      SizedBox(height: 2.h),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 10.r),
-                        child: SizedBox(
-                            height: Get.height * 0.18,
-                            width: 500.w,
-                            child: ListView(
-                              scrollDirection: Axis.horizontal,
-                              shrinkWrap: true,
-                              padding: EdgeInsets.all(2),
-                              children: [
-                                InkWell(
-                                  onTap: () {
-                                    Get.toNamed(Routes.PARKIR_APP,
-                                        arguments: controller.authModel);
-                                  },
-                                  child: Container(
-                                    width: 170.w,
-                                    padding:
-                                        EdgeInsets.symmetric(horizontal: 10),
-                                    child: Column(
-                                      children: [
-                                        ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(5.w),
-                                            child: Image.asset(
-                                                "assets/images/parkirapp.jpg")),
-                                        SizedBox(
-                                          height: 1.5.h,
-                                        ),
-                                        Texts.captionSm(
-                                          "Aplikasi Parkir by Bapenda", //${dataitem.judul}
-                                          maxLines: 2,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            )),
-                      )
                     ],
                   ),
                 ],

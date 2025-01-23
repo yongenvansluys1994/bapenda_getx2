@@ -8,6 +8,8 @@ import '../modules/dashboard/bindings/dashboard_binding.dart';
 import '../modules/dashboard/views/dashboard.dart';
 import '../modules/detailscreen/bindings/detailscreen_binding.dart';
 import '../modules/detailscreen/views/detailscreen_view.dart';
+import '../modules/ekitiran/bindings/ekitiran_binding.dart';
+import '../modules/ekitiran/views/ekitiran_view.dart';
 import '../modules/homepage/bindings/homepage_binding.dart';
 import '../modules/homepage/views/homepage_view.dart';
 import '../modules/kartunpwpd/bindings/kartunpwpd_binding.dart';
@@ -284,6 +286,11 @@ class AppPages {
       name: _Paths.QRISPBB,
       page: () => const QrispbbView(),
       binding: QrispbbBinding(),
+    ),
+    GetPage(
+      name: _Paths.EKITIRAN,
+      page: () => const EkitiranView(),
+      binding: EkitiranBinding(),
     ),
   ];
 }
