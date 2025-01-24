@@ -15,241 +15,252 @@ class EkitiranView extends GetView<EkitiranController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: CustomAppBar(
-          title: "E-Kitiran PBB RT",
-          leading: true,
-          isLogin: true,
-        ),
-        body: GetBuilder<EkitiranController>(
-            init: EkitiranController(),
-            builder: (controller) {
-              return Center(
-                child: Padding(
-                  padding: EdgeInsets.all(8.r),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Texts.body1(
-                          'Selamat Datang di Aplikasi E-Kitiran PBB RT, Lengkapi terlebih dahulu data RT anda dibawah ini untuk Lanjut.',
-                          isBold: true,
-                          maxLines: 3,
-                          textAlign: TextAlign.center),
-                      SizedBox(height: 8.h),
-                      Row(
-                        children: [
-                          Container(
-                            width: 167.w,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Texts.caption(
-                                  "Pilih Kecamatan",
-                                ),
-                                InputDecorator(
-                                  decoration: InputDecoration(
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(5.r),
-                                      borderSide: BorderSide(
-                                          width: 1.0, color: Colors.grey),
-                                    ),
-                                    contentPadding: EdgeInsets.symmetric(
-                                        vertical: 2.h, horizontal: 10.h),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(5.0),
-                                      borderSide: const BorderSide(
-                                          width: 1.0, color: MainColorGreen),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(5.0),
-                                      borderSide: const BorderSide(
-                                          width: 1.0, color: Colors.blue),
-                                    ),
-                                    filled: true,
-                                    fillColor: Colors.white,
-                                  ),
-                                  child: DropdownButtonHideUnderline(
-                                    child: DropdownButton<String>(
-                                      value: controller
-                                              .userrt_kecamatan.text.isEmpty
-                                          ? null
-                                          : controller.userrt_kecamatan.text,
-                                      hint: const Text("Pilih Kecamatan"),
-                                      isExpanded: true,
-                                      onChanged: (newValue) {
-                                        if (newValue != null) {
-                                          controller
-                                              .changeValue_userrt_kecamatan(
-                                                  newValue);
-                                        }
-                                      },
-                                      items: controller.kecamatanList
-                                          .map((item) =>
-                                              DropdownMenuItem<String>(
-                                                value: item,
-                                                child: Text(item),
-                                              ))
-                                          .toList(),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          SizedBox(width: 5.h),
-                          Container(
-                            width: 167.w,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Texts.caption(
-                                  "Pilih Kecamatan",
-                                ),
-                                InputDecorator(
-                                  decoration: InputDecoration(
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(5.r),
-                                      borderSide: BorderSide(
-                                          width: 1.0, color: Colors.grey),
-                                    ),
-                                    contentPadding: EdgeInsets.symmetric(
-                                        vertical: 2.h, horizontal: 10.h),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(5.0),
-                                      borderSide: const BorderSide(
-                                          width: 1.0, color: MainColorGreen),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(5.0),
-                                      borderSide: const BorderSide(
-                                          width: 1.0, color: Colors.blue),
-                                    ),
-                                    filled: true,
-                                    fillColor: Colors.white,
-                                  ),
-                                  child: DropdownButtonHideUnderline(
-                                    child: DropdownButton<String>(
-                                      value: controller
-                                              .userrt_kelurahan.text.isEmpty
-                                          ? null
-                                          : controller.userrt_kelurahan.text,
-                                      hint: const Text("Pilih Kelurahan"),
-                                      isExpanded: true,
-                                      onChanged: controller
-                                              .availableKelurahan.isNotEmpty
-                                          ? (newValue) {
-                                              if (newValue != null) {
-                                                controller
-                                                    .changeValue_userrt_kelurahan(
-                                                        newValue);
-                                              }
-                                            }
-                                          : null, // Disable dropdown if no kelurahan available
-                                      items: controller.availableKelurahan
-                                          .map((item) =>
-                                              DropdownMenuItem<String>(
-                                                value: item,
-                                                child: Text(item),
-                                              ))
-                                          .toList(),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 5.h),
-                      Container(
-                        width: 100.w,
-                        child: TextFields.textFieldDropdown(
-                          textInputAction: TextInputAction.next,
-                          textInputType: TextInputType.text,
-                          isLoading: false,
-                          controller: controller.userrt_rt,
-                          hintText: "Pilih RT",
-                          title: "Pilih RT",
-                          isDropdown: true,
-                          dropdownItems: [
-                            '01',
-                            '02',
-                            '03',
-                            '04',
-                            '05',
-                            '06',
-                            '07',
-                            '08',
-                            '09',
-                            '10',
-                            '11',
-                            '12',
-                            '13',
-                            '14',
-                            '15',
-                            '16',
-                            '17',
-                            '18',
-                            '19',
-                            '20',
-                            '21',
-                            '22',
-                            '23',
-                            '24',
-                            '25',
-                            '26',
-                            '27',
-                            '28',
-                            '29',
-                            '30',
-                            '31',
-                            '32',
-                            '33',
-                            '34',
-                            '35',
-                            '36',
-                            '37',
-                            '38',
-                            '39',
-                            '40',
-                            '41',
-                            '42',
-                            '43',
-                            '44',
-                            '45',
-                            '46',
-                            '47',
-                            '48',
-                            '49',
-                            '50',
-                            '51',
-                            '52',
-                            '53',
-                            '54',
-                            '55'
-                          ],
-                          dropdownValue: controller.userrt_rt.text.isEmpty
-                              ? null
-                              : controller.userrt_rt.text,
-                          onDropdownChanged: (newValue) {
-                            controller.changeValue_userrt_rt(newValue);
-                          },
-                          validator: true,
-                        ),
-                      ),
-                      SizedBox(height: 10.h),
-                      Buttons.gradientButton(
-                        handler: () {
-                          controller.SimpanData();
-                        },
-                        widget: Texts.body1(
-                          "Simpan",
-                        ),
-                        gradient: [Colors.cyan, Colors.indigo],
-                      )
-                    ],
-                  ),
-                ),
-              );
-            }));
+      appBar: CustomAppBar(
+        title: "E-Kitiran PBB RT",
+        leading: true,
+        isLogin: true,
+      ),
+      //   body: SingleChildScrollView(
+      //   child: GetBuilder<EkitiranController>(
+      //     init: EkitiranController(),
+      //     builder: (controller) {
+      //       return Padding(
+      //           padding: const EdgeInsets.all(8.0),
+      //           child: Stack(
+      //             children: [
+      //               Column(
+      //                 children: [
+      //                   TextFields.defaultTextFieldSuggest(
+      //                     title: "Cari Nama WP",
+      //                     hintText: "Pencarian Pintar data WP..",
+      //                     controller: controller.nama_cari,
+      //                     isLoading: controller.isLoadingSuggest,
+      //                     textInputAction: TextInputAction.next,
+      //                     textInputType: TextInputType.text,
+      //                     borderColor: primaryColor,
+      //                     validator: true,
+
+      //                     onChanged: (value) => controller
+      //                         .onTextChanged(value), // Fetch saat mengetik
+      //                   ),
+      //                   // TextField atau widget lainnya di bawah
+      //                   Row(
+      //                     children: [
+      //                       Container(
+      //                         width: 167.w,
+      //                         child: TextFields.defaultTextField2(
+      //                           title: "NPWPD",
+      //                           readOnly: true,
+      //                           controller: controller.npwpd,
+      //                           isLoading: controller.isLoadingSuggest,
+      //                           textInputAction: TextInputAction.next,
+      //                           textInputType: TextInputType.number,
+      //                           // prefixIcon: Icons.contact_emergency,
+      //                           borderColor: primaryColor,
+      //                           validator: true,
+      //                         ),
+      //                       ),
+      //                       SizedBox(width: 10.w),
+      //                       Container(
+      //                         width: 167.w,
+      //                         child: TextFields.defaultTextField2(
+      //                           title: "Jenis Pajak",
+      //                           controller: controller.jenispajak,
+      //                           readOnly: true,
+      //                           isLoading: controller.isLoadingSuggest,
+      //                           textInputAction: TextInputAction.next,
+      //                           textInputType: TextInputType.text,
+      //                           // prefixIcon: Icons.contact_emergency,
+      //                           borderColor: primaryColor,
+      //                           validator: true,
+      //                         ),
+      //                       ),
+      //                     ],
+      //                   ),
+      //                   TextFields.defaultTextField2(
+      //                     title: "Alamat",
+      //                     controller: controller.alamat,
+      //                     readOnly: true,
+      //                     isLoading: controller.isLoadingSuggest,
+      //                     textInputAction: TextInputAction.next,
+      //                     textInputType: TextInputType.multiline,
+      //                     // prefixIcon: Icons.contact_emergency,
+      //                     borderColor: primaryColor,
+      //                     validator: true,
+      //                   ),
+      //                   Row(
+      //                     children: [
+      //                       Container(
+      //                         width: 167.w,
+      //                         child: TextFields.defaultTextField2(
+      //                           title: "Kelurahan",
+      //                           readOnly: true,
+      //                           controller: controller.kelurahan,
+      //                           isLoading: controller.isLoadingSuggest,
+      //                           textInputAction: TextInputAction.next,
+      //                           textInputType: TextInputType.text,
+      //                           // prefixIcon: Icons.contact_emergency,
+      //                           borderColor: primaryColor,
+      //                           validator: true,
+      //                         ),
+      //                       ),
+      //                       SizedBox(width: 10.w),
+      //                       Container(
+      //                         width: 167.w,
+      //                         child: TextFields.defaultTextField2(
+      //                           title: "Kecamatan",
+      //                           readOnly: true,
+      //                           controller: controller.kecamatan,
+      //                           isLoading: controller.isLoadingSuggest,
+      //                           textInputAction: TextInputAction.next,
+      //                           textInputType: TextInputType.text,
+      //                           // prefixIcon: Icons.contact_emergency,
+      //                           borderColor: primaryColor,
+      //                           validator: true,
+      //                         ),
+      //                       ),
+      //                     ],
+      //                   ),
+      //                   TextFields.textFieldDropdown(
+      //                     textInputAction: TextInputAction.next,
+      //                     textInputType: TextInputType.text,
+      //                     isLoading: false,
+      //                     controller: controller.jenisreporting,
+      //                     hintText: "Pilih Jenis Reporting",
+      //                     title: "Pilih Jenis Reporting",
+      //                     isDropdown: true,
+      //                     dropdownItems: [
+      //                       'Pendataan Wajib Pajak',
+      //                       'Validasi Wajib Pajak',
+      //                       'Penyampaian SKPD',
+      //                       'Penagihan',
+      //                     ],
+      //                     dropdownValue: controller.jenisreporting.text.isEmpty
+      //                         ? null
+      //                         : controller.jenisreporting.text,
+      //                     onDropdownChanged: (newValue) {
+      //                       controller.changeValueJenisReporting(newValue);
+      //                     },
+      //                     validator: true,
+      //                   ),
+      //                   TextFields.textFieldMultiline(
+      //                     title: "Keterangan Reporting",
+      //                     hintText: "Masukkan Keterangan Reporting ..",
+      //                     controller: controller.keterangan,
+      //                     isLoading: controller.isLoadingSuggest,
+      //                     textInputAction: TextInputAction.next,
+      //                     textInputType: TextInputType.text,
+      //                     // prefixIcon: Icons.contact_emergency,
+      //                     borderColor: primaryColor,
+      //                     validator: true,
+      //                     borderRed: true,
+      //                   ),
+      //                   Column(
+      //                     crossAxisAlignment: CrossAxisAlignment.center,
+      //                     children: [
+      //                       Padding(
+      //                         padding: const EdgeInsets.all(8),
+      //                         child: Center(
+      //                             child:
+      //                                 Texts.body2("Upload Foto Dokumentasi :")),
+      //                       ),
+      //                       Container(
+      //                         child: (controller.imageFile == null)
+      //                             ? Image.asset(
+      //                                 'assets/images/image.png',
+      //                                 fit: BoxFit.contain,
+      //                               )
+      //                             : Image.file(
+      //                                 fit: BoxFit.contain,
+      //                                 File(controller.imageFile!.path)),
+      //                         width: 240.w,
+      //                         height: 120.h,
+      //                         decoration: BoxDecoration(
+      //                             borderRadius: BorderRadius.circular(9.w),
+      //                             border: Border.all(
+      //                                 width: 1, color: MainColorGreen)),
+      //                       ),
+      //                       SizedBox(height: 5.h),
+      //                       SizedBox(
+      //                         width: 128.w,
+      //                         height: 33.h,
+      //                         child: ElevatedButton(
+      //                           onPressed: () {
+      //                             controller.showChoiceDialog(context);
+      //                           },
+      //                           style: ButtonStyle(
+      //                             backgroundColor:
+      //                                 MaterialStateProperty.all<Color>(
+      //                                     Color.fromARGB(255, 64, 64, 64)),
+      //                           ),
+      //                           child: Row(
+      //                             children: [
+      //                               Icon(Icons.camera_alt, size: 20),
+      //                               SizedBox(
+      //                                 width: 8,
+      //                               ),
+      //                               Text(
+      //                                 'Pilih Gambar',
+      //                                 style: TextStyle(fontSize: 13),
+      //                               )
+      //                             ],
+      //                           ),
+      //                         ),
+      //                       ),
+      //                       SizedBox(height: 15.h),
+      //                       SizedBox(
+      //                         width: 200.w,
+      //                         child: Buttons.gradientButton(
+      //                           handler: () =>
+      //                               controller.showChoiceDialog(context),
+      //                           widget: Texts.button("Simpan Data"),
+      //                           borderSide: false,
+      //                           gradient: [Colors.cyan, Colors.indigo],
+      //                         ),
+      //                       ),
+      //                     ],
+      //                   ),
+      //                 ],
+      //               ),
+      //               if (controller.suggestions.isNotEmpty)
+      //                 Positioned(
+      //                   left: 0,
+      //                   right: 0,
+      //                   top: 65, // Posisi dropdown di bawah TextField
+      //                   child: Material(
+      //                     elevation: 4,
+      //                     borderRadius: BorderRadius.circular(8),
+      //                     child: Container(
+      //                       height: 60.h * controller.suggestions.length,
+      //                       child: ListView.builder(
+      //                         itemCount: controller.suggestions.length,
+      //                         itemBuilder: (context, index) {
+      //                           final suggestion =
+      //                               controller.suggestions[index];
+      //                           return ListTile(
+      //                             title: Text(suggestion['nama_usaha'] ?? ''),
+      //                             subtitle: Text(
+      //                                 'NPWPD: ${suggestion['npwpd'] ?? ''}\nAlamat: ${suggestion['alamat_usaha'] ?? ''}'),
+      //                             onTap: () {
+      //                               controller.nama.text =
+      //                                   suggestion['nama_usaha']!;
+      //                               controller.npwpd.text =
+      //                                   suggestion['npwpd']!;
+      //                               controller.alamat.text =
+      //                                   suggestion['alamat_usaha']!;
+      //                               controller.removeSuggestList();
+      //                             },
+      //                           );
+      //                         },
+      //                       ),
+      //                     ),
+      //                   ),
+      //                 ),
+      //             ],
+      //           ));
+      //     },
+      //   ),
+      // ),
+    );
   }
 }

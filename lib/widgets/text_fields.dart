@@ -1153,4 +1153,156 @@ class TextFields {
       ],
     );
   }
+
+  static Widget defaultTextFieldSuggest({
+    Key? key,
+    required TextInputAction textInputAction,
+    required TextInputType textInputType,
+    required bool isLoading,
+    required controller,
+    String? hintText,
+    TextCapitalization? textCapitalization,
+    List<TextInputFormatter>? inputFormatter,
+    String? initialValue,
+    IconData? prefixIcon,
+    bool hasInitialValue = false,
+    bool readOnly = false,
+    bool isRequired = false,
+    bool error = false,
+    String? errorMessage,
+    String? title,
+    Color borderColor = darkColor,
+    bool isSuffixIcon = false,
+    SuffixType suffixType = SuffixType.icon,
+    IconData? suffixIcon,
+    String? suffixText,
+    required bool validator,
+    required Function(String) onChanged,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        title != null && title.isNotEmpty
+            ? isRequired
+                ? Padding(
+                    padding: EdgeInsets.only(top: 2.h),
+                    child: Row(
+                      children: [
+                        Texts.body2(title),
+                        Texts.body2("*", color: Colors.red),
+                      ],
+                    ),
+                  )
+                : Padding(
+                    padding: EdgeInsets.only(top: 2.h),
+                    child: Texts.body2(title),
+                  )
+            : const SizedBox.shrink(),
+        AnimatedSize(
+          duration: const Duration(milliseconds: 300),
+          child: Padding(
+            padding: EdgeInsets.symmetric(vertical: 2.h),
+            child: TextFormField(
+              controller: controller,
+              readOnly: readOnly,
+              cursorColor: Get.theme.primaryColor,
+              inputFormatters: inputFormatter ?? [],
+              enabled: !isLoading,
+              textInputAction: textInputAction,
+              textCapitalization: textCapitalization ?? TextCapitalization.none,
+              keyboardType: textInputType,
+              onChanged: onChanged,
+              validator: validator == true
+                  ? (value) {
+                      if (value == null || value.isEmpty) {
+                        return "Data harus diisi";
+                      } else {
+                        return null;
+                      }
+                    }
+                  : (value) {
+                      return null;
+                    },
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(5.r),
+                  borderSide: BorderSide(
+                      width: 1.w,
+                      color: readOnly ? readOnlyBorderColor : borderColor),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(5.r),
+                  borderSide: BorderSide(
+                    width: 1.w,
+                    color: readOnly
+                        ? readOnlyBorderColor
+                        : error
+                            ? errorColor
+                            : primaryColor,
+                  ),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(5.r),
+                  borderSide: BorderSide(
+                    width: 1.w,
+                    color: readOnly ? readOnlyBorderColor : blueBorderColor,
+                  ),
+                ),
+                errorBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(5.r),
+                  borderSide: BorderSide(width: 1.w, color: errorColor),
+                ),
+                // disabledBorder: OutlineInputBorder(
+                //   borderRadius: BorderRadius.circular(5.r),
+                //   borderSide: BorderSide(width: 3.w, color: darkColor),
+                // ),
+                contentPadding:
+                    EdgeInsets.symmetric(vertical: 10.h, horizontal: 10.h),
+                hintText: hintText,
+                prefixIcon: prefixIcon == null
+                    ? null
+                    : Icon(
+                        prefixIcon,
+                        color: Get.theme.primaryColor,
+                      ),
+                suffixIcon: isSuffixIcon
+                    ? (suffixType == SuffixType.icon
+                        ? Icon(suffixIcon)
+                        : Padding(
+                            padding: EdgeInsets.only(top: 16.h),
+                            child: Texts.body2(suffixText!),
+                          ))
+                    : isLoading == true
+                        ? Transform.scale(
+                            scale:
+                                0.5, // Mengatur skala, 0.5 artinya setengah dari ukuran asli
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2.0, // Ketebalan garis lingkaran
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(Colors.blue),
+                            ),
+                          )
+                        : null,
+                filled: true,
+                fillColor: readOnly ? readOnlyColor : lightColor,
+              ),
+            ),
+          ),
+        ),
+        error
+            ? AnimatedSize(
+                duration: const Duration(milliseconds: 300),
+                child: Padding(
+                  padding: EdgeInsets.all(1.0.sp),
+                  child: Texts.caption(
+                    "${errorMessage}",
+                    color: Get.theme.colorScheme.error,
+                    textOverflow: TextOverflow.visible,
+                  ),
+                ),
+              )
+            : SizedBox(),
+      ],
+    );
+  }
 }
