@@ -10,6 +10,8 @@ import '../modules/detailscreen/bindings/detailscreen_binding.dart';
 import '../modules/detailscreen/views/detailscreen_view.dart';
 import '../modules/ekitiran/bindings/ekitiran_binding.dart';
 import '../modules/ekitiran/views/ekitiran_view.dart';
+import '../modules/ekitiran_form/bindings/ekitiran_form_binding.dart';
+import '../modules/ekitiran_form/views/ekitiran_form_view.dart';
 import '../modules/homepage/bindings/homepage_binding.dart';
 import '../modules/homepage/views/homepage_view.dart';
 import '../modules/kartunpwpd/bindings/kartunpwpd_binding.dart';
@@ -291,6 +293,11 @@ class AppPages {
       name: _Paths.EKITIRAN,
       page: () => const EkitiranView(),
       binding: EkitiranBinding(),
+    ),
+    GetPage(
+      name: _Paths.EKITIRAN_FORM,
+      page: () => const EkitiranFormView(),
+      binding: EkitiranFormBinding(),
     ),
   ];
 }

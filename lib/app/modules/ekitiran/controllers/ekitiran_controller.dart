@@ -1,42 +1,56 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:bapenda_getx2/app/core/api/api.dart';
-import 'package:bapenda_getx2/app/modules/dashboard/models/auth_model_model.dart';
-import 'package:bapenda_getx2/app/modules/dashboard/models/auth_model_model.dart';
+import 'package:bapenda_getx2/app/modules/ekitiran/models/kitiran_model.dart';
+import 'package:bapenda_getx2/app/modules/ekitiran/models/rt_model.dart';
+import 'package:bapenda_getx2/utils/app_const.dart';
 import 'package:bapenda_getx2/widgets/buttons.dart';
+import 'package:bapenda_getx2/widgets/dismiss_keyboard.dart';
+import 'package:bapenda_getx2/widgets/easythrottle.dart';
 import 'package:bapenda_getx2/widgets/getdialog.dart';
+import 'package:bapenda_getx2/widgets/logger.dart';
 import 'package:bapenda_getx2/widgets/snackbar.dart';
 import 'package:bapenda_getx2/widgets/text_fields.dart';
 import 'package:bapenda_getx2/widgets/texts.dart';
 import 'package:bapenda_getx2/widgets/theme/app_theme.dart';
 import 'package:bapenda_getx2/widgets/topline_bottomsheet.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
+import 'package:connectivity/connectivity.dart';
+import 'package:path_provider/path_provider.dart';
 
 class EkitiranController extends GetxController {
-  late AuthModel authModel;
+  late RTModel rtModel;
+
+  //progress sync untuk loading progress sat sinkronisasi data offline ke online
+  var progressSync = 0.0.obs;
+
+  final storage = GetStorage();
+
+  RxList<ModelKitiran> datalist = <ModelKitiran>[].obs;
+  bool hasMore = true;
+  int page = 1;
+  final controllerScroll = ScrollController();
+  bool isLoading = false;
+  bool isEmpty = false;
+  bool isFailed = false;
 
   bool isLoadingSuggest = false;
+  final TextEditingController id_user_rt = TextEditingController();
+  final TextEditingController nama = TextEditingController();
   final TextEditingController userrt_kecamatan = TextEditingController();
   final TextEditingController userrt_kelurahan = TextEditingController();
   final TextEditingController userrt_rt = TextEditingController();
 
-  final TextEditingController nama_cari = TextEditingController();
-  final TextEditingController nop_cari = TextEditingController();
-  final TextEditingController nama_wp = TextEditingController();
-  final TextEditingController nop_wp = TextEditingController();
-  final TextEditingController alamat_wp = TextEditingController();
-  final TextEditingController kelurahan_wp = TextEditingController();
-  final TextEditingController alamat_op = TextEditingController();
-
-  Timer? debounce;
-  List<Map<String, String>> suggestions = [];
-  final String apiUrl =
-      "https://yongen-bisa.com/bapenda_app/api_ver2/admin/suggest_nama.php";
+  XFile? imageFile = null;
 
   final List<String> kecamatanList = [
     'Bontang Utara',
@@ -69,65 +83,350 @@ class EkitiranController extends GetxController {
     ],
   };
 
+  static const String url =
+      'https://pajak.bontangkita.id/sismiop/api/informasi/sync_sppts_list/2024';
+
   @override
-  void onInit() {
+  void onInit() async {
     super.onInit();
     availableKelurahan = []; // Awalnya kosong
-    authModel = Get.arguments;
 
-    checkUserRt(authModel.idUserwp);
-  }
+    // Cek koneksi internet
+    bool isConnected = await isInternetConnected();
 
-  // Fetch suggestions dari API
-  Future<void> fetchSuggestions(String query) async {
-    isLoadingSuggest = true;
-    if (query.isEmpty) {
-      suggestions = [];
-      isLoadingSuggest = false;
-      update(); // Perbarui UI
-      return;
-    }
+    if (isConnected) {
+      checkAndDownloadPBBData();
 
-    try {
-      final response = await http.get(Uri.parse('$apiUrl?query=$query'));
-      if (response.statusCode == 200) {
-        final List<dynamic> data = json.decode(response.body);
-
-        // Map respons ke bentuk yang diinginkan
-        suggestions = data
-            .map((item) => {
-                  'nama_usaha': item['nama_usaha'].toString(),
-                  'npwpd': item['npwpd'].toString(),
-                  'alamat_usaha': item['alamat_usaha'].toString(),
-                })
-            .toList();
-        isLoadingSuggest = false;
-        print("Suggestions: $suggestions");
+      logInfo("ada internet");
+      // Jika ada internet, jalankan logika untuk memeriksa RT user
+      if (storage.hasData('user_rt')) {
+        logInfo("ada Akun RT di Storage");
+        rtModel = RTModel.fromJson(storage.read('user_rt'));
+        logInfo("Akun RT di storage user_rt: ${jsonEncode(rtModel)}");
+        if (rtModel.isSynced == false) {
+          logInfo("Sync Akun RT ke Online");
+          // jika data di user_rt masih false berarti blm di sync ke online
+          await syncUserRT(rtModel); // Sinkronkan ke database online
+        }
+        // Jika ada internet, periksa apakah getx storage kitiran_pbb kosong
+        if (!storage.hasData('kitiran_pbb')) {
+          logInfo("kitiran_pbb kosong, melakukan fetch dari API");
+          await FetchKitiran(rtModel.kelurahan, rtModel.rt); // Fetch dari API
+        } else {
+          syncAndFetchData();
+        }
+      } else {
+        logInfo("Belum punya akun RT");
+        // Tampilkan error menggunakan RawSnackbar jika data tidak ada
+        showBottomSheet(flag: "baru");
       }
-    } catch (e) {
-      isLoadingSuggest = false;
-      print("Error fetching suggestions: $e");
+
+      // Tambahkan listener untuk scroll
+      controllerScroll.addListener(() {
+        if (controllerScroll.position.maxScrollExtent ==
+            controllerScroll.offset) {
+          FetchKitiran(rtModel.kelurahan, rtModel.rt);
+          update();
+        }
+      });
+    } else {
+      // Jika tidak ada koneksi internet, cek apakah ada data di GetStorage
+      if (storage.hasData('user_rt')) {
+        logInfo("Offline tapi ada akun RT di Storage");
+        // Isi rtModel dengan data dari GetStorage
+        rtModel = RTModel.fromJson(storage.read('user_rt'));
+        FetchKitiranOffline();
+      } else {
+        logInfo("Belum punya akun RT");
+        // Tampilkan error menggunakan RawSnackbar jika data tidak ada
+        showBottomSheet(flag: "baru");
+      }
     }
-    isLoadingSuggest = false;
-    update(); // Perbarui UI
   }
 
-  void onTextChanged(String query) {
-    // Cancel debounce timer jika masih berjalan
-    if (debounce?.isActive ?? false) debounce?.cancel();
+  Future<void> syncAndFetchData() async {
+    try {
+      // Ambil semua data dari GetX Storage
+      List<ModelKitiran> kitiranList =
+          (GetStorage().read<List<dynamic>>('kitiran_pbb') ?? [])
+              .map((e) => ModelKitiran.fromJson(e))
+              .toList();
+      logInfo(jsonEncode(kitiranList));
+      // Filter data yang belum tersinkronisasi
+      List<ModelKitiran> unsyncedData =
+          kitiranList.where((item) => !item.isSynced).toList();
 
-    // Set delay 1 detik sebelum fetch
-    debounce = Timer(Duration(milliseconds: 500), () {
-      fetchSuggestions(query);
-    });
+      if (unsyncedData.isEmpty || kitiranList.isEmpty) {
+        logInfo("Tidak ada data baru untuk disinkronisasi.");
+        FetchKitiran(rtModel.kelurahan, rtModel.rt);
+        return; // Tidak ada data yang perlu disinkronisasi
+      }
+
+      // Buat daftar untuk menampung data hasil sinkronisasi dari server
+      List<ModelKitiran> syncedData = [];
+
+      //jalankan loading progress
+      showSyncProgressDialog();
+
+      final int totalData = unsyncedData.length;
+      for (int i = 0; i < totalData; i++) {
+        var item = unsyncedData[i];
+
+        // Membuat request multipart untuk setiap item
+        var request = http.MultipartRequest(
+            "POST", Uri.parse("${URL_APPSIMPATDA}/ekitiran/kitiran_sync.php"));
+
+        request.fields['kelurahan'] = item.kelurahan!;
+        request.fields['rt'] = item.rt!;
+        request.fields['nop'] = item.nop;
+        request.fields['nama'] = item.nama;
+        request.fields['alamat'] = item.alamat;
+        request.fields['tahun'] = item.tahun;
+        request.fields['jumlah_pajak'] = item.jumlahPajak;
+        request.fields['status_pembayaran_sppt'] = item.statusPembayaranSppt;
+        request.fields['keterangan'] = item.keterangan;
+        request.fields['tgl_bayar'] = item.tglBayar.toIso8601String();
+
+        // Tambahkan file bukti jika ada
+        if (item.bukti.isNotEmpty) {
+          var pic = await http.MultipartFile.fromPath("image", item.bukti);
+          request.files.add(pic);
+        }
+
+        // Kirim request
+        var response = await request.send();
+
+        // Baca dan decode response
+        var responseBody = await response.stream.bytesToString();
+        //logInfo("${responseBody}");
+        // logInfo(json.decode(responseBody));
+        var data = json.decode(responseBody);
+
+        if (response.statusCode == 200 && data['success'] != null) {
+          print("Data dengan NOP ${item.nop} berhasil disinkronisasi.");
+
+          // Hapus file gambar setelah berhasil sync
+          if (item.bukti.isNotEmpty) {
+            try {
+              File file = File(item.bukti);
+              if (await file.exists()) {
+                await file.delete();
+                print("File gambar ${item.bukti} berhasil dihapus.");
+              }
+            } catch (e) {
+              print("Gagal menghapus file gambar: $e");
+            }
+          }
+
+          // Tambahkan data yang berhasil disinkronisasi ke daftar hasil sinkronisasi
+          if (data['data'] != null && data['data'] is List) {
+            List<dynamic> serverData = data['data'];
+            logInfo(jsonEncode(serverData));
+            for (var serverItem in serverData) {
+              ModelKitiran model = ModelKitiran.fromJson(serverItem);
+
+              // Cek apakah data sudah ada di syncedData untuk menghindari duplikasi
+              if (!syncedData.any((e) => e.nop == model.nop)) {
+                syncedData.add(model);
+              }
+            }
+          }
+        } else {
+          print("Gagal menyinkronkan data dengan NOP ${item.nop}.");
+        }
+
+        // **Update Progress** setelah setiap item berhasil diproses
+        progressSync.value = ((i + 1) / totalData);
+        update();
+      }
+      Get.back();
+
+      // Gabungkan data yang tersinkronisasi dengan data lama tanpa duplikasi
+      List<ModelKitiran> updatedList = syncedData.toList();
+      for (var oldItem in kitiranList) {
+        if (!updatedList.any((e) => e.nop == oldItem.nop)) {
+          updatedList.add(oldItem);
+        }
+      }
+
+      // Simpan data terbaru ke GetX Storage
+      GetStorage().write(
+        'kitiran_pbb',
+        updatedList.map((e) => e.toJson()).toList(),
+      );
+      FetchKitiranOffline();
+      update();
+
+      print("Data berhasil diperbarui di GetX Storage.");
+    } catch (e) {
+      print("Error saat sinkronisasi: $e");
+    }
   }
 
-  void removeSuggestList() {
-    suggestions.clear();
+  Future FetchKitiran(kelurahan, rt) async {
+    if (isLoading) return;
+    const limit = 18;
+    final url = Uri.parse(
+        '${URL_APPSIMPATDA}/ekitiran/kitiran_list.php?kelurahan=$kelurahan&rt=$rt');
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      List newItems =
+          (json.decode(response.body) as Map<String, dynamic>)["data"];
+      final list =
+          newItems.map<ModelKitiran>((json) => ModelKitiran.fromJson(json));
+      page++;
+      isLoading = false;
+
+      if (newItems.length < limit) {
+        hasMore = false;
+        update();
+      }
+
+      datalist.addAll(list);
+
+      // Simpan hasil fetch ke GetStorage
+      storage.write('kitiran_pbb', datalist.map((e) => e.toJson()).toList());
+      logInfo("Data kitiran_pbb disimpan ke storage: ${datalist.length} items");
+
+      update();
+    }
+  }
+
+  Future FetchKitiranOffline() async {
+    datalist.clear();
+    final box = GetStorage();
+    List<dynamic>? cache = box.read('kitiran_pbb');
+
+    if (cache != null) {
+      // Decode data dan konversi ke List<ModelKitiran>
+      List<ModelKitiran> kitiranList = cache
+          .map((e) => ModelKitiran.fromJson(e as Map<String, dynamic>))
+          .toList();
+
+      // Tampilkan data
+      datalist.addAll(kitiranList);
+      update();
+    } else {
+      logInfo("Tidak ada data offline tersedia");
+    }
+  }
+
+  void refreshData(kelurahan, rt) async {
+    datalist.clear();
+
+    // Ambil data dari API
+    final url = Uri.parse(
+        '${URL_APPSIMPATDA}/ekitiran/kitiran_list.php?kelurahan=$kelurahan&rt=$rt');
+    final response = await http.get(url);
+
+    List newItems =
+        (json.decode(response.body) as Map<String, dynamic>)["data"];
+    final List<ModelKitiran> apiData = newItems
+        .map<ModelKitiran>((json) => ModelKitiran.fromJson(json))
+        .toList();
+
+    // Ambil data dari GetStorage
+    final localStorage = GetStorage().read<List<dynamic>>("kitiran_pbb") ?? [];
+    final List<ModelKitiran> localData =
+        localStorage.map((item) => ModelKitiran.fromJson(item)).toList();
+
+    // Gabungkan data tanpa duplikasi berdasarkan NOP
+    Map<String, ModelKitiran> combinedMap = {
+      for (var item in apiData) item.nop: item,
+      for (var item in localData) item.nop: item,
+    };
+    datalist.addAll(combinedMap.values);
+
+    // Write data gabungan ke GetStorage
+    GetStorage().write(
+      "kitiran_pbb",
+      combinedMap.values.map((e) => e.toJson()).toList(),
+    );
+
+    isLoading = false;
     update();
   }
 
-  void SimpanData() {
+  Future<void> showChoiceDialog(BuildContext context) {
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text(
+              "Pilih Opsi",
+              style: TextStyle(color: Colors.blue),
+            ),
+            content: Container(
+              decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(6),
+                  boxShadow: [
+                    BoxShadow(
+                        blurRadius: 10,
+                        offset: Offset(8, 6),
+                        color: lightGreenColor.withOpacity(0.3)),
+                    BoxShadow(
+                        blurRadius: 10,
+                        offset: Offset(-1, -5),
+                        color: lightGreenColor.withOpacity(0.3))
+                  ]),
+              child: SingleChildScrollView(
+                child: ListBody(
+                  children: [
+                    Divider(
+                      height: 1,
+                      color: Colors.blue,
+                    ),
+                    ListTile(
+                      onTap: () {
+                        _openGallery(context);
+                      },
+                      title: Text("Gallery"),
+                      leading: Icon(
+                        Icons.account_box,
+                        color: Colors.blue,
+                      ),
+                    ),
+                    Divider(
+                      height: 1,
+                      color: Colors.blue,
+                    ),
+                    ListTile(
+                      onTap: () {
+                        _openCamera(context);
+                      },
+                      title: Text("Camera"),
+                      leading: Icon(
+                        Icons.camera,
+                        color: Colors.blue,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        });
+  }
+
+  void _openGallery(BuildContext context) async {
+    final pickedFile =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
+    imageFile = pickedFile!;
+    update();
+    Get.back();
+  }
+
+  void _openCamera(BuildContext context) async {
+    final pickedFile =
+        await ImagePicker().pickImage(source: ImageSource.camera);
+    imageFile = pickedFile!;
+    update();
+    Get.back();
+  }
+
+  void SimpanDataAkunRT() {
     getDefaultDialog().onConfirm(
       title: "Anda yakin telah Mengisi Data dengan Benar?",
       desc: "Pastikan data yang anda isi telah sesuai",
@@ -140,53 +439,125 @@ class EkitiranController extends GetxController {
     );
   }
 
-  void ProsesData() async {
+  Future<void> ProsesData() async {
     EasyLoading.show();
-    // API disini
+    bool isConnected = await isInternetConnected();
+
+    if (isConnected) {
+      var url = Uri.parse("${URL_APPSIMPATDA}/ekitiran/user_rt_input.php");
+      try {
+        var response = await http.post(url, body: {
+          "id_user_rt": "${id_user_rt.text}",
+          "nama": "${nama.text}",
+          "kecamatan": "${userrt_kecamatan.text}",
+          "kelurahan": "${userrt_kelurahan.text}",
+          "rt": "${userrt_rt.text}",
+        });
+
+        var data = json.decode(response.body);
+
+        if (data['success'] != null && data['data'] != null) {
+          // Update RTModel dengan data dari response
+          rtModel = RTModel(
+            id_user_rt: data['data']['id_user_rt'],
+            nama: data['data']['nama'],
+            kecamatan: data['data']['kecamatan'],
+            kelurahan: data['data']['kelurahan'],
+            rt: data['data']['rt'],
+            isSynced: true,
+          );
+
+          // Simpan ke GetStorage
+          storage.write('user_rt', rtModel.toJson());
+          logInfo(
+              "Updated user_rt in GetStorage: ${jsonEncode(storage.read('user_rt'))}");
+
+          Get.back();
+          RawSnackbar_bottom(
+            message: "${data['success']}",
+            kategori: "success",
+            duration: 3,
+          );
+        } else {
+          RawSnackbar_top(
+            message: "Gagal menyimpan data ke server.",
+            kategori: "Error",
+            duration: 3,
+          );
+        }
+      } catch (e) {
+        logError("Error during API request: $e");
+        RawSnackbar_top(
+          message: "Terjadi gangguan jaringan.",
+          kategori: "Error",
+          duration: 3,
+        );
+      }
+    } else {
+      // Jika tidak ada internet, simpan langsung ke GetStorage
+      rtModel = RTModel(
+        id_user_rt: id_user_rt.text,
+        nama: nama.text,
+        kecamatan: userrt_kecamatan.text,
+        kelurahan: userrt_kelurahan.text,
+        rt: userrt_rt.text,
+        isSynced: false,
+      );
+      storage.write('user_rt', rtModel.toJson());
+      logInfo(
+          "Saved user_rt locally without internet: ${jsonEncode(storage.read('user_rt'))}");
+      Get.back();
+      RawSnackbar_bottom(
+        message:
+            "Data disimpan secara lokal karena tidak ada koneksi internet.",
+        kategori: "success",
+        duration: 3,
+      );
+    }
+
+    EasyLoading.dismiss();
+    update();
+  }
+
+  Future<void> syncUserRT(RTModel rtModel) async {
     var url = Uri.parse("${URL_APPSIMPATDA}/ekitiran/user_rt_input.php");
     var response = await http.post(url, body: {
-      "id_userwp": "${authModel.idUserwp}",
-      "kecamatan": "${userrt_kecamatan.text}",
-      "kelurahan": "${userrt_kelurahan.text}",
-      "rt": "${userrt_rt.text}",
+      "id_user_rt": "${rtModel.id_user_rt}",
+      "nama": "${rtModel.nama}",
+      "kecamatan": "${rtModel.kecamatan}",
+      "kelurahan": "${rtModel.kelurahan}",
+      "rt": "${rtModel.rt}",
     });
 
     var data = json.decode(response.body);
 
-    if (data['success'] != null) {
-      Get.back();
+    if (data['success'] != null && data['data'] != null) {
+      // Update RTModel dengan data dari response
+      rtModel = RTModel(
+        id_user_rt: data['data']['id_user_rt'],
+        nama: data['data']['nama'],
+        kecamatan: data['data']['kecamatan'],
+        kelurahan: data['data']['kelurahan'],
+        rt: data['data']['rt'],
+        isSynced: true,
+      );
+
+      // Simpan ke GetStorage
+      storage.write('user_rt', rtModel.toJson());
+      logInfo(
+          "Updated user_rt in GetStorage: ${jsonEncode(storage.read('user_rt'))}");
+
       RawSnackbar_bottom(
         message: "${data['success']}",
         kategori: "success",
         duration: 3,
       );
-
-      update();
     } else {
       RawSnackbar_top(
-        message: "Gagal, terjadi gangguin di jaringan.",
+        message: "Gagal menyimpan data ke server.",
         kategori: "Error",
         duration: 3,
       );
-      update();
-    }
-    EasyLoading.dismiss();
-    update();
-  }
-
-  void checkUserRt(idUserwp) async {
-    var url = Uri.parse("${URL_APPSIMPATDA}/ekitiran/cek_user_rt.php");
-    var response = await http.post(url, body: {
-      "id_userwp": "${authModel.idUserwp}",
-    });
-
-    var data = json.decode(response.body);
-
-    if (data['status'] == 'non_exists') {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        showBottomSheet();
-      });
-      update();
     }
   }
 
@@ -218,7 +589,17 @@ class EkitiranController extends GetxController {
     super.onClose();
   }
 
-  void showBottomSheet() {
+  void showBottomSheet({required String flag}) {
+    // Baca seluruh data user_rt dari storage
+    var userRTStorage = storage.read('user_rt') ?? {};
+
+    id_user_rt.text = userRTStorage['id_user_rt'] ?? '';
+    nama.text = userRTStorage['nama'] ?? '';
+    userrt_kecamatan.text = userRTStorage['kecamatan'] ?? '';
+    availableKelurahan = kelurahanByKecamatan[userRTStorage['kecamatan']] ?? [];
+    userrt_kelurahan.text = userRTStorage['kelurahan'] ?? '';
+    userrt_rt.text = userRTStorage['rt'] ?? '';
+
     Get.bottomSheet(
       Container(
         decoration: BoxDecoration(
@@ -228,261 +609,480 @@ class EkitiranController extends GetxController {
           ),
           color: Colors.white,
         ),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              topline_bottomsheet(),
-              SizedBox(height: 20),
-              GetBuilder<EkitiranController>(
-                  init: EkitiranController(),
-                  builder: (controller) {
-                    return Center(
-                      child: Padding(
-                        padding: EdgeInsets.all(8.r),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Texts.body1(
-                                'Selamat Datang di Aplikasi E-Kitiran PBB RT, Lengkapi terlebih dahulu data RT anda dibawah ini untuk Lanjut.',
-                                isBold: true,
-                                maxLines: 3,
-                                textAlign: TextAlign.center),
-                            SizedBox(height: 8.h),
-                            Row(
-                              children: [
-                                Container(
-                                  width: 167.w,
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Texts.caption(
-                                        "Pilih Kecamatan",
-                                      ),
-                                      InputDecorator(
-                                        decoration: InputDecoration(
-                                          border: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(5.r),
-                                            borderSide: BorderSide(
-                                                width: 1.0, color: Colors.grey),
-                                          ),
-                                          contentPadding: EdgeInsets.symmetric(
-                                              vertical: 2.h, horizontal: 10.h),
-                                          enabledBorder: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(5.0),
-                                            borderSide: BorderSide(
-                                                width: 1.0,
-                                                color: MainColorGreen),
-                                          ),
-                                          focusedBorder: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(5.0),
-                                            borderSide: const BorderSide(
-                                                width: 1.0, color: Colors.blue),
-                                          ),
-                                          filled: true,
-                                          fillColor: Colors.white,
-                                        ),
-                                        child: DropdownButtonHideUnderline(
-                                          child: DropdownButton<String>(
-                                            value: controller.userrt_kecamatan
-                                                    .text.isEmpty
-                                                ? null
-                                                : controller
-                                                    .userrt_kecamatan.text,
-                                            hint: const Text("Pilih Kecamatan"),
-                                            isExpanded: true,
-                                            onChanged: (newValue) {
-                                              if (newValue != null) {
-                                                controller
-                                                    .changeValue_userrt_kecamatan(
-                                                        newValue);
-                                              }
-                                            },
-                                            items: controller.kecamatanList
-                                                .map((item) =>
-                                                    DropdownMenuItem<String>(
-                                                      value: item,
-                                                      child: Text(item),
-                                                    ))
-                                                .toList(),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+        child: GestureDetector(
+          onTap: () {
+            dismissKeyboard();
+          },
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                topline_bottomsheet(),
+                SizedBox(height: 20),
+                GetBuilder<EkitiranController>(
+                    init: EkitiranController(),
+                    builder: (controller) {
+                      return Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(8.r),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              flag == "edit"
+                                  ? SizedBox()
+                                  : Texts.body1(
+                                      'Selamat Datang di Aplikasi E-Kitiran PBB RT, Lengkapi terlebih dahulu data RT anda dibawah ini untuk Lanjut.',
+                                      isBold: true,
+                                      maxLines: 3,
+                                      textAlign: TextAlign.center),
+                              SizedBox(height: 8.h),
+                              Container(
+                                // width: 167.w,
+                                child: TextFields.defaultTextField2(
+                                  title: "Nama Lengkap Ketua RT",
+                                  controller: controller.nama,
+                                  isLoading: controller.isLoading,
+                                  textInputAction: TextInputAction.next,
+                                  textInputType: TextInputType.text,
+                                  // prefixIcon: Icons.contact_emergency,
+                                  borderColor: MainColorGreen,
+                                  validator: true,
                                 ),
-                                SizedBox(width: 5.h),
-                                Container(
-                                  width: 167.w,
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Texts.caption(
-                                        "Pilih Kecamatan",
-                                      ),
-                                      InputDecorator(
-                                        decoration: InputDecoration(
-                                          border: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(5.r),
-                                            borderSide: BorderSide(
-                                                width: 1.0, color: Colors.grey),
-                                          ),
-                                          contentPadding: EdgeInsets.symmetric(
-                                              vertical: 2.h, horizontal: 10.h),
-                                          enabledBorder: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(5.0),
-                                            borderSide: BorderSide(
-                                                width: 1.0,
-                                                color: MainColorGreen),
-                                          ),
-                                          focusedBorder: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(5.0),
-                                            borderSide: const BorderSide(
-                                                width: 1.0, color: Colors.blue),
-                                          ),
-                                          filled: true,
-                                          fillColor: Colors.white,
+                              ),
+                              Row(
+                                children: [
+                                  Container(
+                                    width: 167.w,
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Texts.caption(
+                                          "Pilih Kecamatan",
                                         ),
-                                        child: DropdownButtonHideUnderline(
-                                          child: DropdownButton<String>(
-                                            value: controller.userrt_kelurahan
-                                                    .text.isEmpty
-                                                ? null
-                                                : controller
-                                                    .userrt_kelurahan.text,
-                                            hint: const Text("Pilih Kelurahan"),
-                                            isExpanded: true,
-                                            onChanged: controller
-                                                    .availableKelurahan
-                                                    .isNotEmpty
-                                                ? (newValue) {
-                                                    if (newValue != null) {
-                                                      controller
-                                                          .changeValue_userrt_kelurahan(
-                                                              newValue);
+                                        InputDecorator(
+                                          decoration: InputDecoration(
+                                            border: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(5.r),
+                                              borderSide: BorderSide(
+                                                  width: 1.0,
+                                                  color: Colors.grey),
+                                            ),
+                                            contentPadding:
+                                                EdgeInsets.symmetric(
+                                                    vertical: 2.h,
+                                                    horizontal: 10.h),
+                                            enabledBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(5.0),
+                                              borderSide: BorderSide(
+                                                  width: 1.0,
+                                                  color: MainColorGreen),
+                                            ),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(5.0),
+                                              borderSide: const BorderSide(
+                                                  width: 1.0,
+                                                  color: Colors.blue),
+                                            ),
+                                            filled: true,
+                                            fillColor: Colors.white,
+                                          ),
+                                          child: DropdownButtonHideUnderline(
+                                            child: DropdownButton<String>(
+                                              value: controller.userrt_kecamatan
+                                                      .text.isEmpty
+                                                  ? null
+                                                  : controller
+                                                      .userrt_kecamatan.text,
+                                              hint:
+                                                  const Text("Pilih Kecamatan"),
+                                              isExpanded: true,
+                                              onChanged: (newValue) {
+                                                if (newValue != null) {
+                                                  controller
+                                                      .changeValue_userrt_kecamatan(
+                                                          newValue);
+                                                }
+                                              },
+                                              items: controller.kecamatanList
+                                                  .map((item) =>
+                                                      DropdownMenuItem<String>(
+                                                        value: item,
+                                                        child: Text(item),
+                                                      ))
+                                                  .toList(),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  SizedBox(width: 5.h),
+                                  Container(
+                                    width: 167.w,
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Texts.caption(
+                                          "Pilih Kelurahan",
+                                        ),
+                                        InputDecorator(
+                                          decoration: InputDecoration(
+                                            border: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(5.r),
+                                              borderSide: BorderSide(
+                                                  width: 1.0,
+                                                  color: Colors.grey),
+                                            ),
+                                            contentPadding:
+                                                EdgeInsets.symmetric(
+                                                    vertical: 2.h,
+                                                    horizontal: 10.h),
+                                            enabledBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(5.0),
+                                              borderSide: BorderSide(
+                                                  width: 1.0,
+                                                  color: MainColorGreen),
+                                            ),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(5.0),
+                                              borderSide: const BorderSide(
+                                                  width: 1.0,
+                                                  color: Colors.blue),
+                                            ),
+                                            filled: true,
+                                            fillColor: Colors.white,
+                                          ),
+                                          child: DropdownButtonHideUnderline(
+                                            child: DropdownButton<String>(
+                                              value: controller.userrt_kelurahan
+                                                      .text.isEmpty
+                                                  ? null
+                                                  : controller
+                                                      .userrt_kelurahan.text,
+                                              hint:
+                                                  const Text("Pilih Kelurahan"),
+                                              isExpanded: true,
+                                              onChanged: controller
+                                                      .availableKelurahan
+                                                      .isNotEmpty
+                                                  ? (newValue) {
+                                                      if (newValue != null) {
+                                                        controller
+                                                            .changeValue_userrt_kelurahan(
+                                                                newValue);
+                                                      }
                                                     }
-                                                  }
-                                                : null, // Disable dropdown if no kelurahan available
-                                            items: controller.availableKelurahan
-                                                .map((item) =>
-                                                    DropdownMenuItem<String>(
-                                                      value: item,
-                                                      child: Text(item),
-                                                    ))
-                                                .toList(),
+                                                  : null, // Disable dropdown if no kelurahan available
+                                              items: controller
+                                                  .availableKelurahan
+                                                  .map((item) =>
+                                                      DropdownMenuItem<String>(
+                                                        value: item,
+                                                        child: Text(item),
+                                                      ))
+                                                  .toList(),
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 5.h),
-                            Container(
-                              width: 100.w,
-                              child: TextFields.textFieldDropdown(
-                                textInputAction: TextInputAction.next,
-                                textInputType: TextInputType.text,
-                                isLoading: false,
-                                controller: controller.userrt_rt,
-                                hintText: "Pilih RT",
-                                title: "Pilih RT",
-                                isDropdown: true,
-                                dropdownItems: [
-                                  '01',
-                                  '02',
-                                  '03',
-                                  '04',
-                                  '05',
-                                  '06',
-                                  '07',
-                                  '08',
-                                  '09',
-                                  '10',
-                                  '11',
-                                  '12',
-                                  '13',
-                                  '14',
-                                  '15',
-                                  '16',
-                                  '17',
-                                  '18',
-                                  '19',
-                                  '20',
-                                  '21',
-                                  '22',
-                                  '23',
-                                  '24',
-                                  '25',
-                                  '26',
-                                  '27',
-                                  '28',
-                                  '29',
-                                  '30',
-                                  '31',
-                                  '32',
-                                  '33',
-                                  '34',
-                                  '35',
-                                  '36',
-                                  '37',
-                                  '38',
-                                  '39',
-                                  '40',
-                                  '41',
-                                  '42',
-                                  '43',
-                                  '44',
-                                  '45',
-                                  '46',
-                                  '47',
-                                  '48',
-                                  '49',
-                                  '50',
-                                  '51',
-                                  '52',
-                                  '53',
-                                  '54',
-                                  '55'
                                 ],
-                                dropdownValue: controller.userrt_rt.text.isEmpty
-                                    ? null
-                                    : controller.userrt_rt.text,
-                                onDropdownChanged: (newValue) {
-                                  controller.changeValue_userrt_rt(newValue);
+                              ),
+                              SizedBox(height: 5.h),
+                              Container(
+                                width: 100.w,
+                                child: TextFields.textFieldDropdown(
+                                  textInputAction: TextInputAction.next,
+                                  textInputType: TextInputType.text,
+                                  isLoading: false,
+                                  controller: controller.userrt_rt,
+                                  hintText: "Pilih RT",
+                                  title: "Pilih RT",
+                                  isDropdown: true,
+                                  dropdownItems: [
+                                    '01',
+                                    '02',
+                                    '03',
+                                    '04',
+                                    '05',
+                                    '06',
+                                    '07',
+                                    '08',
+                                    '09',
+                                    '10',
+                                    '11',
+                                    '12',
+                                    '13',
+                                    '14',
+                                    '15',
+                                    '16',
+                                    '17',
+                                    '18',
+                                    '19',
+                                    '20',
+                                    '21',
+                                    '22',
+                                    '23',
+                                    '24',
+                                    '25',
+                                    '26',
+                                    '27',
+                                    '28',
+                                    '29',
+                                    '30',
+                                    '31',
+                                    '32',
+                                    '33',
+                                    '34',
+                                    '35',
+                                    '36',
+                                    '37',
+                                    '38',
+                                    '39',
+                                    '40',
+                                    '41',
+                                    '42',
+                                    '43',
+                                    '44',
+                                    '45',
+                                    '46',
+                                    '47',
+                                    '48',
+                                    '49',
+                                    '50',
+                                    '51',
+                                    '52',
+                                    '53',
+                                    '54',
+                                    '55'
+                                  ],
+                                  dropdownValue:
+                                      controller.userrt_rt.text.isEmpty
+                                          ? null
+                                          : controller.userrt_rt.text,
+                                  onDropdownChanged: (newValue) {
+                                    controller.changeValue_userrt_rt(newValue);
+                                  },
+                                  validator: true,
+                                ),
+                              ),
+                              SizedBox(height: 10.h),
+                              Buttons.gradientButton(
+                                handler: () {
+                                  easyThrottle(
+                                    handler: () {
+                                      controller.SimpanDataAkunRT();
+                                    },
+                                  );
                                 },
-                                validator: true,
+                                widget: Texts.body1(
+                                  "Simpan",
+                                ),
+                                gradient: [Colors.cyan, Colors.indigo],
                               ),
-                            ),
-                            SizedBox(height: 10.h),
-                            Buttons.gradientButton(
-                              handler: () {
-                                controller.SimpanData();
-                              },
-                              widget: Texts.body1(
-                                "Simpan",
-                              ),
-                              gradient: [Colors.cyan, Colors.indigo],
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                    );
-                  })
-            ],
+                      );
+                    })
+              ],
+            ),
           ),
         ),
       ),
-      isDismissible: false,
+      isDismissible: flag == "edit" ? true : false,
     );
+  }
+
+  void showSyncProgressDialog() {
+    Get.defaultDialog(
+      barrierDismissible: false,
+      content: Obx(
+        () => Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Texts.caption(
+                "Terhubung ke Internet! sedang Sinkronisasi data ke database online, Mohon Tunggu beberapa saat",
+                textAlign: TextAlign.center,
+                maxLines: 3),
+            SizedBox(height: 10),
+            LinearProgressIndicator(
+              value: progressSync.value,
+              minHeight: 10,
+              backgroundColor: Colors.grey[300],
+              color: Colors.blueAccent,
+            ),
+            SizedBox(height: 10),
+            Text(
+              "${(progressSync.value * 100).toStringAsFixed(1)}% Selesai",
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void hapusData(String NopHapus) async {
+    EasyLoading.show();
+    // Membaca data dari GetX Storage
+    var storedData = storage.read('kitiran_pbb');
+
+    // Cek apakah data ditemukan di storage
+    if (storedData != null) {
+      // Pastikan storedData adalah List<dynamic>
+      List<dynamic> jsonData = storedData;
+
+      // Debug untuk melihat data yang ada
+      print('Data sebelum dihapus: $jsonData');
+
+      // Gunakan try-catch untuk menangani kesalahan jika item tidak ditemukan
+      var itemToRemove;
+      try {
+        itemToRemove = jsonData.firstWhere((item) => item['nop'] == NopHapus);
+      } catch (e) {
+        itemToRemove =
+            null; // Jika item tidak ditemukan, itemToRemove akan menjadi null
+      }
+
+      // Periksa apakah data ditemukan dan valid
+      if (itemToRemove != null && itemToRemove is Map<String, dynamic>) {
+        logInfo("disini");
+        // Mengecek apakah data isSynced == false
+        ModelKitiran modelKitiran = ModelKitiran.fromJson(itemToRemove);
+        if (modelKitiran.isSynced == false) {
+          // Jika isSynced false, langsung hapus dari GetX Storage
+          jsonData.removeWhere((item) => item['nop'] == NopHapus);
+          // Tulis data yang telah diubah kembali ke GetX Storage
+          storage.write('kitiran_pbb', jsonData);
+          FetchKitiranOffline();
+          print('Data berhasil dihapus dari GetX Storage.');
+          update();
+        } else {
+          bool isConnected = await isInternetConnected();
+
+          if (isConnected) {
+            // Jika isSynced true, kirim request POST ke server untuk menghapus data
+            final url = Uri.parse(
+                '${URL_APPSIMPATDA}/ekitiran/kitiran_hapus.php?nop=$NopHapus');
+
+            try {
+              // Kirim request POST
+              final response = await http.post(url);
+              final responseData = json.decode(response.body);
+
+              if (response.statusCode == 200) {
+                // Setelah berhasil dihapus di server, hapus data dari GetX Storage
+                if (responseData['status'] == 'success') {
+                  jsonData.removeWhere((item) => item['nop'] == NopHapus);
+                  storage.write('kitiran_pbb', jsonData);
+                  FetchKitiranOffline();
+                  update();
+                } else {
+                  print(
+                      'Gagal menghapus data di server: ${responseData['message']}');
+                }
+                update();
+                print('Data berhasil dihapus dari server dan GetX Storage.');
+              } else {
+                print('Gagal menghapus data di server: ${response.statusCode}');
+              }
+            } catch (e) {
+              print('Terjadi kesalahan saat mengirim request: $e');
+            }
+          } else {
+            EasyLoading.showError(
+                "Untuk menghapus data ini, harus terhubung Internet");
+          }
+        }
+      } else {
+        print(
+            'Data dengan NOP $NopHapus tidak ditemukan atau format data tidak valid.');
+      }
+      EasyLoading.dismiss();
+    } else {
+      EasyLoading.dismiss();
+      print('Tidak ada data yang disimpan di GetX Storage.');
+    }
+  }
+
+  Future<bool> isInternetConnected() async {
+    var connectivityResult = await Connectivity().checkConnectivity();
+    return connectivityResult != ConnectivityResult.none;
+  }
+
+  void checkAndDownloadPBBData() async {
+    int? storedVersion = storage.read<int>('versi_data_pbb');
+
+    // Jika versi belum ada atau lebih rendah dari versi yang diinginkan
+    if (storedVersion == null || storedVersion < dataPBBVersion) {
+      print("Mulai download data PBB versi baru...");
+      await DownloadDataPBBJson();
+
+      // Setelah selesai, simpan versi terbaru ke storage
+      storage.write('versi_data_pbb', dataPBBVersion);
+      print("Download selesai, versi_data_pbb disimpan: $dataPBBVersion");
+    } else {
+      print(
+          "Data PBB sudah versi terbaru ($storedVersion). Tidak perlu download.");
+    }
+  }
+
+  Future<void> DownloadDataPBBJson() async {
+    //EasyLoading.show(status: "Sedang download Data PBB JSON");
+    try {
+      String basicAuth =
+          'Basic ${base64Encode(utf8.encode('API_BPD_ETAM:API_BPD_ETAM'))}';
+      final response = await http.get(
+        Uri.parse(
+            "https://pajak.bontangkita.id/sismiop/api/informasi/sync_sppts_list/${tahun_pbb}"),
+        headers: {'Authorization': basicAuth},
+      );
+
+      if (response.statusCode == 200) {
+        String jsonData = response.body;
+
+        // Parsing JSON dan ambil bagian 'sppts' yang berupa List
+        final parsedData = json.decode(jsonData);
+        final List<dynamic> informasi = parsedData['data']['sppts'];
+
+        // Simpan ke GetStorage
+        await saveJsonToStorage(informasi);
+
+        print('Data PBB berhasil disimpan ke GetStorage.');
+      } else {
+        print('Gagal mendapatkan data: ${response.statusCode}');
+      }
+      //EasyLoading.dismiss();
+    } catch (e) {
+      print('Terjadi kesalahan: $e');
+      // EasyLoading.dismiss();
+    }
+  }
+
+  Future<void> saveJsonToStorage(List<dynamic> informasi) async {
+    storage.write('data_pbb', informasi);
+    print('Data PBB berhasil disimpan di GetStorage.');
+  }
+
+  Future<void> loadJsonFromStorage() async {
+    var dataPBB = storage.read('data_pbb');
+    if (dataPBB != null) {
+      print("Data PBB dari GetStorage: ${jsonEncode(dataPBB)}");
+    } else {
+      print("Tidak ada data PBB di GetStorage.");
+    }
   }
 }

@@ -195,6 +195,20 @@ class LoginController extends GetxController with AuthCacheService {
     }
   }
 
+  void LoginAkses_RT() {
+    final box = GetStorage();
+    box.write(STORAGE_LOGIN_USER_DATA, {
+      "id_userwp": '2', //id_userwp default ketua adalah 2
+      "nama": 'Ketua RT',
+      "nik": 'ketuart',
+      "no_hp": 'ketuart',
+      "password": 'ketuart',
+      "foto": 'user_6.png',
+      "last_active": "123"
+    });
+    Get.offAllNamed(Routes.DASHBOARD, arguments: "login");
+  }
+
   @override
   void onInit() {
     super.onInit();

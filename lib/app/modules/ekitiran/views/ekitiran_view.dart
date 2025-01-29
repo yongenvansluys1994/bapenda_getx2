@@ -1,12 +1,21 @@
+import 'dart:io';
+
+import 'package:bapenda_getx2/app/routes/app_pages.dart';
 import 'package:bapenda_getx2/widgets/buttons.dart';
 import 'package:bapenda_getx2/widgets/custom_appbar.dart';
+import 'package:bapenda_getx2/widgets/getdialog.dart';
+import 'package:bapenda_getx2/widgets/logger.dart';
+import 'package:bapenda_getx2/widgets/nodata.dart';
+import 'package:bapenda_getx2/widgets/shimmer.dart';
 import 'package:bapenda_getx2/widgets/text_fields.dart';
 import 'package:bapenda_getx2/widgets/texts.dart';
 import 'package:bapenda_getx2/widgets/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 import '../controllers/ekitiran_controller.dart';
 
@@ -16,251 +25,411 @@ class EkitiranView extends GetView<EkitiranController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
-        title: "E-Kitiran PBB RT",
+        title: "E-Kitiran PBB",
         leading: true,
         isLogin: true,
       ),
-      //   body: SingleChildScrollView(
-      //   child: GetBuilder<EkitiranController>(
-      //     init: EkitiranController(),
-      //     builder: (controller) {
-      //       return Padding(
-      //           padding: const EdgeInsets.all(8.0),
-      //           child: Stack(
-      //             children: [
-      //               Column(
-      //                 children: [
-      //                   TextFields.defaultTextFieldSuggest(
-      //                     title: "Cari Nama WP",
-      //                     hintText: "Pencarian Pintar data WP..",
-      //                     controller: controller.nama_cari,
-      //                     isLoading: controller.isLoadingSuggest,
-      //                     textInputAction: TextInputAction.next,
-      //                     textInputType: TextInputType.text,
-      //                     borderColor: primaryColor,
-      //                     validator: true,
+      body: Column(
+        children: [
+          Expanded(
+            child: Stack(
+              children: [
+                GetBuilder<EkitiranController>(
+                  init: EkitiranController(),
+                  builder: (controller) {
+                    if (controller.isFailed) {
+                      return ShimmerWidget.Items1();
+                    }
 
-      //                     onChanged: (value) => controller
-      //                         .onTextChanged(value), // Fetch saat mengetik
-      //                   ),
-      //                   // TextField atau widget lainnya di bawah
-      //                   Row(
-      //                     children: [
-      //                       Container(
-      //                         width: 167.w,
-      //                         child: TextFields.defaultTextField2(
-      //                           title: "NPWPD",
-      //                           readOnly: true,
-      //                           controller: controller.npwpd,
-      //                           isLoading: controller.isLoadingSuggest,
-      //                           textInputAction: TextInputAction.next,
-      //                           textInputType: TextInputType.number,
-      //                           // prefixIcon: Icons.contact_emergency,
-      //                           borderColor: primaryColor,
-      //                           validator: true,
-      //                         ),
-      //                       ),
-      //                       SizedBox(width: 10.w),
-      //                       Container(
-      //                         width: 167.w,
-      //                         child: TextFields.defaultTextField2(
-      //                           title: "Jenis Pajak",
-      //                           controller: controller.jenispajak,
-      //                           readOnly: true,
-      //                           isLoading: controller.isLoadingSuggest,
-      //                           textInputAction: TextInputAction.next,
-      //                           textInputType: TextInputType.text,
-      //                           // prefixIcon: Icons.contact_emergency,
-      //                           borderColor: primaryColor,
-      //                           validator: true,
-      //                         ),
-      //                       ),
-      //                     ],
-      //                   ),
-      //                   TextFields.defaultTextField2(
-      //                     title: "Alamat",
-      //                     controller: controller.alamat,
-      //                     readOnly: true,
-      //                     isLoading: controller.isLoadingSuggest,
-      //                     textInputAction: TextInputAction.next,
-      //                     textInputType: TextInputType.multiline,
-      //                     // prefixIcon: Icons.contact_emergency,
-      //                     borderColor: primaryColor,
-      //                     validator: true,
-      //                   ),
-      //                   Row(
-      //                     children: [
-      //                       Container(
-      //                         width: 167.w,
-      //                         child: TextFields.defaultTextField2(
-      //                           title: "Kelurahan",
-      //                           readOnly: true,
-      //                           controller: controller.kelurahan,
-      //                           isLoading: controller.isLoadingSuggest,
-      //                           textInputAction: TextInputAction.next,
-      //                           textInputType: TextInputType.text,
-      //                           // prefixIcon: Icons.contact_emergency,
-      //                           borderColor: primaryColor,
-      //                           validator: true,
-      //                         ),
-      //                       ),
-      //                       SizedBox(width: 10.w),
-      //                       Container(
-      //                         width: 167.w,
-      //                         child: TextFields.defaultTextField2(
-      //                           title: "Kecamatan",
-      //                           readOnly: true,
-      //                           controller: controller.kecamatan,
-      //                           isLoading: controller.isLoadingSuggest,
-      //                           textInputAction: TextInputAction.next,
-      //                           textInputType: TextInputType.text,
-      //                           // prefixIcon: Icons.contact_emergency,
-      //                           borderColor: primaryColor,
-      //                           validator: true,
-      //                         ),
-      //                       ),
-      //                     ],
-      //                   ),
-      //                   TextFields.textFieldDropdown(
-      //                     textInputAction: TextInputAction.next,
-      //                     textInputType: TextInputType.text,
-      //                     isLoading: false,
-      //                     controller: controller.jenisreporting,
-      //                     hintText: "Pilih Jenis Reporting",
-      //                     title: "Pilih Jenis Reporting",
-      //                     isDropdown: true,
-      //                     dropdownItems: [
-      //                       'Pendataan Wajib Pajak',
-      //                       'Validasi Wajib Pajak',
-      //                       'Penyampaian SKPD',
-      //                       'Penagihan',
-      //                     ],
-      //                     dropdownValue: controller.jenisreporting.text.isEmpty
-      //                         ? null
-      //                         : controller.jenisreporting.text,
-      //                     onDropdownChanged: (newValue) {
-      //                       controller.changeValueJenisReporting(newValue);
-      //                     },
-      //                     validator: true,
-      //                   ),
-      //                   TextFields.textFieldMultiline(
-      //                     title: "Keterangan Reporting",
-      //                     hintText: "Masukkan Keterangan Reporting ..",
-      //                     controller: controller.keterangan,
-      //                     isLoading: controller.isLoadingSuggest,
-      //                     textInputAction: TextInputAction.next,
-      //                     textInputType: TextInputType.text,
-      //                     // prefixIcon: Icons.contact_emergency,
-      //                     borderColor: primaryColor,
-      //                     validator: true,
-      //                     borderRed: true,
-      //                   ),
-      //                   Column(
-      //                     crossAxisAlignment: CrossAxisAlignment.center,
-      //                     children: [
-      //                       Padding(
-      //                         padding: const EdgeInsets.all(8),
-      //                         child: Center(
-      //                             child:
-      //                                 Texts.body2("Upload Foto Dokumentasi :")),
-      //                       ),
-      //                       Container(
-      //                         child: (controller.imageFile == null)
-      //                             ? Image.asset(
-      //                                 'assets/images/image.png',
-      //                                 fit: BoxFit.contain,
-      //                               )
-      //                             : Image.file(
-      //                                 fit: BoxFit.contain,
-      //                                 File(controller.imageFile!.path)),
-      //                         width: 240.w,
-      //                         height: 120.h,
-      //                         decoration: BoxDecoration(
-      //                             borderRadius: BorderRadius.circular(9.w),
-      //                             border: Border.all(
-      //                                 width: 1, color: MainColorGreen)),
-      //                       ),
-      //                       SizedBox(height: 5.h),
-      //                       SizedBox(
-      //                         width: 128.w,
-      //                         height: 33.h,
-      //                         child: ElevatedButton(
-      //                           onPressed: () {
-      //                             controller.showChoiceDialog(context);
-      //                           },
-      //                           style: ButtonStyle(
-      //                             backgroundColor:
-      //                                 MaterialStateProperty.all<Color>(
-      //                                     Color.fromARGB(255, 64, 64, 64)),
-      //                           ),
-      //                           child: Row(
-      //                             children: [
-      //                               Icon(Icons.camera_alt, size: 20),
-      //                               SizedBox(
-      //                                 width: 8,
-      //                               ),
-      //                               Text(
-      //                                 'Pilih Gambar',
-      //                                 style: TextStyle(fontSize: 13),
-      //                               )
-      //                             ],
-      //                           ),
-      //                         ),
-      //                       ),
-      //                       SizedBox(height: 15.h),
-      //                       SizedBox(
-      //                         width: 200.w,
-      //                         child: Buttons.gradientButton(
-      //                           handler: () =>
-      //                               controller.showChoiceDialog(context),
-      //                           widget: Texts.button("Simpan Data"),
-      //                           borderSide: false,
-      //                           gradient: [Colors.cyan, Colors.indigo],
-      //                         ),
-      //                       ),
-      //                     ],
-      //                   ),
-      //                 ],
-      //               ),
-      //               if (controller.suggestions.isNotEmpty)
-      //                 Positioned(
-      //                   left: 0,
-      //                   right: 0,
-      //                   top: 65, // Posisi dropdown di bawah TextField
-      //                   child: Material(
-      //                     elevation: 4,
-      //                     borderRadius: BorderRadius.circular(8),
-      //                     child: Container(
-      //                       height: 60.h * controller.suggestions.length,
-      //                       child: ListView.builder(
-      //                         itemCount: controller.suggestions.length,
-      //                         itemBuilder: (context, index) {
-      //                           final suggestion =
-      //                               controller.suggestions[index];
-      //                           return ListTile(
-      //                             title: Text(suggestion['nama_usaha'] ?? ''),
-      //                             subtitle: Text(
-      //                                 'NPWPD: ${suggestion['npwpd'] ?? ''}\nAlamat: ${suggestion['alamat_usaha'] ?? ''}'),
-      //                             onTap: () {
-      //                               controller.nama.text =
-      //                                   suggestion['nama_usaha']!;
-      //                               controller.npwpd.text =
-      //                                   suggestion['npwpd']!;
-      //                               controller.alamat.text =
-      //                                   suggestion['alamat_usaha']!;
-      //                               controller.removeSuggestList();
-      //                             },
-      //                           );
-      //                         },
-      //                       ),
-      //                     ),
-      //                   ),
-      //                 ),
-      //             ],
-      //           ));
-      //     },
-      //   ),
-      // ),
+                    if (controller.datalist.isEmpty) {
+                      return NoData(); //menampilkan lotties no data
+                    }
+
+                    if (controller.isLoading) {
+                      return ShimmerWidget.Items1();
+                    }
+                    return ListView.builder(
+                        physics: NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemCount: controller.datalist.length,
+                        itemBuilder: (context, index) {
+                          var datatitem = controller.datalist[index];
+                          String formatNop(String nopthn) {
+                            // Step 1: Remove the last 4 digits (the year) from nopthn
+
+                            // Step 2: Create formatted NOP as 'xx.xx.xxx.xxx.xxx.xxxx.x'
+                            String formattedNop =
+                                "${nopthn.substring(0, 2)}." // xx
+                                "${nopthn.substring(2, 4)}." // xx
+                                "${nopthn.substring(4, 7)}." // xxx
+                                "${nopthn.substring(7, 10)}." // xxx
+                                "${nopthn.substring(10, 13)}." // xxx
+                                "${nopthn.substring(13, 17)}."; // xxxx
+
+                            // Step 3: Add '0' at the end
+                            formattedNop += "0";
+
+                            return formattedNop;
+                          }
+
+                          return Slidable(
+                            key: const ValueKey(0),
+                            endActionPane: ActionPane(
+                              motion: ScrollMotion(),
+                              children: [
+                                SlidableAction(
+                                  onPressed: (context) {
+                                    getDefaultDialog().onConfirmWithoutIcon(
+                                      title: "Hapus Data Ini?",
+                                      desc:
+                                          "Apakah anda yakin ingin menghapus data ini ?",
+                                      handler: () {
+                                        //logInfo(datatitem.nop);
+                                        Get.back();
+                                        controller.hapusData(datatitem.nop);
+                                      },
+                                    );
+                                  },
+                                  backgroundColor:
+                                      Color.fromARGB(255, 115, 149, 196),
+                                  icon: Icons.delete,
+                                  label: 'HAPUS',
+                                ),
+                              ],
+                            ),
+                            child: InkWell(
+                              onTap: () {},
+                              child: Padding(
+                                  padding: EdgeInsetsDirectional.fromSTEB(
+                                      0, 0, 0, 1),
+                                  child: Container(
+                                    height: Get.height * 0.115,
+                                    decoration: BoxDecoration(
+                                      image: DecorationImage(
+                                          image: AssetImage(datatitem
+                                                      .statusPembayaranSppt !=
+                                                  ""
+                                              ? "assets/images/lunas.png"
+                                              : "assets/images/belum_bayar.png"),
+                                          fit: BoxFit.cover),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          blurRadius: 0,
+                                          color: Color(0xFFE0E3E7),
+                                          offset: Offset(0, 1),
+                                        )
+                                      ],
+                                    ),
+                                    child: Padding(
+                                      padding: EdgeInsetsDirectional.fromSTEB(
+                                          4, 0, 0, 0),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.max,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Container(
+                                            width: 15.w,
+                                            child: Stack(
+                                              alignment:
+                                                  AlignmentDirectional(0, 0),
+                                              children: [
+                                                Align(
+                                                  alignment:
+                                                      AlignmentDirectional(
+                                                          0, -0.6),
+                                                  child: Container(
+                                                    width: 12.w,
+                                                    height: 12.h,
+                                                    decoration: BoxDecoration(
+                                                      color: lightBlueColor,
+                                                      shape: BoxShape.circle,
+                                                    ),
+                                                  ),
+                                                ),
+                                                Row(
+                                                  mainAxisSize:
+                                                      MainAxisSize.max,
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    VerticalDivider(
+                                                      thickness: 2,
+                                                      color: lightBlueColor,
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding:
+                                                EdgeInsetsDirectional.fromSTEB(
+                                                    0, 12, 0, 0),
+                                            child: Container(
+                                              width: 35.w,
+                                              height: 35.h,
+                                              decoration: BoxDecoration(
+                                                color: Color(0xFF39D2C0),
+                                                shape: BoxShape.circle,
+                                              ),
+                                              child: Padding(
+                                                padding: EdgeInsetsDirectional
+                                                    .fromSTEB(2, 2, 2, 2),
+                                                child: ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(50),
+                                                  child: Image.asset(
+                                                    'assets/icon/pbb-icon.png',
+                                                    width: 90.w,
+                                                    height: 90.h,
+                                                    fit: BoxFit.contain,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          Expanded(
+                                            child: Padding(
+                                              padding: EdgeInsetsDirectional
+                                                  .fromSTEB(5, 10, 0, 1),
+                                              child: Column(
+                                                mainAxisSize: MainAxisSize.max,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Row(
+                                                    mainAxisSize:
+                                                        MainAxisSize.max,
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      Container(
+                                                        width: 300.w,
+                                                        height: 22.h,
+                                                        child: Stack(
+                                                          children: [
+                                                            Texts.caption(
+                                                                'Nama : ${datatitem.nama}'),
+                                                            Positioned(
+                                                              right: 1,
+                                                              child: Padding(
+                                                                padding:
+                                                                    EdgeInsetsDirectional
+                                                                        .fromSTEB(
+                                                                            8,
+                                                                            0,
+                                                                            0,
+                                                                            0),
+                                                                child:
+                                                                    Container(
+                                                                  color: Colors
+                                                                      .white,
+                                                                  child: Column(
+                                                                    crossAxisAlignment:
+                                                                        CrossAxisAlignment
+                                                                            .start,
+                                                                    children: [
+                                                                      Text(
+                                                                        'Tahun ',
+                                                                        style:
+                                                                            TextStyle(
+                                                                          fontFamily:
+                                                                              'Outfit',
+                                                                          color:
+                                                                              Color(0xFF39D2C0),
+                                                                          fontSize:
+                                                                              12.sp,
+                                                                          fontWeight:
+                                                                              FontWeight.bold,
+                                                                          height:
+                                                                              0.4,
+                                                                        ),
+                                                                      ),
+                                                                      Text(
+                                                                        '${datatitem.tahun}',
+                                                                        style:
+                                                                            TextStyle(
+                                                                          fontFamily:
+                                                                              'Outfit',
+                                                                          color:
+                                                                              Color(0xFF39D2C0),
+                                                                          fontSize:
+                                                                              14.sp,
+                                                                          fontWeight:
+                                                                              FontWeight.bold,
+                                                                          height:
+                                                                              1,
+                                                                        ),
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  Padding(
+                                                    padding:
+                                                        EdgeInsetsDirectional
+                                                            .fromSTEB(
+                                                                0, 0, 0, 0),
+                                                    child: Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Text(
+                                                          'NOP : ${formatNop(datatitem.nop)}',
+                                                          maxLines: 2,
+                                                          overflow:
+                                                              TextOverflow.clip,
+                                                          style: TextStyle(
+                                                            fontFamily:
+                                                                'Outfit',
+                                                            color: Color(
+                                                                0xFF57636C),
+                                                            fontSize: 11.sp,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .normal,
+                                                          ),
+                                                        ),
+                                                        Text(
+                                                          'Alamat : ${datatitem.alamat} }',
+                                                          maxLines: 2,
+                                                          overflow:
+                                                              TextOverflow.clip,
+                                                          style: TextStyle(
+                                                            fontFamily:
+                                                                'Outfit',
+                                                            color: Color(
+                                                                0xFF57636C),
+                                                            fontSize: 11.sp,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .normal,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  Divider(height: 5.h),
+                                                  Row(
+                                                    mainAxisSize:
+                                                        MainAxisSize.max,
+                                                    children: [
+                                                      Expanded(
+                                                        child: Text(
+                                                          "${datatitem.jumlahPajak}",
+                                                          maxLines: 1,
+                                                          overflow:
+                                                              TextOverflow.clip,
+                                                          style: TextStyle(
+                                                              fontFamily:
+                                                                  'Outfit',
+                                                              fontSize: 13.sp,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                              color: MainColor),
+                                                        ),
+                                                      ),
+                                                      Row(
+                                                        children: [
+                                                          Buttons
+                                                              .defaultButtonSm(
+                                                                  fillColor: datatitem
+                                                                              .statusPembayaranSppt !=
+                                                                          ""
+                                                                      ? lightBlueColor
+                                                                      : textLink,
+                                                                  handler:
+                                                                      () async {
+                                                                    controller
+                                                                        .showSyncProgressDialog();
+                                                                  },
+                                                                  title: datatitem
+                                                                              .statusPembayaranSppt !=
+                                                                          ""
+                                                                      ? 'Lunas'
+                                                                      : 'Belum Bayar'),
+                                                          Icon(
+                                                            Icons
+                                                                .chevron_right_rounded,
+                                                            color: Color(
+                                                                0xFF57636C),
+                                                            size: 24,
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  )),
+                            ),
+                          );
+                        });
+                  },
+                ),
+                Positioned(
+                  left: 16,
+                  bottom: 16,
+                  child: FloatingActionButton(
+                    heroTag: "fab1", // Hero tag unik
+                    child: Container(
+                      width: 60.w,
+                      height: 60.h,
+                      child: Icon(
+                        Icons.settings,
+                        size: 40,
+                      ),
+                      decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: LinearGradient(colors: gradientColor)),
+                    ),
+                    onPressed: () {
+                      controller.showBottomSheet(flag: "edit");
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        heroTag: "fab2", // Hero tag unik
+        child: Container(
+          width: 60.w,
+          height: 60.h,
+          child: Icon(
+            Icons.add,
+            size: 40,
+          ),
+          decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: LinearGradient(colors: gradientColor)),
+        ),
+        onPressed: () {
+          Get.toNamed(
+            Routes.EKITIRAN_FORM,
+            arguments: {
+              "rtModel": controller.rtModel,
+            },
+          );
+        },
+      ),
     );
   }
 }

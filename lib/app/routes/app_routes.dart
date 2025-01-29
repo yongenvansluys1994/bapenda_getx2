@@ -48,6 +48,7 @@ abstract class Routes {
   static const PBB = _Paths.PBB;
   static const QRISPBB = _Paths.QRISPBB;
   static const EKITIRAN = _Paths.EKITIRAN;
+  static const EKITIRAN_FORM = _Paths.EKITIRAN_FORM;
 }
 
 abstract class _Paths {
@@ -92,4 +93,5 @@ abstract class _Paths {
   static const PBB = '/pbb';
   static const QRISPBB = '/qrispbb';
   static const EKITIRAN = '/ekitiran';
+  static const EKITIRAN_FORM = '/ekitiran-form';
 }

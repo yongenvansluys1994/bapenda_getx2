@@ -2,12 +2,14 @@ import 'dart:convert';
 
 import 'package:bapenda_getx2/app/modules/chat/models/model_chat.dart';
 import 'package:bapenda_getx2/app/modules/chat/models/model_checkroom.dart';
+import 'package:bapenda_getx2/app/modules/ekitiran_form/models/pbbkitiran_model.dart';
 import 'package:bapenda_getx2/app/modules/kartunpwpd/models/model_kartudata.dart';
 import 'package:bapenda_getx2/app/modules/lapor_pajak/models/model_getpelaporanuser.dart';
 import 'package:bapenda_getx2/app/modules/lapor_pajak/models/model_objekku.dart';
 import 'package:bapenda_getx2/app/modules/myprofil/models/model_ads.dart';
 import 'package:bapenda_getx2/app/modules/notifikasi/models/model_notifikasi.dart';
 import 'package:bapenda_getx2/app/modules/pbb/models/model_pbb.dart';
+import 'package:bapenda_getx2/widgets/getdialog.dart';
 import 'package:bapenda_getx2/widgets/logger.dart';
 import 'package:dio/dio.dart';
 
@@ -16,7 +18,7 @@ const baseUrl = 'https://yongen-bisa.com/bapenda_app/api_ver2';
 const URL_APP = "https://yongen-bisa.com/bapenda_app/api_ver2";
 const URL_SIMPATDA = "http://simpatda.bontangkita.id/simpatda";
 const URL_APPSIMPATDA = "http://simpatda.bontangkita.id/api_ver2";
-const URL_SISMIOP = "https://dev-b.invinicsoft.com/sismiop/api";
+const URL_SISMIOP = "https://pajak.bontangkita.id/sismiop/api";
 const String ApiFCM =
     "AAAAB69wS5U:APA91bGHHGdo_FzlMJlzO0rc4SUPIMt10OZLqzT60DwVdIU_SSmYkDVu5LRofJR3u9_AS8_ptJ-S5dHIB-7BYWoOTrHUY-pe04UKfLDuAH1ezeY7ohWZalRdShAfJOchSVR9wDuusnnj";
 
@@ -72,8 +74,8 @@ Future<Map<String, dynamic>?> get_PBB(NOPTHN) async {
 
       // Extract the 'sppt' part as a list of objects
       List spptData = response.data["data"]["sppt"];
-      List<ModelPbbSppt> spptList =
-          spptData.map((e) => ModelPbbSppt.fromJson(e)).toList();
+      List<ModelPbbSpptKitiran> spptList =
+          spptData.map((e) => ModelPbbSpptKitiran.fromJson(e)).toList();
 
       // Return both in a map
       return {
@@ -84,6 +86,49 @@ Future<Map<String, dynamic>?> get_PBB(NOPTHN) async {
       };
     }
   } else {
+    return null;
+  }
+}
+
+Future<Map<String, dynamic>?> get_PBBNew(String NOP) async {
+  try {
+    var response = await dioSismiop.get(
+      "/informasi/wajib_pajak/$NOP",
+      options: Options(
+        headers: {
+          'Authorization':
+              'Basic ${base64Encode(utf8.encode('API_BPD_ETAM:API_BPD_ETAM'))}',
+        },
+      ),
+    );
+
+    if (response.statusCode == 200) {
+      var isError = response.data["is_error"];
+      var message = response.data["message"];
+
+      if (isError == true) {
+        return {"isError": isError, "message": message};
+      } else {
+        var informasiData = response.data["data"]["informasi"];
+        print(jsonEncode(informasiData));
+
+        if (informasiData is Map<String, dynamic>) {
+          var informasi = ModelPbbInformasi.fromJson(
+              informasiData); // Correctly parse the Map to the Model
+          return {
+            "isError": isError,
+            "informasi": informasi,
+            "message": message
+          };
+        } else {
+          print(
+              "Unexpected data type for 'informasi': ${informasiData.runtimeType}");
+        }
+      }
+    }
+    return null;
+  } catch (e) {
+    print("Exception: $e");
     return null;
   }
 }

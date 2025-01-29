@@ -13,10 +13,10 @@ class ModelPbbInformasi {
 
   factory ModelPbbInformasi.fromJson(Map<String, dynamic> json) {
     return ModelPbbInformasi(
-      namaWp: json['NM_WP_SPPT'],
-      alamatWp: json['ALM_WP'],
-      kelurahanWp: json['KELURAHAN_WP_SPPT'],
-      alamatOp: json['ALM_OP'],
+      namaWp: json['NM_WP_SPPT'] ?? '',
+      alamatWp: json['ALM_WP'] ?? '',
+      kelurahanWp: json['KELURAHAN_WP_SPPT'] ?? '',
+      alamatOp: json['ALM_OP'] ?? '',
     );
   }
 }

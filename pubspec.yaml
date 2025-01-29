@@ -52,6 +52,7 @@ dependencies:
   flutter_easyloading: ^3.0.5
   flutter_local_notifications: ^15.1.1
   flutter_screenutil: ^5.9.0
+  flutter_slidable: ^3.0.0
   font_awesome_flutter: ^10.5.0
   get: ^4.6.5
   get_storage: ^2.1.1
@@ -69,6 +70,7 @@ dependencies:
   open_filex: ^4.3.4
   open_store: ^0.5.0
   open_street_map_search_and_pick: ^0.1.0
+  path_provider: ^2.0.14
   pdf: ^3.10.4
   permission_handler: ^11.0.0
   photo_view: ^0.14.0
@@ -93,6 +95,7 @@ dev_dependencies:
 # The following section is specific to Flutter packages.
 flutter:
   assets:
+    - assets/models/
     - assets/images/
     - assets/icon/
     - assets/lottie/
