@@ -1,5 +1,5 @@
 // ignore_for_file: constant_identifier_names
-const int currentversion = 38;
+const int currentversion = 39;
 const int dataPBBVersion = 4; //RT update data Informasi PBB
 const String tahun_pbb = "2025";
 const String projectId = "bapendagetx";
