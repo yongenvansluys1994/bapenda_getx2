@@ -2,12 +2,16 @@ class ModelPbbInformasi {
   final String namaWp;
   final String alamatWp;
   final String kelurahanWp;
+  final String kecamatanOp;
+  final String kelurahanOp;
   final String alamatOp;
 
   ModelPbbInformasi({
     required this.namaWp,
     required this.alamatWp,
     required this.kelurahanWp,
+    required this.kecamatanOp,
+    required this.kelurahanOp,
     required this.alamatOp,
   });
 
@@ -16,6 +20,8 @@ class ModelPbbInformasi {
       namaWp: json['NM_WP_SPPT'] ?? '',
       alamatWp: json['ALM_WP'] ?? '',
       kelurahanWp: json['KELURAHAN_WP_SPPT'] ?? '',
+      kecamatanOp: json['KECAMATAN_OP'] ?? '',
+      kelurahanOp: json['KELURAHAN_OP'] ?? '',
       alamatOp: json['ALM_OP'] ?? '',
     );
   }

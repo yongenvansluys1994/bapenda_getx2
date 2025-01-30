@@ -20,6 +20,8 @@ class PbbController extends GetxController {
     namaWp: '',
     alamatWp: '',
     kelurahanWp: '',
+    kecamatanOp: '',
+    kelurahanOp: '',
     alamatOp: '',
   ).obs;
   bool isError = false;

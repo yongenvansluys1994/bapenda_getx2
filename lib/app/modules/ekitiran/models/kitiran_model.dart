@@ -15,6 +15,9 @@ class ModelKitiran {
   String nop;
   String nama;
   String alamat;
+  String kecamatanOp;
+  String kelurahanOp;
+  String alamatOp;
   String tahun;
   String jumlahPajak;
   String statusPembayaranSppt;
@@ -30,6 +33,9 @@ class ModelKitiran {
     required this.nop,
     required this.nama,
     required this.alamat,
+    required this.kecamatanOp,
+    required this.kelurahanOp,
+    required this.alamatOp,
     required this.tahun,
     required this.jumlahPajak,
     required this.statusPembayaranSppt,
@@ -46,13 +52,15 @@ class ModelKitiran {
         nop: json["nop"],
         nama: json["nama"],
         alamat: json["alamat"],
+        kecamatanOp: json["kecamatan_op"] ?? '',
+        kelurahanOp: json["kelurahan_op"] ?? '',
+        alamatOp: json["alamat_op"] ?? '',
         tahun: json["tahun"],
         jumlahPajak: json["jumlah_pajak"],
         statusPembayaranSppt: json["status_pembayaran_sppt"],
         keterangan: json["keterangan"],
         tglBayar: DateTime.parse(json["tgl_bayar"]),
         bukti: json["bukti"],
-        // Periksa apakah datetime null sebelum parse
         datetime:
             json["datetime"] != null ? DateTime.parse(json["datetime"]) : null,
         isSynced: json["isSynced"],
@@ -64,13 +72,15 @@ class ModelKitiran {
         "nop": nop,
         "nama": nama,
         "alamat": alamat,
+        "kecamatan_op": kecamatanOp,
+        "kelurahan_op": kelurahanOp,
+        "alamat_op": alamatOp,
         "tahun": tahun,
         "jumlah_pajak": jumlahPajak,
         "status_pembayaran_sppt": statusPembayaranSppt,
         "keterangan": keterangan,
         "tgl_bayar": tglBayar.toIso8601String(),
         "bukti": bukti,
-        // Gunakan ?. untuk mencegah error jika datetime null
         "datetime": datetime?.toIso8601String(),
         "isSynced": isSynced,
       };

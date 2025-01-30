@@ -11,11 +11,13 @@ import 'package:bapenda_getx2/widgets/dismiss_keyboard.dart';
 import 'package:bapenda_getx2/widgets/easythrottle.dart';
 import 'package:bapenda_getx2/widgets/getdialog.dart';
 import 'package:bapenda_getx2/widgets/logger.dart';
+import 'package:bapenda_getx2/widgets/shimmer.dart';
 import 'package:bapenda_getx2/widgets/snackbar.dart';
 import 'package:bapenda_getx2/widgets/text_fields.dart';
 import 'package:bapenda_getx2/widgets/texts.dart';
 import 'package:bapenda_getx2/widgets/theme/app_theme.dart';
 import 'package:bapenda_getx2/widgets/topline_bottomsheet.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -25,6 +27,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:connectivity/connectivity.dart';
+import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 
 class EkitiranController extends GetxController {
@@ -469,6 +472,7 @@ class EkitiranController extends GetxController {
 
           // Simpan ke GetStorage
           storage.write('user_rt', rtModel.toJson());
+          FetchKitiran(rtModel.kelurahan, rtModel.rt);
           logInfo(
               "Updated user_rt in GetStorage: ${jsonEncode(storage.read('user_rt'))}");
 
@@ -911,7 +915,7 @@ class EkitiranController extends GetxController {
           mainAxisSize: MainAxisSize.min,
           children: [
             Texts.caption(
-                "Terhubung ke Internet! sedang Sinkronisasi data ke database online, Mohon Tunggu beberapa saat",
+                "Terhubung ke Internet! sedang Sinkronisasi data ke database online, Mohon Tunggu & jangan menutup Aplikasi sampai proses Selesai",
                 textAlign: TextAlign.center,
                 maxLines: 3),
             SizedBox(height: 10),
@@ -1084,5 +1088,269 @@ class EkitiranController extends GetxController {
     } else {
       print("Tidak ada data PBB di GetStorage.");
     }
+  }
+
+  void GetDetailSPPT(ModelKitiran itemSPPT) {
+    Get.defaultDialog(
+      title: "Detail SPPT",
+      radius: 12.r,
+      titlePadding: EdgeInsets.zero,
+      content: Container(
+        child: Column(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                color: Color.fromARGB(255, 230, 230, 230),
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(10.w),
+                    topRight: Radius.circular(10.w)),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.all(4.w),
+                    child: Container(
+                      width: 115.w,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Texts.captionXs2(
+                            "NAMA PEMILIK :",
+                            isBold: true,
+                            color: Color.fromARGB(255, 71, 80, 90),
+                          ),
+                          Texts.captionXs2(
+                            maxLines: 2,
+                            "${itemSPPT.nama}",
+                            color: Color.fromARGB(255, 59, 59, 59),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 0.5.w),
+                  Padding(
+                    padding: EdgeInsets.all(4.w),
+                    child: Container(
+                      width: 115.w,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Texts.captionXs2(
+                            "NOP :",
+                            isBold: true,
+                            color: Color.fromARGB(255, 71, 80, 90),
+                          ),
+                          Texts.captionXs2(
+                            "${itemSPPT.nop}",
+                            color: Color.fromARGB(255, 59, 59, 59),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              decoration:
+                  BoxDecoration(color: Color.fromARGB(255, 248, 248, 248)),
+              child: Row(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.all(4.w),
+                    child: Container(
+                      width: 230.w,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Texts.captionXs2(
+                            "ALAMAT PEMILIK :",
+                            isBold: true,
+                            color: Color.fromARGB(255, 71, 80, 90),
+                          ),
+                          Texts.captionXs2(
+                            "${itemSPPT.alamat}",
+                            color: Color.fromARGB(255, 59, 59, 59),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              decoration: BoxDecoration(
+                color: Color.fromARGB(255, 230, 230, 230),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.all(4.w),
+                    child: Container(
+                      width: 115.w,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Texts.captionXs2(
+                            "KECAMATAN OBJEK",
+                            isBold: true,
+                            color: Color.fromARGB(255, 71, 80, 90),
+                          ),
+                          Texts.captionXs2(
+                            "${itemSPPT.kecamatanOp}",
+                            color: Color.fromARGB(255, 59, 59, 59),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 0.5.w),
+                  Padding(
+                    padding: EdgeInsets.all(4.w),
+                    child: Container(
+                      width: 115.w,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Texts.captionXs2(
+                            "KELURAHAN OBJEK",
+                            isBold: true,
+                            color: Color.fromARGB(255, 71, 80, 90),
+                          ),
+                          Texts.captionXs2(
+                            "${itemSPPT.kelurahanOp}",
+                            color: Color.fromARGB(255, 59, 59, 59),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              decoration:
+                  BoxDecoration(color: Color.fromARGB(255, 248, 248, 248)),
+              child: Row(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.all(4.w),
+                    child: Container(
+                      width: 230.w,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Texts.captionXs2(
+                            "ALAMAT OBJEK :",
+                            isBold: true,
+                            color: Color.fromARGB(255, 71, 80, 90),
+                          ),
+                          Texts.captionXs2(
+                            "${itemSPPT.alamatOp}",
+                            color: Color.fromARGB(255, 59, 59, 59),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              decoration: BoxDecoration(
+                color: Color.fromARGB(255, 230, 230, 230),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.all(4.w),
+                    child: Container(
+                      width: 115.w,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Texts.captionXs2(
+                            "JML PAJAK",
+                            isBold: true,
+                            color: Color.fromARGB(255, 71, 80, 90),
+                          ),
+                          Texts.captionXs2(
+                            "${NumberFormat.currency(locale: 'id', symbol: 'Rp. ', decimalDigits: 0).format(int.parse(itemSPPT.jumlahPajak.toString() == '' ? '0' : itemSPPT.jumlahPajak.toString()))}",
+                            color: Color.fromARGB(255, 59, 59, 59),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 0.5.w),
+                  Padding(
+                    padding: EdgeInsets.all(4.w),
+                    child: Container(
+                      width: 115.w,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Texts.captionXs2(
+                            "STATUS BAYAR :",
+                            isBold: true,
+                            color: Color.fromARGB(255, 71, 80, 90),
+                          ),
+                          Texts.captionXs2(
+                            "${itemSPPT.isSynced}",
+                            color: Color.fromARGB(255, 59, 59, 59),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 5.h),
+            itemSPPT.isSynced == true
+                ? ClipRRect(
+                    borderRadius: BorderRadius.circular(
+                        8.0), // opsional, untuk sudut membulat
+                    child: CachedNetworkImage(
+                      imageUrl:
+                          "${URL_APPSIMPATDA}/upload_bukti_kitiran/${itemSPPT.bukti}",
+                      width: 210.w,
+                      height: 150.h,
+                      fit: BoxFit.contain, // Atur ini sesuai kebutuhan
+                      placeholder: (context, url) => ShimmerWidget.rectangular(
+                        width: 210.w,
+                        height: 150.h,
+                        baseColor: shadowColor,
+                      ),
+                      errorWidget: (context, url, error) => Image.asset(
+                        'images/image.png',
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                  )
+                : SizedBox(),
+          ],
+        ),
+      ),
+      actions: [
+        SizedBox(
+          width: 80.w,
+          child: Buttons.gradientButton(
+            handler: () {
+              Get.back();
+            },
+            widget: Texts.button("Ok"),
+            borderSide: false,
+            gradient: [Colors.cyan, Colors.indigo],
+          ),
+        ),
+      ],
+    );
   }
 }

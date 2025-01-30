@@ -35,6 +35,8 @@ class EkitiranFormController extends GetxController {
   final TextEditingController jumlah_pajak = TextEditingController();
   final TextEditingController alamat_wp = TextEditingController();
   final TextEditingController kelurahan_wp = TextEditingController();
+  final TextEditingController kecamatan_op = TextEditingController();
+  final TextEditingController kelurahan_op = TextEditingController();
   final TextEditingController alamat_op = TextEditingController();
 
   String ket_loading = "Sedang Memproses";
@@ -50,6 +52,8 @@ class EkitiranFormController extends GetxController {
     namaWp: '',
     alamatWp: '',
     kelurahanWp: '',
+    kecamatanOp: '',
+    kelurahanOp: '',
     alamatOp: '',
   ).obs;
 
@@ -113,9 +117,11 @@ class EkitiranFormController extends GetxController {
 
           // Jika Anda ingin mengisi ke TextEditingController juga, lakukan ini:
           nama_wp.text = informasi.namaWp;
-          alamat_op.text = informasi.alamatOp;
           alamat_wp.text = informasi.alamatWp;
           kelurahan_wp.text = informasi.kelurahanWp;
+          kecamatan_op.text = informasi.kecamatanOp;
+          kelurahan_op.text = informasi.kelurahanOp;
+          alamat_op.text = informasi.alamatOp;
           isEmpty = false;
           dismissKeyboard();
         }
@@ -165,16 +171,20 @@ class EkitiranFormController extends GetxController {
         // Map data ke model
         dataInformasi.value = ModelPbbInformasi(
           namaWp: matchedData["NM_WP_SPPT"],
-          alamatOp: matchedData["ALM_OP"],
           alamatWp: matchedData["ALM_WP"],
           kelurahanWp: matchedData["KELURAHAN_WP_SPPT"],
+          kecamatanOp: matchedData["KECAMATAN_OP"],
+          kelurahanOp: matchedData["KELURAHAN_OP"],
+          alamatOp: matchedData["ALM_OP"],
         );
 
         // Isi field UI
         nama_wp.text = dataInformasi.value.namaWp;
-        alamat_op.text = dataInformasi.value.alamatOp;
         alamat_wp.text = dataInformasi.value.alamatWp;
         kelurahan_wp.text = dataInformasi.value.kelurahanWp;
+        alamat_op.text = dataInformasi.value.alamatOp;
+        kecamatan_op.text = dataInformasi.value.kecamatanOp;
+        kelurahan_op.text = dataInformasi.value.kecamatanOp;
         jumlah_pajak.text = "0";
 
         isEmpty = false;
@@ -231,6 +241,9 @@ class EkitiranFormController extends GetxController {
         nop: cleanedNOP,
         nama: nama_wp.text,
         alamat: alamat_op.text,
+        kecamatanOp: kecamatan_op.text,
+        kelurahanOp: kelurahan_op.text,
+        alamatOp: alamat_op.text,
         tahun: tahun_pbb,
         jumlahPajak: '', // Nilai default
         statusPembayaranSppt: '', // Nilai default
@@ -313,6 +326,9 @@ class EkitiranFormController extends GetxController {
     request.fields['nop'] = '${cleanedNOP}';
     request.fields['nama'] = '${nama_wp.text}';
     request.fields['alamat'] = '${alamat_op.text}';
+    request.fields['kecamatan_op'] = '${kecamatan_op.text}';
+    request.fields['kelurahan_op'] = '${kelurahan_op.text}';
+    request.fields['alamat_op'] = '${alamat_op.text}';
     request.fields['tahun'] = '${tahun_pbb}';
     request.fields['jumlah_pajak'] = '';
     request.fields['status_pembayaran_sppt'] = '';

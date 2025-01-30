@@ -351,7 +351,8 @@ class EkitiranView extends GetView<EkitiranController> {
                                                                   handler:
                                                                       () async {
                                                                     controller
-                                                                        .showSyncProgressDialog();
+                                                                        .GetDetailSPPT(
+                                                                            datatitem);
                                                                   },
                                                                   title: datatitem
                                                                               .statusPembayaranSppt !=

@@ -39,6 +39,7 @@ class EkitiranFormView extends GetView<EkitiranFormController> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               SizedBox(
                                 width: 245.w,
@@ -143,6 +144,7 @@ class EkitiranFormView extends GetView<EkitiranFormController> {
 
                           //TextField atau widget lainnya di bawah
                           Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               SizedBox(
                                 width: 185,
@@ -158,7 +160,6 @@ class EkitiranFormView extends GetView<EkitiranFormController> {
                                   validator: true,
                                 ),
                               ),
-                              SizedBox(width: 5.w),
                               SizedBox(
                                 width: 185,
                                 child: TextFields.defaultTextField2(
@@ -176,6 +177,17 @@ class EkitiranFormView extends GetView<EkitiranFormController> {
                             ],
                           ),
                           TextFields.defaultTextField2(
+                            title: "ALAMAT PEMILIK",
+                            controller: controller.alamat_wp,
+                            readOnly: true,
+                            isLoading: controller.isLoading,
+                            textInputAction: TextInputAction.next,
+                            textInputType: TextInputType.multiline,
+                            // prefixIcon: Icons.contact_emergency,
+                            borderColor: primaryColor,
+                            validator: true,
+                          ),
+                          TextFields.defaultTextField2(
                             title: "ALAMAT OBJEK PAJAK",
                             controller: controller.alamat_op,
                             readOnly: true,
@@ -187,12 +199,13 @@ class EkitiranFormView extends GetView<EkitiranFormController> {
                             validator: true,
                           ),
                           Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               SizedBox(
                                 width: 185,
                                 child: TextFields.defaultTextField2(
-                                  title: "ALAMAT WAJIB PAJAK",
-                                  controller: controller.alamat_wp,
+                                  title: "KECAMATAN OBJEK",
+                                  controller: controller.kecamatan_op,
                                   readOnly: true,
                                   isLoading: controller.isLoading,
                                   textInputAction: TextInputAction.next,
@@ -202,20 +215,11 @@ class EkitiranFormView extends GetView<EkitiranFormController> {
                                   validator: true,
                                 ),
                               ),
-                              SizedBox(width: 5.w),
                               SizedBox(
                                 width: 185,
                                 child: TextFields.defaultTextField2(
-                                  title: "JUMLAH PBB + DENDA",
-                                  controller: controller.jumlah_pajak
-                                    ..text = NumberFormat.currency(
-                                      locale: 'id',
-                                      symbol: 'Rp. ',
-                                      decimalDigits: 0,
-                                    ).format(int.tryParse(controller
-                                            .jumlah_pajak.text
-                                            .replaceAll(RegExp(r'\D'), '')) ??
-                                        0),
+                                  title: "KELURAHAN OBJEK",
+                                  controller: controller.kelurahan_op,
                                   readOnly: true,
                                   isLoading: controller.isLoading,
                                   textInputAction: TextInputAction.next,
@@ -227,7 +231,6 @@ class EkitiranFormView extends GetView<EkitiranFormController> {
                               ),
                             ],
                           ),
-
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
