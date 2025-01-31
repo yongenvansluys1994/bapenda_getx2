@@ -18,7 +18,7 @@ const baseUrl = 'https://yongen-bisa.com/bapenda_app/api_ver2';
 const URL_APP = "https://yongen-bisa.com/bapenda_app/api_ver2";
 const URL_SIMPATDA = "http://simpatda.bontangkita.id/simpatda";
 const URL_APPSIMPATDA = "http://simpatda.bontangkita.id/api_ver2";
-const URL_SISMIOP = "https://pajak.bontangkita.id/sismiop/api";
+const URL_SISMIOP = " https://dev-b.invinicsoft.com/sismiop/api";
 const String ApiFCM =
     "AAAAB69wS5U:APA91bGHHGdo_FzlMJlzO0rc4SUPIMt10OZLqzT60DwVdIU_SSmYkDVu5LRofJR3u9_AS8_ptJ-S5dHIB-7BYWoOTrHUY-pe04UKfLDuAH1ezeY7ohWZalRdShAfJOchSVR9wDuusnnj";
 
@@ -58,7 +58,8 @@ final Dio dioSismiop = Dio(
 );
 
 Future<Map<String, dynamic>?> get_PBB(NOPTHN) async {
-  var response = await dioSismiop.get("/informasi/piutang/$NOPTHN");
+  var response =
+      await dioSismiop.get("/informasi/piutang/64.74.010.001.006.1565.0");
 
   if (response.statusCode == 200) {
     // Extract the 'informasi' part as a single object

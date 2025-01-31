@@ -115,7 +115,7 @@ class PbbView extends GetView<PbbController> {
                             onPressed: () {
                               easyThrottle(
                                 handler: () {
-                                  controller.FetchData();
+                                  controller.fetchData();
                                 },
                               );
                             }),

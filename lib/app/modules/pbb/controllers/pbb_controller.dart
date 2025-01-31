@@ -9,6 +9,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+import 'package:http/http.dart' as http;
 
 class PbbController extends GetxController {
   String ket_loading = "Sedang Memproses";
@@ -39,54 +40,42 @@ class PbbController extends GetxController {
     super.onInit();
   }
 
-  Future<void> FetchData() async {
+  Future<void> fetchData() async {
+    isLoading = true;
+    isError = false;
+    update();
+
+    final String url =
+        'https://dev-b.invinicsoft.com/sismiop/api/informasi/piutang/${nop.text}';
     try {
-      isLoading = true;
-      EasyLoading.show(status: "Mencari Data");
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> jsonData = json.decode(response.body);
 
-      final datauser = await get_PBB(nop.text); // Fetch data from API
+        if (!jsonData['is_error']) {
+          dataInformasi.value =
+              ModelPbbInformasi.fromJson(jsonData['data']['informasi']);
 
-      if (datauser == null) {
-        isFailed = true;
-      } else if (datauser.isEmpty) {
-        isEmpty = true;
-      } else {
-        // Now no need for the '!' operator since dataInformasi is always initialized
-        EasyLoading.dismiss();
-        if (datauser["isError"]) {
-          isError = datauser["isError"];
-          message = datauser["message"];
-          datalist.clear();
-          getDefaultDialog().onFix(
-              title: message,
-              desc: "Isi kembali kolom pencarian NOP dengan benar",
-              kategori: "warning");
+          List<ModelPbbSppt> tempList = (jsonData['data']['sppt'] as List)
+              .map((sppt) => ModelPbbSppt.fromJson(sppt))
+              .toList();
+
+          datalist.value = tempList;
+          message = jsonData['message'];
         } else {
-          EasyLoading.showSuccess("Data NOP ditemukan!");
-          isError = datauser["isError"];
-          message = datauser["message"];
-          dataInformasi.value = datauser["informasi"] as ModelPbbInformasi;
-
-          datalist.clear();
-          datalist.addAll(datauser["sppt"] as List<ModelPbbSppt>);
-
-          isEmpty = false;
+          isError = true;
+          message = jsonData['message'] ?? "Terjadi kesalahan.";
         }
-      }
-
-      isLoading = false;
-      update(); // Notify GetX to update UI
-    } on DioError catch (ex) {
-      var errorMessage = "";
-      if (ex.type == DioErrorType.connectionTimeout ||
-          ex.type == DioErrorType.connectionError ||
-          ex.type == DioErrorType.receiveTimeout ||
-          ex.type == DioErrorType.sendTimeout) {
-        errorMessage = "Limit Connection, Koneksi anda bermasalah";
       } else {
-        errorMessage = "$ex";
+        isError = true;
+        message = "Gagal terhubung ke server. Kode: ${response.statusCode}";
       }
-      update(); // Update the UI with error state
+    } catch (e) {
+      isError = true;
+      message = "Kesalahan koneksi: $e";
+    } finally {
+      isLoading = false;
+      update();
     }
   }
 
