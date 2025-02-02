@@ -29,6 +29,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as path;
 
 class EkitiranController extends GetxController {
   late RTModel rtModel;
@@ -52,8 +53,6 @@ class EkitiranController extends GetxController {
   final TextEditingController userrt_kecamatan = TextEditingController();
   final TextEditingController userrt_kelurahan = TextEditingController();
   final TextEditingController userrt_rt = TextEditingController();
-
-  XFile? imageFile = null;
 
   final List<String> kecamatanList = [
     'Bontang Utara',
@@ -116,7 +115,7 @@ class EkitiranController extends GetxController {
           logInfo("kitiran_pbb kosong, melakukan fetch dari API");
           await FetchKitiran(rtModel.kelurahan, rtModel.rt); // Fetch dari API
         } else {
-          syncAndFetchData();
+          syncAndFetchKitiran();
         }
       } else {
         logInfo("Belum punya akun RT");
@@ -147,7 +146,7 @@ class EkitiranController extends GetxController {
     }
   }
 
-  Future<void> syncAndFetchData() async {
+  Future<void> syncAndFetchKitiran() async {
     try {
       // Ambil semua data dari GetX Storage
       List<ModelKitiran> kitiranList =
@@ -155,7 +154,7 @@ class EkitiranController extends GetxController {
               .map((e) => ModelKitiran.fromJson(e))
               .toList();
       logInfo(jsonEncode(kitiranList));
-      // Filter data yang belum tersinkronisasi
+      // Filter data yang belum tersinkronisasi/isSynced is False
       List<ModelKitiran> unsyncedData =
           kitiranList.where((item) => !item.isSynced).toList();
 
@@ -168,7 +167,7 @@ class EkitiranController extends GetxController {
       // Buat daftar untuk menampung data hasil sinkronisasi dari server
       List<ModelKitiran> syncedData = [];
 
-      //jalankan loading progress
+      //jalankan loading progress sesuai jumlah row Kitiran
       showSyncProgressDialog();
 
       final int totalData = unsyncedData.length;
@@ -184,6 +183,9 @@ class EkitiranController extends GetxController {
         request.fields['nop'] = item.nop;
         request.fields['nama'] = item.nama;
         request.fields['alamat'] = item.alamat;
+        request.fields['kecamatan_op'] = '${item.kecamatanOp}';
+        request.fields['kelurahan_op'] = '${item.kelurahanOp}';
+        request.fields['alamat_op'] = '${item.alamatOp}';
         request.fields['tahun'] = item.tahun;
         request.fields['jumlah_pajak'] = item.jumlahPajak;
         request.fields['status_pembayaran_sppt'] = item.statusPembayaranSppt;
@@ -192,8 +194,24 @@ class EkitiranController extends GetxController {
 
         // Tambahkan file bukti jika ada
         if (item.bukti.isNotEmpty) {
-          var pic = await http.MultipartFile.fromPath("image", item.bukti);
-          request.files.add(pic);
+          logInfo("Proses Upload Bukti Kitiran ke Server");
+          var file = File(item.bukti);
+
+          if (await file.exists()) {
+            var pic = await http.MultipartFile.fromPath("image", item.bukti);
+            request.files.add(pic);
+          } else {
+            // Ambil nama file dari item.bukti
+            String fileName = path.basename(item.bukti);
+
+            // Gunakan nama file yang sama meskipun file tidak ditemukan
+            var dummyFile = http.MultipartFile.fromString(
+              "image",
+              "",
+              filename: fileName,
+            );
+            request.files.add(dummyFile);
+          }
         }
 
         // Kirim request
@@ -206,25 +224,29 @@ class EkitiranController extends GetxController {
         var data = json.decode(responseBody);
 
         if (response.statusCode == 200 && data['success'] != null) {
+          //hapus cache image
+          final fileName = path.basename(item.bukti);
+          clearImagePickerCache(fileName);
           print("Data dengan NOP ${item.nop} berhasil disinkronisasi.");
+          logInfo(jsonEncode(data['data']));
 
           // Hapus file gambar setelah berhasil sync
-          if (item.bukti.isNotEmpty) {
-            try {
-              File file = File(item.bukti);
-              if (await file.exists()) {
-                await file.delete();
-                print("File gambar ${item.bukti} berhasil dihapus.");
-              }
-            } catch (e) {
-              print("Gagal menghapus file gambar: $e");
-            }
-          }
+          // if (item.bukti.isNotEmpty) {
+          //   try {
+          //     File file = File(item.bukti);
+          //     if (await file.exists()) {
+          //       await file.delete();
+          //       print("File gambar ${item.bukti} berhasil dihapus.");
+          //     }
+          //   } catch (e) {
+          //     print("Gagal menghapus file gambar: $e");
+          //   }
+          // }
 
           // Tambahkan data yang berhasil disinkronisasi ke daftar hasil sinkronisasi
           if (data['data'] != null && data['data'] is List) {
             List<dynamic> serverData = data['data'];
-            logInfo(jsonEncode(serverData));
+            //logInfo(jsonEncode(serverData));
             for (var serverItem in serverData) {
               ModelKitiran model = ModelKitiran.fromJson(serverItem);
 
@@ -257,41 +279,61 @@ class EkitiranController extends GetxController {
         'kitiran_pbb',
         updatedList.map((e) => e.toJson()).toList(),
       );
-      FetchKitiranOffline();
+      FetchKitiranOffline(); // fetch ulang Ekitiran dari getx Storage
       update();
 
       print("Data berhasil diperbarui di GetX Storage.");
     } catch (e) {
-      print("Error saat sinkronisasi: $e");
+      Get.defaultDialog(content: Text("$e"));
     }
   }
 
   Future FetchKitiran(kelurahan, rt) async {
+    EasyLoading.show(
+        status: "Sedang Memuat Data Kitiran",
+        maskType: EasyLoadingMaskType.clear);
+    datalist.clear();
+
     if (isLoading) return;
+
     const limit = 18;
     final url = Uri.parse(
-        '${URL_APPSIMPATDA}/ekitiran/kitiran_list.php?kelurahan=$kelurahan&rt=$rt');
-    final response = await http.get(url);
+        '${URL_APPSIMPATDA}/ekitiran/kitiran_list.php?kelurahan=$kelurahan&rt=$rt&tahun=$tahun_pbb');
 
-    if (response.statusCode == 200) {
-      List newItems =
-          (json.decode(response.body) as Map<String, dynamic>)["data"];
-      final list =
-          newItems.map<ModelKitiran>((json) => ModelKitiran.fromJson(json));
-      page++;
-      isLoading = false;
+    try {
+      final response = await http.get(url);
 
-      if (newItems.length < limit) {
-        hasMore = false;
-        update();
+      if (response.statusCode == 200) {
+        List newItems =
+            (json.decode(response.body) as Map<String, dynamic>)["data"];
+        final list =
+            newItems.map<ModelKitiran>((json) => ModelKitiran.fromJson(json));
+        page++;
+        isLoading = false;
+
+        if (newItems.length < limit) {
+          hasMore = false;
+          update();
+        }
+
+        datalist.addAll(list);
+
+        // Simpan hasil fetch ke GetStorage
+        storage.write('kitiran_pbb', datalist.map((e) => e.toJson()).toList());
+        logInfo(
+            "Data kitiran_pbb disimpan ke storage: ${datalist.length} items");
+      } else {
+        logError(
+            "Gagal memuat data Kitiran: ${response.statusCode} - ${response.reasonPhrase}");
+        EasyLoading.showError("Gagal memuat data (${response.statusCode})");
       }
-
-      datalist.addAll(list);
-
-      // Simpan hasil fetch ke GetStorage
-      storage.write('kitiran_pbb', datalist.map((e) => e.toJson()).toList());
-      logInfo("Data kitiran_pbb disimpan ke storage: ${datalist.length} items");
-
+      EasyLoading.dismiss();
+    } catch (error) {
+      logError("Terjadi kesalahan: $error");
+      EasyLoading.showError("Terjadi kesalahan saat memuat data.");
+    } finally {
+      isLoading = false;
+      EasyLoading.dismiss();
       update();
     }
   }
@@ -316,11 +358,14 @@ class EkitiranController extends GetxController {
   }
 
   void refreshData(kelurahan, rt) async {
+    EasyLoading.show(
+        status: "Sedang Memuat Data Kitiran",
+        maskType: EasyLoadingMaskType.clear);
     datalist.clear();
 
     // Ambil data dari API
     final url = Uri.parse(
-        '${URL_APPSIMPATDA}/ekitiran/kitiran_list.php?kelurahan=$kelurahan&rt=$rt');
+        '${URL_APPSIMPATDA}/ekitiran/kitiran_list.php?kelurahan=$kelurahan&rt=$rt&tahun=$tahun_pbb');
     final response = await http.get(url);
 
     List newItems =
@@ -346,87 +391,9 @@ class EkitiranController extends GetxController {
       "kitiran_pbb",
       combinedMap.values.map((e) => e.toJson()).toList(),
     );
-
+    EasyLoading.dismiss();
     isLoading = false;
     update();
-  }
-
-  Future<void> showChoiceDialog(BuildContext context) {
-    return showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text(
-              "Pilih Opsi",
-              style: TextStyle(color: Colors.blue),
-            ),
-            content: Container(
-              decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(6),
-                  boxShadow: [
-                    BoxShadow(
-                        blurRadius: 10,
-                        offset: Offset(8, 6),
-                        color: lightGreenColor.withOpacity(0.3)),
-                    BoxShadow(
-                        blurRadius: 10,
-                        offset: Offset(-1, -5),
-                        color: lightGreenColor.withOpacity(0.3))
-                  ]),
-              child: SingleChildScrollView(
-                child: ListBody(
-                  children: [
-                    Divider(
-                      height: 1,
-                      color: Colors.blue,
-                    ),
-                    ListTile(
-                      onTap: () {
-                        _openGallery(context);
-                      },
-                      title: Text("Gallery"),
-                      leading: Icon(
-                        Icons.account_box,
-                        color: Colors.blue,
-                      ),
-                    ),
-                    Divider(
-                      height: 1,
-                      color: Colors.blue,
-                    ),
-                    ListTile(
-                      onTap: () {
-                        _openCamera(context);
-                      },
-                      title: Text("Camera"),
-                      leading: Icon(
-                        Icons.camera,
-                        color: Colors.blue,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          );
-        });
-  }
-
-  void _openGallery(BuildContext context) async {
-    final pickedFile =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
-    imageFile = pickedFile!;
-    update();
-    Get.back();
-  }
-
-  void _openCamera(BuildContext context) async {
-    final pickedFile =
-        await ImagePicker().pickImage(source: ImageSource.camera);
-    imageFile = pickedFile!;
-    update();
-    Get.back();
   }
 
   void SimpanDataAkunRT() {
@@ -436,14 +403,14 @@ class EkitiranController extends GetxController {
       kategori: "warning",
       handler: () {
         Get.back();
-        ProsesData();
+        ProsesDataRT();
         update();
       },
     );
   }
 
-  Future<void> ProsesData() async {
-    EasyLoading.show();
+  Future<void> ProsesDataRT() async {
+    EasyLoading.show(maskType: EasyLoadingMaskType.clear);
     bool isConnected = await isInternetConnected();
 
     if (isConnected) {
@@ -471,12 +438,12 @@ class EkitiranController extends GetxController {
           );
 
           // Simpan ke GetStorage
-          storage.write('user_rt', rtModel.toJson());
+          await storage.write('user_rt', rtModel.toJson());
           FetchKitiran(rtModel.kelurahan, rtModel.rt);
           logInfo(
-              "Updated user_rt in GetStorage: ${jsonEncode(storage.read('user_rt'))}");
+              "Updated user_rt in GetStorage with Internet: ${jsonEncode(storage.read('user_rt'))}");
 
-          Get.back();
+          Get.back(); // tutup bottomsheet data RT
           RawSnackbar_bottom(
             message: "${data['success']}",
             kategori: "success",
@@ -489,7 +456,9 @@ class EkitiranController extends GetxController {
             duration: 3,
           );
         }
+        EasyLoading.dismiss();
       } catch (e) {
+        EasyLoading.dismiss();
         logError("Error during API request: $e");
         RawSnackbar_top(
           message: "Terjadi gangguan jaringan.",
@@ -498,6 +467,7 @@ class EkitiranController extends GetxController {
         );
       }
     } else {
+      EasyLoading.dismiss();
       // Jika tidak ada internet, simpan langsung ke GetStorage
       rtModel = RTModel(
         id_user_rt: id_user_rt.text,
@@ -940,7 +910,9 @@ class EkitiranController extends GetxController {
   }
 
   void hapusData(String NopHapus) async {
-    EasyLoading.show();
+    EasyLoading.show(
+        status: "Sedang menghapus Data Kitiran",
+        maskType: EasyLoadingMaskType.clear);
     // Membaca data dari GetX Storage
     var storedData = storage.read('kitiran_pbb');
 
@@ -1006,9 +978,11 @@ class EkitiranController extends GetxController {
             } catch (e) {
               print('Terjadi kesalahan saat mengirim request: $e');
             }
+            EasyLoading.dismiss();
           } else {
             EasyLoading.showError(
-                "Untuk menghapus data ini, harus terhubung Internet");
+                "Untuk menghapus data ini, harus terhubung Internet",
+                duration: Duration(seconds: 4));
           }
         }
       } else {
@@ -1302,7 +1276,8 @@ class EkitiranController extends GetxController {
                             color: Color.fromARGB(255, 71, 80, 90),
                           ),
                           Texts.captionXs2(
-                            "${itemSPPT.isSynced}",
+                            "${itemSPPT.statusPembayaranSppt}",
+                            maxLines: 5,
                             color: Color.fromARGB(255, 59, 59, 59),
                           ),
                         ],
@@ -1329,12 +1304,21 @@ class EkitiranController extends GetxController {
                         baseColor: shadowColor,
                       ),
                       errorWidget: (context, url, error) => Image.asset(
-                        'images/image.png',
+                        'assets/images/image.png',
                         fit: BoxFit.contain,
                       ),
                     ),
                   )
-                : SizedBox(),
+                : ClipRRect(
+                    borderRadius: BorderRadius.circular(
+                        8.0), // opsional, untuk sudut membulat
+                    child: Image.file(
+                      width: 210.w,
+                      height: 150.h,
+                      File(itemSPPT.bukti),
+                      fit: BoxFit.contain,
+                    ),
+                  ),
           ],
         ),
       ),
@@ -1352,5 +1336,22 @@ class EkitiranController extends GetxController {
         ),
       ],
     );
+  }
+
+  Future<void> clearImagePickerCache(String fileName) async {
+    final directory = await getTemporaryDirectory();
+    final cacheDirectory = Directory(directory.path);
+
+    final cleanFileName = fileName.replaceFirst(RegExp(r'^scaled_'), '');
+
+    if (cacheDirectory.existsSync()) {
+      print("Cache directory: ${cacheDirectory.path}");
+      for (var file in cacheDirectory.listSync(recursive: true)) {
+        if (file is File && file.path.contains(cleanFileName)) {
+          print('Deleting image cache: ${file.path}');
+          await file.delete();
+        }
+      }
+    }
   }
 }

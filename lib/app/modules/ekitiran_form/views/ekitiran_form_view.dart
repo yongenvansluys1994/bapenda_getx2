@@ -102,6 +102,11 @@ class EkitiranFormView extends GetView<EkitiranFormController> {
                                           }
                                           return null;
                                         },
+                                        onChanged: (value) {
+                                          if (controller.isReadySubmit) {
+                                            controller.isReadySubmitToFalse();
+                                          }
+                                        },
                                       ),
                                     ),
                                   ],
@@ -309,7 +314,7 @@ class EkitiranFormView extends GetView<EkitiranFormController> {
                               //   width: 200.w,
                               //   child: Buttons.gradientButton(
                               //     handler: () {
-                              //       controller.resetAkunRT();
+                              //       controller.resetData();
                               //     },
                               //     widget: Texts.button("Reset Data"),
                               //     borderSide: false,

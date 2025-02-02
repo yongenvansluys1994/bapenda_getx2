@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:bapenda_getx2/app/core/api/api.dart';
 import 'package:bapenda_getx2/app/modules/pbb/models/model_pbb.dart';
+import 'package:bapenda_getx2/widgets/dismiss_keyboard.dart';
 import 'package:bapenda_getx2/widgets/getdialog.dart';
 import 'package:bapenda_getx2/widgets/logger.dart';
 import 'package:dio/dio.dart';
@@ -38,6 +39,65 @@ class PbbController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+  }
+
+  Future<void> fetchData2() async {
+    try {
+      isLoading = true;
+      EasyLoading.show(status: "Mencari Data");
+
+      final dataUser = await getPbb(nop.text); // Fetch data using Dio
+
+      if (dataUser == null) {
+        isFailed = true;
+      } else if (dataUser.isEmpty) {
+        isEmpty = true;
+      } else {
+        EasyLoading.dismiss();
+        if (dataUser["isError"]) {
+          isError = dataUser["isError"];
+          message = dataUser["message"];
+          datalist.clear();
+          getDefaultDialog().onFix(
+            title: message,
+            desc: "Isi kembali kolom pencarian NOP dengan benar",
+            kategori: "warning",
+          );
+        } else {
+          dismissKeyboard();
+          EasyLoading.showSuccess("Data NOP ditemukan!");
+          isError = dataUser["isError"];
+          message = dataUser["message"];
+          dataInformasi.value = dataUser["informasi"] as ModelPbbInformasi;
+
+          datalist.clear();
+          datalist.addAll(dataUser["sppt"] as List<ModelPbbSppt>);
+
+          isEmpty = false;
+        }
+      }
+    } on DioError catch (ex) {
+      EasyLoading.dismiss();
+      var errorMessage = "";
+      if (ex.type == DioErrorType.connectionTimeout ||
+          ex.type == DioErrorType.connectionError ||
+          ex.type == DioErrorType.receiveTimeout ||
+          ex.type == DioErrorType.sendTimeout) {
+        errorMessage = "Limit Connection, Koneksi anda bermasalah";
+      } else {
+        errorMessage = "Kesalahan Koneksi: $ex";
+      }
+      isError = true;
+      message = errorMessage;
+      getDefaultDialog().onFix(
+        title: "Koneksi Error",
+        desc: errorMessage,
+        kategori: "error",
+      );
+    } finally {
+      isLoading = false;
+      update();
+    }
   }
 
   Future<void> fetchData() async {

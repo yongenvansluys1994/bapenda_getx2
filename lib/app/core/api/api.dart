@@ -18,7 +18,7 @@ const baseUrl = 'https://yongen-bisa.com/bapenda_app/api_ver2';
 const URL_APP = "https://yongen-bisa.com/bapenda_app/api_ver2";
 const URL_SIMPATDA = "http://simpatda.bontangkita.id/simpatda";
 const URL_APPSIMPATDA = "http://simpatda.bontangkita.id/api_ver2";
-const URL_SISMIOP = " https://dev-b.invinicsoft.com/sismiop/api";
+const URL_SISMIOP = "https://pajak.bontangkita.id/sismiop/api";
 const String ApiFCM =
     "AAAAB69wS5U:APA91bGHHGdo_FzlMJlzO0rc4SUPIMt10OZLqzT60DwVdIU_SSmYkDVu5LRofJR3u9_AS8_ptJ-S5dHIB-7BYWoOTrHUY-pe04UKfLDuAH1ezeY7ohWZalRdShAfJOchSVR9wDuusnnj";
 
@@ -56,6 +56,48 @@ final Dio dioSismiop = Dio(
     headers: {'Content-Type': 'application/json'},
   ),
 );
+
+Future<Map<String, dynamic>?> getPbb(String nopthn) async {
+  try {
+    final response = await dioSismiop.get(
+      "/informasi/piutang/$nopthn",
+      options: Options(
+        headers: {
+          'Authorization':
+              'Basic ${base64Encode(utf8.encode('API_BPD_ETAM:API_BPD_ETAM'))}',
+        },
+      ),
+    );
+
+    if (response.statusCode == 200) {
+      var isError = response.data["is_error"];
+      var message = response.data["message"];
+      logInfo(message);
+
+      if (isError == true) {
+        return {"isError": isError, "message": message};
+      } else {
+        var informasiData = response.data["data"]["informasi"];
+        var informasi = ModelPbbInformasi.fromJson(informasiData);
+
+        List spptData = response.data["data"]["sppt"];
+        List<ModelPbbSppt> spptList =
+            spptData.map((e) => ModelPbbSppt.fromJson(e)).toList();
+
+        return {
+          "isError": isError,
+          "informasi": informasi,
+          "sppt": spptList,
+          "message": message,
+        };
+      }
+    } else {
+      return null;
+    }
+  } on DioError catch (ex) {
+    throw ex;
+  }
+}
 
 Future<Map<String, dynamic>?> get_PBB(NOPTHN) async {
   var response =

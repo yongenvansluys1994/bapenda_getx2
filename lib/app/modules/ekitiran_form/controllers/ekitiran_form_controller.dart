@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:bapenda_getx2/app/core/api/api.dart';
 import 'package:bapenda_getx2/app/modules/dashboard/models/auth_model_model.dart';
@@ -24,6 +25,8 @@ import 'package:get_storage/get_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as path;
 
 class EkitiranFormController extends GetxController {
   final storage = GetStorage();
@@ -47,6 +50,7 @@ class EkitiranFormController extends GetxController {
   bool isError = false;
   String message = "";
   XFile? imageFile = null;
+  XFile? previousImageFile = null;
 
   Rx<ModelPbbInformasi> dataInformasi = ModelPbbInformasi(
     namaWp: '',
@@ -70,6 +74,8 @@ class EkitiranFormController extends GetxController {
   }
 
   Future<void> FetchData() async {
+    EasyLoading.show(
+        status: "Sedang Mencari Data", maskType: EasyLoadingMaskType.clear);
     try {
       // Membuat header dengan Basic Authorization
       String basicAuth =
@@ -125,11 +131,14 @@ class EkitiranFormController extends GetxController {
           isEmpty = false;
           dismissKeyboard();
         }
+        EasyLoading.dismiss();
       } else {
+        EasyLoading.dismiss();
         print("Request failed with status: ${response.statusCode}");
         update();
       }
     } catch (e) {
+      EasyLoading.dismiss();
       print("Error: $e");
     }
   }
@@ -137,7 +146,8 @@ class EkitiranFormController extends GetxController {
   Future<void> fetchDataOffline() async {
     try {
       isLoading = true;
-      EasyLoading.show(status: "Mencari Data Offline");
+      EasyLoading.show(
+          status: "Mencari Data Offline", maskType: EasyLoadingMaskType.clear);
 
       // Membaca data dari GetStorage
       List<dynamic>? jsonData = storage.read('data_pbb');
@@ -231,9 +241,16 @@ class EkitiranFormController extends GetxController {
   void ProsesSimpanOffline() async {
     // Bersihkan NOP dari karakter non-angka
     String cleanedNOP = nop_cari.text.replaceAll(RegExp(r'[^0-9]'), '');
-    EasyLoading.show();
+    EasyLoading.show(maskType: EasyLoadingMaskType.clear);
 
     try {
+      // Compress the image before saving
+      // XFile? compressedFile = await compressImage(XFile(imageFile!.path));
+
+      // if (compressedFile == null) {
+      //   throw "Gagal melakukan kompresi gambar.";
+      // }
+
       // Buat instance dari ModelKitiran dengan data input form
       ModelKitiran newKitiran = ModelKitiran(
         kelurahan: rtModel.kelurahan,
@@ -246,19 +263,20 @@ class EkitiranFormController extends GetxController {
         alamatOp: alamat_op.text,
         tahun: tahun_pbb,
         jumlahPajak: '', // Nilai default
-        statusPembayaranSppt: '', // Nilai default
+        statusPembayaranSppt: 'BELUM LUNAS', // Nilai default
         keterangan: '', // Nilai default
         tglBayar: DateTime(1970, 1, 1), // Nilai default
-        bukti: imageFile!.path,
+        bukti: imageFile!.path, // Use compressed image path
         isSynced: false, // Tandai data sebagai belum tersinkronisasi
       );
+
+      logInfo("Kitiran Baru Offline : ${jsonEncode(newKitiran)}");
 
       // Ambil data yang sudah ada di GetX Storage
       List<ModelKitiran> kitiranList = [];
 
       var storedData = GetStorage().read<List<dynamic>>('kitiran_pbb');
       if (storedData != null && storedData.isNotEmpty) {
-        // Jika data ada, decode ke list ModelKitiran
         kitiranList = List<ModelKitiran>.from(
           storedData
               .map((e) => ModelKitiran.fromJson(e as Map<String, dynamic>)),
@@ -269,7 +287,6 @@ class EkitiranFormController extends GetxController {
       bool isExist = kitiranList.any((kitiran) => kitiran.nop == cleanedNOP);
 
       if (!isExist) {
-        // Tambahkan data baru ke depan list jika belum ada
         kitiranList.insert(0, newKitiran);
 
         // Simpan kembali list yang diperbarui ke GetX Storage
@@ -278,37 +295,30 @@ class EkitiranFormController extends GetxController {
           kitiranList.map((e) => e.toJson()).toList(),
         );
 
-        // Ambil kembali data yang sudah disimpan
-        final kitiranJson = GetStorage().read<List<dynamic>>('kitiran_pbb');
-        logInfo(jsonEncode(kitiranJson));
-
         Get.back();
         ekitiranController.FetchKitiranOffline();
-        // Tampilkan snackbar untuk menandakan berhasil
+
         RawSnackbar_bottom(
           message: "Data berhasil disimpan ke penyimpanan lokal.",
           kategori: "success",
           duration: 3,
         );
       } else {
-        // Tampilkan snackbar jika data sudah ada
         RawSnackbar_top(
           message: "Data dengan NOP ini sudah ada.",
           kategori: "warning",
           duration: 3,
         );
       }
-
-      // Tutup form dan kembalikan ke halaman sebelumnya
+      EasyLoading.dismiss();
     } catch (e) {
-      // Tampilkan error jika terjadi kesalahan
+      EasyLoading.dismiss();
       RawSnackbar_top(
         message: "Gagal menyimpan data: $e",
         kategori: "Error",
         duration: 3,
       );
     } finally {
-      // Tutup loading spinner
       EasyLoading.dismiss();
       update();
     }
@@ -316,7 +326,8 @@ class EkitiranFormController extends GetxController {
 
   void ProsesSimpanData() async {
     String cleanedNOP = nop_cari.text.replaceAll(RegExp(r'[^0-9]'), '');
-    EasyLoading.show();
+    EasyLoading.show(
+        status: "Sedang Mengirim Data", maskType: EasyLoadingMaskType.clear);
     // API disini
     var request = http.MultipartRequest(
         "POST", Uri.parse("${URL_APPSIMPATDA}/ekitiran/kitiran_input.php"));
@@ -331,10 +342,11 @@ class EkitiranFormController extends GetxController {
     request.fields['alamat_op'] = '${alamat_op.text}';
     request.fields['tahun'] = '${tahun_pbb}';
     request.fields['jumlah_pajak'] = '';
-    request.fields['status_pembayaran_sppt'] = '';
+    request.fields['status_pembayaran_sppt'] = 'BELUM LUNAS';
     request.fields['keterangan'] = '';
     request.fields['tgl_bayar'] = '1970-01-01';
 
+    //var compressedImage = await compressImage(imageFile!);
     var pic = await http.MultipartFile.fromPath("image", imageFile!.path);
     request.files.add(pic);
 
@@ -344,6 +356,8 @@ class EkitiranFormController extends GetxController {
     var data = json.decode(responseBody); // Decode JSON
 
     if (response.statusCode == 200 && data['success'] != null) {
+      final fileName = path.basename(imageFile!.path);
+      await clearImagePickerCache(fileName);
       ekitiranController.refreshData(rtModel.kelurahan, rtModel.rt);
       Get.back();
       RawSnackbar_bottom(
@@ -425,17 +439,35 @@ class EkitiranFormController extends GetxController {
   }
 
   void _openGallery(BuildContext context) async {
-    final pickedFile =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
+    final pickedFile = await ImagePicker().pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 800, // Set target width
+      maxHeight: 800, // Set target height
+      imageQuality: 70, // Set quality (0-100)
+    );
+    //agar tidak terjadinya penumpukan cache bila user ganti2 foto
+    if (previousImageFile != null) {
+      final previousFileName = path.basename(previousImageFile!.path);
+      await clearImagePickerCache(previousFileName);
+    }
     imageFile = pickedFile!;
+    previousImageFile = pickedFile;
     update();
     Get.back();
   }
 
   void _openCamera(BuildContext context) async {
-    final pickedFile =
-        await ImagePicker().pickImage(source: ImageSource.camera);
+    final pickedFile = await ImagePicker().pickImage(
+      source: ImageSource.camera, maxWidth: 800, // Set target width
+      maxHeight: 800, // Set target height
+      imageQuality: 70, // Set quality (0-100)
+    );
+    if (previousImageFile != null) {
+      final previousFileName = path.basename(previousImageFile!.path);
+      await clearImagePickerCache(previousFileName);
+    }
     imageFile = pickedFile!;
+    previousImageFile = pickedFile;
     update();
     Get.back();
   }
@@ -492,8 +524,31 @@ class EkitiranFormController extends GetxController {
     }
   }
 
+  Future<void> clearImagePickerCache(String fileName) async {
+    final directory = await getTemporaryDirectory();
+    final cacheDirectory = Directory(directory.path);
+
+    final cleanFileName = fileName.replaceFirst(RegExp(r'^scaled_'), '');
+
+    if (cacheDirectory.existsSync()) {
+      print("Cache directory: ${cacheDirectory.path}");
+      for (var file in cacheDirectory.listSync(recursive: true)) {
+        if (file is File && file.path.contains(cleanFileName)) {
+          print('Deleting image cache: ${file.path}');
+          await file.delete();
+        }
+      }
+    }
+  }
+
   Future<bool> isInternetConnected() async {
     var connectivityResult = await Connectivity().checkConnectivity();
     return connectivityResult != ConnectivityResult.none;
+  }
+
+  void isReadySubmitToFalse() {
+    isReadySubmit = false;
+    update();
+    logInfo("isreadysubmit to false");
   }
 }
