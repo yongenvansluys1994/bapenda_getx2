@@ -244,13 +244,6 @@ class EkitiranFormController extends GetxController {
     EasyLoading.show(maskType: EasyLoadingMaskType.clear);
 
     try {
-      // Compress the image before saving
-      // XFile? compressedFile = await compressImage(XFile(imageFile!.path));
-
-      // if (compressedFile == null) {
-      //   throw "Gagal melakukan kompresi gambar.";
-      // }
-
       // Buat instance dari ModelKitiran dengan data input form
       ModelKitiran newKitiran = ModelKitiran(
         kelurahan: rtModel.kelurahan,
