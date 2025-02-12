@@ -224,17 +224,43 @@ class EkitiranFormController extends GetxController {
   }
 
   void SimpanData() async {
-    if (isReadySubmit == false) {
+    // Cek apakah NOP sudah dicari
+    if (!isReadySubmit) {
       EasyLoading.showError("NOP Belum dicari, Cari NOP terlebih dahulu");
-    } else if (imageFile == null) {
+      return;
+    }
+
+    // Cek apakah foto sudah di-upload
+    if (imageFile == null) {
       EasyLoading.showError("Foto Dokumentasi belum di Upload");
+      return;
+    }
+
+    // Cek koneksi internet
+    bool isConnected = await isInternetConnected();
+
+    if (isConnected) {
+      await CheckUnSyncKitiranStorage(); // Sinkronisasi data dulu
+      ProsesSimpanData(); // Kemudian simpan data
     } else {
-      bool isConnected = await isInternetConnected();
-      if (isConnected == true) {
-        ProsesSimpanData();
-      } else {
-        ProsesSimpanOffline();
-      }
+      ProsesSimpanOffline(); // Simpan offline jika tidak ada internet
+    }
+  }
+
+  Future<void> CheckUnSyncKitiranStorage() async {
+    // Ambil semua data dari GetX Storage
+    List<ModelKitiran> kitiranList =
+        (GetStorage().read<List<dynamic>>('kitiran_pbb') ?? [])
+            .map((e) => ModelKitiran.fromJson(e))
+            .toList();
+
+    // Filter data yang belum tersinkronisasi
+    List<ModelKitiran> unsyncedData =
+        kitiranList.where((item) => !item.isSynced).toList();
+
+    // Jika ada data yang belum tersinkronisasi, jalankan sync
+    if (unsyncedData.isNotEmpty) {
+      await ekitiranController.syncAndFetchKitiran();
     }
   }
 
@@ -255,7 +281,7 @@ class EkitiranFormController extends GetxController {
         kelurahanOp: kelurahan_op.text,
         alamatOp: alamat_op.text,
         tahun: tahun_pbb,
-        jumlahPajak: '', // Nilai default
+        jumlahPajak: '0', // Nilai default
         statusPembayaranSppt: 'BELUM LUNAS', // Nilai default
         keterangan: '', // Nilai default
         tglBayar: DateTime(1970, 1, 1), // Nilai default
@@ -334,7 +360,7 @@ class EkitiranFormController extends GetxController {
     request.fields['kelurahan_op'] = '${kelurahan_op.text}';
     request.fields['alamat_op'] = '${alamat_op.text}';
     request.fields['tahun'] = '${tahun_pbb}';
-    request.fields['jumlah_pajak'] = '';
+    request.fields['jumlah_pajak'] = '0';
     request.fields['status_pembayaran_sppt'] = 'BELUM LUNAS';
     request.fields['keterangan'] = '';
     request.fields['tgl_bayar'] = '1970-01-01';
@@ -478,7 +504,7 @@ class EkitiranFormController extends GetxController {
   void resetData() {
     try {
       // Hapus data yang tersimpan di GetX Storage untuk 'kitiran_pbb'
-      GetStorage().remove('kitiran_pbb');
+      GetStorage().remove('already_sync_ekitiran');
 
       // Tampilkan snackbar untuk memberi tahu pengguna bahwa data telah direset
       RawSnackbar_bottom(

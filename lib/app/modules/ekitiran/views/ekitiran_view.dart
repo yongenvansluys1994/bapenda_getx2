@@ -1,6 +1,9 @@
 import 'dart:io';
 
 import 'package:bapenda_getx2/app/routes/app_pages.dart';
+import 'package:bapenda_getx2/core/pdf/pdf_ekitiran_helper.dart';
+import 'package:bapenda_getx2/core/pdf/pdf_helper.dart';
+import 'package:bapenda_getx2/core/pdf/pdf_invoice_helper.dart';
 import 'package:bapenda_getx2/widgets/buttons.dart';
 import 'package:bapenda_getx2/widgets/custom_appbar.dart';
 import 'package:bapenda_getx2/widgets/getdialog.dart';
@@ -24,11 +27,123 @@ class EkitiranView extends GetView<EkitiranController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(
-        title:
-            "E-Kitiran PBB ${controller.storage.read('user_rt') == null ? "" : "RT ${controller.storage.read('user_rt')['rt']} Kel. ${controller.storage.read('user_rt')['kelurahan']}"}",
-        leading: true,
-        isLogin: true,
+      appBar: AppBar(
+        title: Texts.appBarText(
+            "E-Kitiran ${controller.storage.read('user_rt') == null ? "" : "RT ${controller.storage.read('user_rt')['rt']} Kel. ${controller.storage.read('user_rt')['kelurahan']}"}",
+            color: MainColor),
+        automaticallyImplyLeading: false,
+        centerTitle: true,
+        elevation: 0,
+        backgroundColor: Colors.white,
+        actions: [
+          GetBuilder<EkitiranController>(
+              init: EkitiranController(),
+              builder: (controller) {
+                return Padding(
+                  padding: EdgeInsets.symmetric(
+                      vertical: Get.height * 0.006,
+                      horizontal: Get.width * 0.015),
+                  child: Container(
+                    width: 42.w, // Adjust width as needed
+                    height: 42.h, // Adjust height as needed
+                    decoration: BoxDecoration(
+                      color: lightColor,
+                      border: Border.all(width: 2.w, color: shadowColor2),
+                      borderRadius: BorderRadius.circular(11.r),
+                    ),
+                    child: IconButton(
+                      icon: const Icon(
+                        Icons.picture_as_pdf_rounded,
+                        color: primaryColor,
+                      ),
+                      tooltip: "Open notifications menu",
+                      onPressed: () {
+                        // Get.toNamed(Routes.NOTIFIKASI, arguments: authModel);
+                        Get.defaultDialog(
+                          title: "Cetak Laporan E-Kitiran",
+                          content: GetBuilder<EkitiranController>(
+                            // Tambahkan GetBuilder di sini
+                            builder: (controller) {
+                              return Column(
+                                children: [
+                                  SizedBox(
+                                    width: 150.w,
+                                    child: TextFields.textFieldDropdown(
+                                      textInputAction: TextInputAction.next,
+                                      textInputType: TextInputType.text,
+                                      isLoading: false,
+                                      controller: controller.tahun_cetak,
+                                      hintText: "Pilih Tahun E-Kitiran",
+                                      title: "Pilih Tahun E-Kitiran",
+                                      isDropdown: true,
+                                      dropdownItems: List.generate(
+                                        DateTime.now().year -
+                                            2025 +
+                                            1, // Hitung tahun dari 2025 ke tahun sekarang
+                                        (index) => (2025 + index)
+                                            .toString(), // Konversi ke string
+                                      ),
+                                      dropdownValue:
+                                          controller.tahun_cetak.text.isEmpty
+                                              ? null
+                                              : controller.tahun_cetak.text,
+                                      onDropdownChanged: (newValue) {
+                                        controller
+                                            .changeValueTahunCetak(newValue);
+                                      },
+                                      validator: true,
+                                    ),
+                                  ),
+                                  SizedBox(height: 5.h),
+                                  SizedBox(
+                                    height: 30.h,
+                                    child: Buttons.defaultButtonSm(
+                                        handler: () async {
+                                          final pdfFile =
+                                              await PdfEkitiranHelper.generate(
+                                                  controller.datalist,
+                                                  controller.tahun_cetak.text,
+                                                  controller.rtModel);
+                                          PdfHelper.openFile(pdfFile);
+                                        },
+                                        title: "Cetak Laporan PDF",
+                                        fillColor: textLink),
+                                  )
+                                ],
+                              );
+                            },
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                );
+              })
+        ],
+        leading: Padding(
+          padding: EdgeInsets.symmetric(
+              vertical: Get.height * 0.006, horizontal: Get.width * 0.009),
+          child: Container(
+            width: 42.w, // Atur lebar sesuai kebutuhan
+            height: 42.h, // Atur tinggi sesuai kebutuhan
+            decoration: BoxDecoration(
+              color: lightColor,
+              border: Border.all(width: 2.w, color: shadowColor2),
+              borderRadius: BorderRadius.circular(11.r),
+            ),
+            child: IconButton(
+              icon: Icon(
+                Icons.arrow_back_ios_new_outlined,
+                color: primaryColor,
+              ),
+              tooltip: "Open notifications menu",
+              onPressed: () {
+                Get.back();
+                //Get.offNamed(Routes.DASHBOARD);
+              },
+            ),
+          ),
+        ),
       ),
       body: Column(
         children: [
@@ -174,7 +289,10 @@ class EkitiranView extends GetView<EkitiranController> {
                                                 width: 35.w,
                                                 height: 35.h,
                                                 decoration: BoxDecoration(
-                                                  color: Color(0xFF39D2C0),
+                                                  color: datatitem.isSynced
+                                                      ? Color(0xFF39D2C0)
+                                                      : Color.fromARGB(
+                                                          255, 255, 114, 114),
                                                   shape: BoxShape.circle,
                                                 ),
                                                 child: Padding(
@@ -213,13 +331,14 @@ class EkitiranView extends GetView<EkitiranController> {
                                                       children: [
                                                         Container(
                                                           width: 300.w,
-                                                          height: 22.h,
+                                                          height: 23.h,
                                                           child: Stack(
                                                             children: [
                                                               Texts.caption(
                                                                   'Nama : ${datatitem.nama}'),
                                                               Positioned(
                                                                 right: 1,
+                                                                top: 5,
                                                                 child: Padding(
                                                                   padding: EdgeInsetsDirectional
                                                                       .fromSTEB(
@@ -246,7 +365,7 @@ class EkitiranView extends GetView<EkitiranController> {
                                                                             color:
                                                                                 Color(0xFF39D2C0),
                                                                             fontSize:
-                                                                                12.sp,
+                                                                                11.sp,
                                                                             fontWeight:
                                                                                 FontWeight.bold,
                                                                             height:
@@ -305,22 +424,9 @@ class EkitiranView extends GetView<EkitiranController> {
                                                                       .normal,
                                                             ),
                                                           ),
-                                                          Text(
-                                                            'Alamat Objek : ${datatitem.alamatOp}',
-                                                            overflow:
-                                                                TextOverflow
-                                                                    .clip,
-                                                            style: TextStyle(
-                                                              fontFamily:
-                                                                  'Outfit',
-                                                              color: Color(
-                                                                  0xFF57636C),
-                                                              fontSize: 11.sp,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .normal,
-                                                            ),
-                                                          ),
+                                                          Texts.captionXs2(
+                                                              'Alamat Objek : ${datatitem.alamatOp}',
+                                                              maxLines: 1)
                                                         ],
                                                       ),
                                                     ),
@@ -331,7 +437,17 @@ class EkitiranView extends GetView<EkitiranController> {
                                                       children: [
                                                         Expanded(
                                                           child: Text(
-                                                            "${datatitem.jumlahPajak}",
+                                                            NumberFormat.currency(
+                                                                    locale:
+                                                                        'id',
+                                                                    symbol:
+                                                                        'Rp. ',
+                                                                    decimalDigits:
+                                                                        0)
+                                                                .format(int.parse(
+                                                                    datatitem
+                                                                        .jumlahPajak
+                                                                        .toString())),
                                                             maxLines: 1,
                                                             overflow:
                                                                 TextOverflow

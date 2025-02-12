@@ -47,15 +47,15 @@ class ModelKitiran {
   });
 
   factory ModelKitiran.fromJson(Map<String, dynamic> json) => ModelKitiran(
-        kelurahan: json["kelurahan"],
+        kelurahan: json["kelurahan"] ?? '',
         rt: json["rt"],
         nop: json["nop"],
-        nama: json["nama"],
-        alamat: json["alamat"],
+        nama: json["nama"] ?? '',
+        alamat: json["alamat"] ?? '',
         kecamatanOp: json["kecamatan_op"] ?? '',
         kelurahanOp: json["kelurahan_op"] ?? '',
         alamatOp: json["alamat_op"] ?? '',
-        tahun: json["tahun"],
+        tahun: json["tahun"] ?? '',
         jumlahPajak: json["jumlah_pajak"],
         statusPembayaranSppt: json["status_pembayaran_sppt"],
         keterangan: json["keterangan"],

@@ -54,6 +54,9 @@ class EkitiranController extends GetxController {
   final TextEditingController userrt_kelurahan = TextEditingController();
   final TextEditingController userrt_rt = TextEditingController();
 
+  //controller untuk cetak laporan
+  final TextEditingController tahun_cetak = TextEditingController();
+
   final List<String> kecamatanList = [
     'Bontang Utara',
     'Bontang Selatan',
@@ -113,9 +116,11 @@ class EkitiranController extends GetxController {
         // Jika ada internet, periksa apakah getx storage kitiran_pbb kosong
         if (!storage.hasData('kitiran_pbb')) {
           logInfo("kitiran_pbb kosong, melakukan fetch dari API");
-          await FetchKitiran(rtModel.kelurahan, rtModel.rt); // Fetch dari API
+          await FetchKitiranThenSync(
+              rtModel.kelurahan, rtModel.rt); // Fetch dari API
         } else {
-          syncAndFetchKitiran();
+          logInfo("kitiran_pbb ada isinya, melakukan sync lalu fetch data");
+          checkSyncStatus();
         }
       } else {
         logInfo("Belum punya akun RT");
@@ -146,9 +151,47 @@ class EkitiranController extends GetxController {
     }
   }
 
+  Future<void> checkSyncStatus() async {
+    // Mendapatkan tanggal hari ini dalam format yyyy-MM-dd
+    String today = DateFormat('yyyy-MM-dd').format(DateTime.now());
+
+    // Cek apakah ada data sinkronisasi sebelumnya
+    String? lastSyncDate = storage.read('already_sync_ekitiran');
+
+    // Jika tanggal sinkronisasi sebelumnya berbeda dengan hari ini
+    if (lastSyncDate != today) {
+      backupKitiranPbb();
+      // Ambil semua data dari GetX Storage
+      List<ModelKitiran> kitiranList =
+          (GetStorage().read<List<dynamic>>('kitiran_pbb') ?? [])
+              .map((e) => ModelKitiran.fromJson(e))
+              .toList();
+
+      // Filter data yang belum tersinkronisasi
+      List<ModelKitiran> unsyncedData =
+          kitiranList.where((item) => !item.isSynced).toList();
+
+      // Jika ada data yang belum tersinkronisasi, jalankan sync
+      if (unsyncedData.isNotEmpty) {
+        logInfo("Sinkronisasi data dengan sismiop");
+        syncAndFetchKitiran();
+      } else {
+        await FetchKitiranThenSync(
+            rtModel.kelurahan, rtModel.rt); // Fetch dari API
+      }
+      storage.write('already_sync_ekitiran', today);
+      logInfo("save flag already_sync_ekitiran");
+    } else {
+      // Jika sudah sinkronisasi hari ini
+      logInfo(
+          "Data sudah disinkronkan hari ini, tidak bisa sinkronisasi ulang.");
+      syncAndFetchKitiran();
+    }
+  }
+
   Future<void> syncAndFetchKitiran() async {
     try {
-      // Ambil semua data dari GetX Storage
+      // Ambil semua data dari GetX Storage kitiran_pbb
       List<ModelKitiran> kitiranList =
           (GetStorage().read<List<dynamic>>('kitiran_pbb') ?? [])
               .map((e) => ModelKitiran.fromJson(e))
@@ -219,6 +262,7 @@ class EkitiranController extends GetxController {
 
         // Baca dan decode response
         var responseBody = await response.stream.bytesToString();
+
         //logInfo("${responseBody}");
         // logInfo(json.decode(responseBody));
         var data = json.decode(responseBody);
@@ -227,21 +271,9 @@ class EkitiranController extends GetxController {
           //hapus cache image
           final fileName = path.basename(item.bukti);
           clearImagePickerCache(fileName);
-          print("Data dengan NOP ${item.nop} berhasil disinkronisasi.");
+          print(
+              "Data dengan NOP ${item.nop} berhasil disinkronisasi. ${data['data']}");
           logInfo(jsonEncode(data['data']));
-
-          // Hapus file gambar setelah berhasil sync
-          // if (item.bukti.isNotEmpty) {
-          //   try {
-          //     File file = File(item.bukti);
-          //     if (await file.exists()) {
-          //       await file.delete();
-          //       print("File gambar ${item.bukti} berhasil dihapus.");
-          //     }
-          //   } catch (e) {
-          //     print("Gagal menghapus file gambar: $e");
-          //   }
-          // }
 
           // Tambahkan data yang berhasil disinkronisasi ke daftar hasil sinkronisasi
           if (data['data'] != null && data['data'] is List) {
@@ -257,7 +289,8 @@ class EkitiranController extends GetxController {
             }
           }
         } else {
-          print("Gagal menyinkronkan data dengan NOP ${item.nop}.");
+          print(
+              "Gagal menyinkronkan data dengan NOP ${item.nop}. ${responseBody}");
         }
 
         // **Update Progress** setelah setiap item berhasil diproses
@@ -299,6 +332,56 @@ class EkitiranController extends GetxController {
     const limit = 18;
     final url = Uri.parse(
         '${URL_APPSIMPATDA}/ekitiran/kitiran_list.php?kelurahan=$kelurahan&rt=$rt&tahun=$tahun_pbb');
+
+    try {
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        List newItems =
+            (json.decode(response.body) as Map<String, dynamic>)["data"];
+        final list =
+            newItems.map<ModelKitiran>((json) => ModelKitiran.fromJson(json));
+        page++;
+        isLoading = false;
+
+        if (newItems.length < limit) {
+          hasMore = false;
+          update();
+        }
+
+        datalist.addAll(list);
+
+        // Simpan hasil fetch ke GetStorage
+        storage.write('kitiran_pbb', datalist.map((e) => e.toJson()).toList());
+        logInfo(
+            "Data kitiran_pbb disimpan ke storage: ${datalist.length} items");
+      } else {
+        logError(
+            "Gagal memuat data Kitiran: ${response.statusCode} - ${response.reasonPhrase}");
+        EasyLoading.showError("Gagal memuat data (${response.statusCode})");
+      }
+      EasyLoading.dismiss();
+    } catch (error) {
+      logError("Terjadi kesalahan: $error");
+      EasyLoading.showError("Terjadi kesalahan saat memuat data.");
+    } finally {
+      isLoading = false;
+      EasyLoading.dismiss();
+      update();
+    }
+  }
+
+  Future FetchKitiranThenSync(kelurahan, rt) async {
+    EasyLoading.show(
+        status: "Sedang Memuat Data Kitiran",
+        maskType: EasyLoadingMaskType.clear);
+    datalist.clear();
+
+    if (isLoading) return;
+
+    const limit = 18;
+    final url = Uri.parse(
+        '${URL_APPSIMPATDA}/ekitiran/kitiran_list_thensync.php?kelurahan=$kelurahan&rt=$rt&tahun=$tahun_pbb');
 
     try {
       final response = await http.get(url);
@@ -439,7 +522,7 @@ class EkitiranController extends GetxController {
 
           // Simpan ke GetStorage
           await storage.write('user_rt', rtModel.toJson());
-          FetchKitiran(rtModel.kelurahan, rtModel.rt);
+          FetchKitiranThenSync(rtModel.kelurahan, rtModel.rt);
           logInfo(
               "Updated user_rt in GetStorage with Internet: ${jsonEncode(storage.read('user_rt'))}");
 
@@ -887,7 +970,7 @@ class EkitiranController extends GetxController {
             Texts.caption(
                 "Terhubung ke Internet! sedang Sinkronisasi data ke database online, Mohon Tunggu & jangan menutup Aplikasi sampai proses Selesai",
                 textAlign: TextAlign.center,
-                maxLines: 3),
+                maxLines: 4),
             SizedBox(height: 10),
             LinearProgressIndicator(
               value: progressSync.value,
@@ -1352,6 +1435,45 @@ class EkitiranController extends GetxController {
           await file.delete();
         }
       }
+    }
+  }
+
+  void changeValueTahunCetak(String? newValue) {
+    tahun_cetak.text = newValue!;
+    update();
+  }
+
+  Future<void> backupKitiranPbb() async {
+    try {
+      final storage = GetStorage();
+      List<dynamic> rawData = storage.read<List<dynamic>>('kitiran_pbb') ?? [];
+
+      if (rawData.isEmpty) {
+        print("Tidak ada data untuk di-backup.");
+        return;
+      }
+
+      // Menyiapkan data untuk dikirim
+      Map<String, dynamic> dataToSend = {
+        "rt": rtModel.rt,
+        "kelurahan": rtModel.kelurahan,
+        "tahun": tahun_pbb,
+        "data_backup": rawData, // Isi data_backup dengan rawData
+      };
+
+      String apiUrl = "${URL_APPSIMPATDA}/ekitiran/backup_kitiran.php";
+
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode(dataToSend), // Kirimkan data yang sudah terstruktur
+      );
+
+      final responseData = jsonDecode(response.body);
+      print(responseData["message"]);
+    } catch (e) {
+      print("Error saat backup: $e");
+      Get.snackbar("Backup Gagal", "Pastikan koneksi internet stabil.");
     }
   }
 }

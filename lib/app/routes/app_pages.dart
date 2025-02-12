@@ -35,6 +35,8 @@ import '../modules/lapor_pajak/views/pelaporan_detail_view_cath.dart';
 import '../modules/lapor_pajak/views/pelaporan_detail_view_ppj.dart';
 import '../modules/lapor_pajak/views/qris_page_view.dart';
 import '../modules/lapor_pajak/views/va_page_view.dart';
+import '../modules/laporan_ekitiran/bindings/laporan_ekitiran_binding.dart';
+import '../modules/laporan_ekitiran/views/laporan_ekitiran_view.dart';
 import '../modules/login/bindings/login_binding.dart';
 import '../modules/login/views/login_view.dart';
 import '../modules/lokasi_kantor/bindings/lokasi_kantor_binding.dart';
@@ -298,6 +300,11 @@ class AppPages {
       name: _Paths.EKITIRAN_FORM,
       page: () => const EkitiranFormView(),
       binding: EkitiranFormBinding(),
+    ),
+    GetPage(
+      name: _Paths.LAPORAN_EKITIRAN,
+      page: () => const LaporanEkitiranView(),
+      binding: LaporanEkitiranBinding(),
     ),
   ];
 }
