@@ -188,7 +188,7 @@ class LoginView extends GetView<LoginController> {
                     ),
                     Positioned(
                       right: 2.r,
-                      top: 340.r,
+                      top: 300.r,
                       child: GestureDetector(
                         onTap: () {
                           easyThrottle(

@@ -315,7 +315,7 @@ class EkitiranFormController extends GetxController {
         );
 
         Get.back();
-        ekitiranController.FetchKitiranOffline();
+        //ekitiranController.FetchKitiranOffline();
 
         RawSnackbar_bottom(
           message: "Data berhasil disimpan ke penyimpanan lokal.",
@@ -347,51 +347,75 @@ class EkitiranFormController extends GetxController {
     String cleanedNOP = nop_cari.text.replaceAll(RegExp(r'[^0-9]'), '');
     EasyLoading.show(
         status: "Sedang Mengirim Data", maskType: EasyLoadingMaskType.clear);
-    // API disini
-    var request = http.MultipartRequest(
-        "POST", Uri.parse("${URL_APPSIMPATDA}/ekitiran/kitiran_input.php"));
 
-    request.fields['kelurahan'] = '${rtModel.kelurahan}';
-    request.fields['rt'] = '${rtModel.rt}';
-    request.fields['nop'] = '${cleanedNOP}';
-    request.fields['nama'] = '${nama_wp.text}';
-    request.fields['alamat'] = '${alamat_op.text}';
-    request.fields['kecamatan_op'] = '${kecamatan_op.text}';
-    request.fields['kelurahan_op'] = '${kelurahan_op.text}';
-    request.fields['alamat_op'] = '${alamat_op.text}';
-    request.fields['tahun'] = '${tahun_pbb}';
-    request.fields['jumlah_pajak'] = '0';
-    request.fields['status_pembayaran_sppt'] = 'BELUM LUNAS';
-    request.fields['keterangan'] = '';
-    request.fields['tgl_bayar'] = '1970-01-01';
+    try {
+      var request = http.MultipartRequest(
+          "POST", Uri.parse("${URL_APPSIMPATDA}/ekitiran/kitiran_input.php"));
 
-    //var compressedImage = await compressImage(imageFile!);
-    var pic = await http.MultipartFile.fromPath("image", imageFile!.path);
-    request.files.add(pic);
+      request.fields['kelurahan'] = '${rtModel.kelurahan}';
+      request.fields['rt'] = '${rtModel.rt}';
+      request.fields['nop'] = '${cleanedNOP}';
+      request.fields['nama'] = '${nama_wp.text}';
+      request.fields['alamat'] = '${alamat_op.text}';
+      request.fields['kecamatan_op'] = '${kecamatan_op.text}';
+      request.fields['kelurahan_op'] = '${kelurahan_op.text}';
+      request.fields['alamat_op'] = '${alamat_op.text}';
+      request.fields['tahun'] = '${tahun_pbb}';
+      request.fields['jumlah_pajak'] = '0';
+      request.fields['status_pembayaran_sppt'] = 'BELUM LUNAS';
+      request.fields['keterangan'] = '';
+      request.fields['tgl_bayar'] = '1970-01-01';
 
-    var response = await request.send();
+      var pic = await http.MultipartFile.fromPath("image", imageFile!.path);
+      request.files.add(pic);
 
-    var responseBody = await response.stream.bytesToString(); // Parse body
-    var data = json.decode(responseBody); // Decode JSON
+      var response =
+          await request.send().timeout(Duration(seconds: 30), onTimeout: () {
+        throw Exception("Timeout");
+      });
 
-    if (response.statusCode == 200 && data['success'] != null) {
-      final fileName = path.basename(imageFile!.path);
-      await clearImagePickerCache(fileName);
-      ekitiranController.refreshData(rtModel.kelurahan, rtModel.rt);
-      Get.back();
-      RawSnackbar_bottom(
-        message: "${data['success']}",
+      var responseBody = await response.stream.bytesToString();
+      var data = json.decode(responseBody);
+
+      if (response.statusCode == 200 && data['success'] != null) {
+        EasyLoading.dismiss();
+        final fileName = path.basename(imageFile!.path);
+        await clearImagePickerCache(fileName);
+        ekitiranController.refreshData(rtModel.kelurahan, rtModel.rt);
+        Get.back();
+        RawSnackbar_bottom(
+          message: "${data['success']}",
+          kategori: "success",
+          duration: 3,
+        );
+      } else if (data['Error'] == "Sudah_Ada") {
+        EasyLoading.dismiss();
+        RawSnackbar_top(
+          message: "Data NOP Sudah Ada",
+          kategori: "error",
+          duration: 3,
+        );
+      } else {
+        await EasyLoading
+            .dismiss(); // Tunggu loading berhenti sebelum simpan offline
+        ProsesSimpanOffline();
+        RawSnackbar_top(
+          message: "Koneksi Timeout, Data tetap tersimpan!.",
+          kategori: "success",
+          duration: 3,
+        );
+      }
+    } catch (e) {
+      await EasyLoading
+          .dismiss(); // Tunggu loading berhenti sebelum simpan offline
+      ProsesSimpanOffline();
+      RawSnackbar_top(
+        message: "Koneksi Timeout, Data tetap tersimpan!.",
         kategori: "success",
         duration: 3,
       );
-    } else {
-      RawSnackbar_top(
-        message: data['Error'] ?? "Gagal, terjadi gangguan di jaringan.",
-        kategori: "Error",
-        duration: 3,
-      );
     }
-    EasyLoading.dismiss();
+
     update();
   }
 
