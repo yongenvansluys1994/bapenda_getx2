@@ -315,7 +315,7 @@ class EkitiranFormController extends GetxController {
         );
 
         Get.back();
-        //ekitiranController.FetchKitiranOffline();
+        ekitiranController.FetchKitiranOffline();
 
         RawSnackbar_bottom(
           message: "Data berhasil disimpan ke penyimpanan lokal.",
@@ -350,7 +350,7 @@ class EkitiranFormController extends GetxController {
 
     try {
       var request = http.MultipartRequest(
-          "POST", Uri.parse("${URL_APPSIMPATDA}/ekitiran/kitiran_input.php"));
+          "POST", Uri.parse("${URL_APP}/ekitiran/kitiran_input.php"));
 
       request.fields['kelurahan'] = '${rtModel.kelurahan}';
       request.fields['rt'] = '${rtModel.rt}';
@@ -400,7 +400,7 @@ class EkitiranFormController extends GetxController {
             .dismiss(); // Tunggu loading berhenti sebelum simpan offline
         ProsesSimpanOffline();
         RawSnackbar_top(
-          message: "Koneksi Timeout, Data tetap tersimpan!.",
+          message: "Terkendala Jaringan, Namun Data tetap tersimpan!.",
           kategori: "success",
           duration: 3,
         );
@@ -486,7 +486,7 @@ class EkitiranFormController extends GetxController {
       source: ImageSource.gallery,
       maxWidth: 800, // Set target width
       maxHeight: 800, // Set target height
-      imageQuality: 70, // Set quality (0-100)
+      imageQuality: 50, // Set quality (0-100)
     );
     //agar tidak terjadinya penumpukan cache bila user ganti2 foto
     if (previousImageFile != null) {
@@ -503,7 +503,7 @@ class EkitiranFormController extends GetxController {
     final pickedFile = await ImagePicker().pickImage(
       source: ImageSource.camera, maxWidth: 800, // Set target width
       maxHeight: 800, // Set target height
-      imageQuality: 70, // Set quality (0-100)
+      imageQuality: 50, // Set quality (0-100)
     );
     if (previousImageFile != null) {
       final previousFileName = path.basename(previousImageFile!.path);

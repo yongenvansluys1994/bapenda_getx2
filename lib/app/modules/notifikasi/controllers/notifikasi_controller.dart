@@ -35,7 +35,7 @@ class NotifikasiController extends GetxController {
     if (isLoading) return;
     const limit = 10;
     final url = Uri.parse(
-        '${URL_APPSIMPATDA}/notifikasi/riwayat_notifikasi.php?nik=${authModel.nik}&page=$page&limit=$limit');
+        '${URL_APP}/notifikasi/riwayat_notifikasi.php?nik=${authModel.nik}&page=$page&limit=$limit');
     final response = await http.get(url);
     if (response.statusCode == 200) {
       List newItems =

@@ -219,7 +219,7 @@ class EkitiranController extends GetxController {
 
         // Membuat request multipart untuk setiap item
         var request = http.MultipartRequest(
-            "POST", Uri.parse("${URL_APPSIMPATDA}/ekitiran/kitiran_sync.php"));
+            "POST", Uri.parse("${URL_APP}/ekitiran/kitiran_sync.php"));
 
         request.fields['kelurahan'] = item.kelurahan!;
         request.fields['rt'] = item.rt!;
@@ -331,7 +331,7 @@ class EkitiranController extends GetxController {
 
     const limit = 18;
     final url = Uri.parse(
-        '${URL_APPSIMPATDA}/ekitiran/kitiran_list.php?kelurahan=$kelurahan&rt=$rt&tahun=$tahun_pbb');
+        '${URL_APP}/ekitiran/kitiran_list.php?kelurahan=$kelurahan&rt=$rt&tahun=$tahun_pbb');
 
     try {
       final response = await http.get(url);
@@ -381,7 +381,7 @@ class EkitiranController extends GetxController {
 
     const limit = 18;
     final url = Uri.parse(
-        '${URL_APPSIMPATDA}/ekitiran/kitiran_list_thensync.php?kelurahan=$kelurahan&rt=$rt&tahun=$tahun_pbb');
+        '${URL_APP}/ekitiran/kitiran_list_thensync.php?kelurahan=$kelurahan&rt=$rt&tahun=$tahun_pbb');
 
     try {
       final response = await http.get(url);
@@ -448,7 +448,7 @@ class EkitiranController extends GetxController {
 
     // Ambil data dari API
     final url = Uri.parse(
-        '${URL_APPSIMPATDA}/ekitiran/kitiran_list.php?kelurahan=$kelurahan&rt=$rt&tahun=$tahun_pbb');
+        '${URL_APP}/ekitiran/kitiran_list.php?kelurahan=$kelurahan&rt=$rt&tahun=$tahun_pbb');
     final response = await http.get(url);
 
     List newItems =
@@ -497,7 +497,7 @@ class EkitiranController extends GetxController {
     bool isConnected = await isInternetConnected();
 
     if (isConnected) {
-      var url = Uri.parse("${URL_APPSIMPATDA}/ekitiran/user_rt_input.php");
+      var url = Uri.parse("${URL_APP}/ekitiran/user_rt_input.php");
       try {
         var response = await http.post(url, body: {
           "id_user_rt": "${id_user_rt.text}",
@@ -577,7 +577,7 @@ class EkitiranController extends GetxController {
   }
 
   Future<void> syncUserRT(RTModel rtModel) async {
-    var url = Uri.parse("${URL_APPSIMPATDA}/ekitiran/user_rt_input.php");
+    var url = Uri.parse("${URL_APP}/ekitiran/user_rt_input.php");
     var response = await http.post(url, body: {
       "id_user_rt": "${rtModel.id_user_rt}",
       "nama": "${rtModel.nama}",
@@ -1035,7 +1035,7 @@ class EkitiranController extends GetxController {
           if (isConnected) {
             // Jika isSynced true, kirim request POST ke server untuk menghapus data
             final url = Uri.parse(
-                '${URL_APPSIMPATDA}/ekitiran/kitiran_hapus.php?nop=$NopHapus');
+                '${URL_APP}/ekitiran/kitiran_hapus.php?nop=$NopHapus');
 
             try {
               // Kirim request POST
@@ -1377,7 +1377,7 @@ class EkitiranController extends GetxController {
                         8.0), // opsional, untuk sudut membulat
                     child: CachedNetworkImage(
                       imageUrl:
-                          "${URL_APPSIMPATDA}/upload_bukti_kitiran/${itemSPPT.bukti}",
+                          "${URL_APP}/upload_bukti_kitiran/${itemSPPT.bukti}",
                       width: 210.w,
                       height: 150.h,
                       fit: BoxFit.contain, // Atur ini sesuai kebutuhan
@@ -1461,7 +1461,7 @@ class EkitiranController extends GetxController {
         "data_backup": rawData, // Isi data_backup dengan rawData
       };
 
-      String apiUrl = "${URL_APPSIMPATDA}/ekitiran/backup_kitiran.php";
+      String apiUrl = "${URL_APP}/ekitiran/backup_kitiran.php";
 
       final response = await http.post(
         Uri.parse(apiUrl),

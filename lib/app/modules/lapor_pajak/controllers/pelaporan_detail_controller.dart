@@ -106,7 +106,7 @@ class PelaporanDetailController extends GetxController {
 
     if (controllerhist.datalist.isEmpty) {
       print('Tidak ada data sebelumnya, Anda bisa memasukkan data baru.');
-       InputPelaporanPPJ(); //start proses input pelaporan();
+      InputPelaporanPPJ(); //start proses input pelaporan();
     } else {
       // Check if newDate already exists in controllerhist.datalist
       bool dateExists = controllerhist.datalist.any((data) {
@@ -131,7 +131,7 @@ class PelaporanDetailController extends GetxController {
             newDate.month == nextMonth.month) {
           // Data bisa dimasukkan
           logInfo('Data bisa dimasukkan.');
-           InputPelaporanPPJ(); //start proses input pelaporan();
+          InputPelaporanPPJ(); //start proses input pelaporan();
         } else {
           EasyLoading.dismiss();
           // Tampilkan notifikasi tidak bisa melompat bulan
@@ -170,7 +170,8 @@ class PelaporanDetailController extends GetxController {
       initialDate:
           DateTime.now(), // The initial date when the date picker is opened.
       firstDate: DateTime(2021), // The earliest date that can be selected.
-      lastDate: DateTime(2025), // The latest date that can be selected.
+      lastDate: DateTime(
+          DateTime.now().year + 1), // The latest date that can be selected.
     ).then((date) {
       if (date != null) {
         selectedDate = date;
@@ -188,7 +189,8 @@ class PelaporanDetailController extends GetxController {
       initialDate:
           DateTime.now(), // The initial date when the date picker is opened.
       firstDate: DateTime(2021), // The earliest date that can be selected.
-      lastDate: DateTime(2025), // The latest date that can be selected.
+      lastDate: DateTime(
+          DateTime.now().year + 1), // The latest date that can be selected.
     ).then((date) {
       if (date != null) {
         selectedDate_akhir = date;
