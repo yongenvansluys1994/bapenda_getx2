@@ -875,11 +875,6 @@ class Dashboard extends StatelessWidget {
                                         ],
                                       ),
                                       onTap: () {
-                                        sendPushMessage(
-                                            'czaeZzxJRkmIS4IgxIlS4Q:APA91bE-LyMUG19fT_TRLTDt_I1ersu6Bz6SUYRHVdbFdl21RfAkh9xZibC1ALIL7H6fdLiKHx0EhjqAhUjpfu4gTxWQxlgYY4PiajIDDmZdo2Ile0z9bcM',
-                                            "hai",
-                                            "isi",
-                                            "");
                                         // sendPushMessage_topic("operatorpejabat",
                                         //     "title", "body", "desc");
                                       },

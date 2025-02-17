@@ -88,9 +88,6 @@ class EkitiranController extends GetxController {
     ],
   };
 
-  static const String url =
-      'https://pajak.bontangkita.id/sismiop/api/informasi/sync_sppts_list/2024';
-
   @override
   void onInit() async {
     super.onInit();
@@ -1005,7 +1002,7 @@ class EkitiranController extends GetxController {
       List<dynamic> jsonData = storedData;
 
       // Debug untuk melihat data yang ada
-      print('Data sebelum dihapus: $jsonData');
+      // print('Data sebelum dihapus: $jsonData');
 
       // Gunakan try-catch untuk menangani kesalahan jika item tidak ditemukan
       var itemToRemove;
@@ -1081,7 +1078,25 @@ class EkitiranController extends GetxController {
 
   Future<bool> isInternetConnected() async {
     var connectivityResult = await Connectivity().checkConnectivity();
-    return connectivityResult != ConnectivityResult.none;
+
+// Jika tidak ada koneksi sama sekali, langsung return false
+    if (connectivityResult == ConnectivityResult.none) {
+      return false;
+    }
+
+    // Coba melakukan ping ke Google DNS untuk memastikan akses internet
+    // Set timeout agar tidak menunggu terlalu lama
+    try {
+      final result = await InternetAddress.lookup('google.com')
+          .timeout(Duration(seconds: 2)); // Timeout 2 detik
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        return true; // Internet benar-benar aktif
+      }
+    } catch (e) {
+      return false; // Tidak bisa mengakses internet
+    }
+
+    return false;
   }
 
   void checkAndDownloadPBBData() async {

@@ -1,12 +1,13 @@
+import 'package:bapenda_getx2/app/modules/panduan/models/model_panduan.dart';
 import 'package:get/get.dart';
 
 class PanduanDetailController extends GetxController {
-  //TODO: Implement PanduanDetailController
+  late PanduanModel dataArgument;
 
-  final count = 0.obs;
   @override
   void onInit() {
     super.onInit();
+    dataArgument = Get.arguments;
   }
 
   @override
@@ -18,6 +19,4 @@ class PanduanDetailController extends GetxController {
   void onClose() {
     super.onClose();
   }
-
-  void increment() => count.value++;
 }
