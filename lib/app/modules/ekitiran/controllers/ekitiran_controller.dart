@@ -355,12 +355,14 @@ class EkitiranController extends GetxController {
       } else {
         logError(
             "Gagal memuat data Kitiran: ${response.statusCode} - ${response.reasonPhrase}");
-        EasyLoading.showError("Gagal memuat data (${response.statusCode})");
+        EasyLoading.showError(
+            "Gagal memuat data (${response.statusCode}. Keluar Menu dan coba Masuk Lagi)");
       }
       EasyLoading.dismiss();
     } catch (error) {
       logError("Terjadi kesalahan: $error");
-      EasyLoading.showError("Terjadi kesalahan saat memuat data.");
+      EasyLoading.showError(
+          "Terjadi kesalahan. Keluar Menu dan coba Masuk Lagi");
     } finally {
       isLoading = false;
       EasyLoading.dismiss();
@@ -404,13 +406,14 @@ class EkitiranController extends GetxController {
             "Data kitiran_pbb disimpan ke storage: ${datalist.length} items");
       } else {
         logError(
-            "Gagal memuat data Kitiran: ${response.statusCode} - ${response.reasonPhrase}");
+            "Gagal memuat data Kitiran: ${response.statusCode} - Keluar Menu dan coba Masuk Lagi");
         EasyLoading.showError("Gagal memuat data (${response.statusCode})");
       }
       EasyLoading.dismiss();
     } catch (error) {
       logError("Terjadi kesalahan: $error");
-      EasyLoading.showError("Terjadi kesalahan saat memuat data.");
+      EasyLoading.showError(
+          "Terjadi kesalahan. Keluar Menu dan coba Masuk Lagi");
     } finally {
       isLoading = false;
       EasyLoading.dismiss();
@@ -502,7 +505,12 @@ class EkitiranController extends GetxController {
           "kecamatan": "${userrt_kecamatan.text}",
           "kelurahan": "${userrt_kelurahan.text}",
           "rt": "${userrt_rt.text}",
+        }).timeout(Duration(seconds: 10), onTimeout: () {
+          EasyLoading
+              .dismiss(); // Tambahkan ini untuk menutup loading jika timeout
+          throw TimeoutException("Request timeout");
         });
+        ;
 
         var data = json.decode(response.body);
 
@@ -541,10 +549,13 @@ class EkitiranController extends GetxController {
         EasyLoading.dismiss();
         logError("Error during API request: $e");
         RawSnackbar_top(
-          message: "Terjadi gangguan jaringan.",
+          message: "Terjadi gangguan jaringan. Coba lagi.",
           kategori: "Error",
           duration: 3,
         );
+      } finally {
+        EasyLoading.dismiss();
+        update();
       }
     } else {
       EasyLoading.dismiss();
@@ -1056,7 +1067,12 @@ class EkitiranController extends GetxController {
                 print('Gagal menghapus data di server: ${response.statusCode}');
               }
             } catch (e) {
+              EasyLoading
+                  .dismiss(); // Pasti menutup loading meskipun terjadi error
               print('Terjadi kesalahan saat mengirim request: $e');
+            } finally {
+              EasyLoading.dismiss();
+              update();
             }
             EasyLoading.dismiss();
           } else {

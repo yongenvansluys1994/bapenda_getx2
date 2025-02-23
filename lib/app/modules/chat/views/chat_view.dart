@@ -546,8 +546,12 @@ class ChatFrom extends StatelessWidget {
                                   Texts.subtitle2(
                                       "${timeago.format(data_chat.sentAt, locale: 'en_short')}",
                                       color: Colors.grey),
-                                  Texts.captionSm("${data_chat.senderName}",
-                                      color: Colors.black87),
+                                  data_chat.senderId == "2" //ketua RT
+                                      ? Texts.captionSm("${data_chat.namaRT}",
+                                          color: Colors.black87)
+                                      : Texts.captionSm(
+                                          "${data_chat.senderName}",
+                                          color: Colors.black87),
                                 ],
                               ),
                             ],

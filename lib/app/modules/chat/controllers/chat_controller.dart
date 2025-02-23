@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:bapenda_getx2/app/core/api/api.dart';
 import 'package:bapenda_getx2/app/modules/chat/models/model_chat.dart';
 import 'package:bapenda_getx2/app/modules/dashboard/models/auth_model_model.dart';
+import 'package:bapenda_getx2/app/modules/ekitiran/models/rt_model.dart';
 import 'package:bapenda_getx2/core/push_notification/push_notif_multiple.dart';
 import 'package:bapenda_getx2/widgets/dismiss_keyboard.dart';
 import 'package:bapenda_getx2/widgets/logger.dart';
@@ -12,8 +13,12 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 
 class ChatController extends GetxController {
+  late RTModel rtModel;
+  final storage = GetStorage();
+
   bool isLoading = false;
   bool isEmpty = false;
   bool isFailed = false;
@@ -68,6 +73,18 @@ class ChatController extends GetxController {
           message: "Pesan tidak boleh kosong", kategori: "error", duration: 1);
       update();
     } else {
+      var userRtData = storage.read('user_rt');
+
+      RTModel rtModel = userRtData != null
+          ? RTModel.fromJson(userRtData)
+          : RTModel(
+              id_user_rt: "",
+              nama: "",
+              kecamatan: "",
+              kelurahan: "",
+              rt: "",
+              isSynced: false,
+            );
       try {
         // Memanggil sendChat dan menunggu hasilnya
         logInfo('${typeRoom}');
@@ -75,6 +92,9 @@ class ChatController extends GetxController {
           'id_userwp': int.parse("${authModel.idUserwp}"),
           'room_id': '${roomID}',
           'text': '${textController.text}',
+          'nama_rt': rtModel.rt != ""
+              ? '${rtModel.nama} - RT. ${rtModel.rt} ${rtModel.kelurahan}'
+              : '',
           'type': typeChat,
           'type_room': '${typeRoom}',
           'target_id_userwp': '',
@@ -126,9 +146,24 @@ class ChatController extends GetxController {
           message: "Pesan tidak boleh kosong", kategori: "error", duration: 1);
       update();
     } else {
+      var userRtData = storage.read('user_rt');
+
+      RTModel rtModel = userRtData != null
+          ? RTModel.fromJson(userRtData)
+          : RTModel(
+              id_user_rt: "",
+              nama: "",
+              kecamatan: "",
+              kelurahan: "",
+              rt: "",
+              isSynced: false,
+            );
       sendChat({
         'id_userwp': '${authModel.idUserwp}',
         'id_sender': '${"id_sender"}',
+        'nama_rt': rtModel.rt != ""
+            ? '${rtModel.nama} - RT. ${rtModel.rt} ${rtModel.kelurahan}'
+            : '',
         'text': '${textController.text}',
         'type': 'baru',
       });

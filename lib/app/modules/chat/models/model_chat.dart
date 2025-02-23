@@ -12,6 +12,7 @@ class ModelChat {
   String messageId;
   String roomId;
   String senderId;
+  String namaRT;
   String senderName;
   String foto;
   String messageText;
@@ -21,6 +22,7 @@ class ModelChat {
     required this.messageId,
     required this.roomId,
     required this.senderId,
+    required this.namaRT,
     required this.senderName,
     required this.foto,
     required this.messageText,
@@ -31,6 +33,7 @@ class ModelChat {
         messageId: json["message_id"],
         roomId: json["room_id"],
         senderId: json["sender_id"],
+        namaRT: json["nama_rt"],
         senderName: json["sender_name"],
         foto: json["foto"],
         messageText: json["message_text"],
@@ -41,6 +44,7 @@ class ModelChat {
         "message_id": messageId,
         "room_id": roomId,
         "sender_id": senderId,
+        "nama_rt": namaRT,
         "sender_name": senderName,
         "foto": foto,
         "message_text": messageText,

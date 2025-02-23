@@ -140,6 +140,9 @@ class EkitiranFormController extends GetxController {
     } catch (e) {
       EasyLoading.dismiss();
       print("Error: $e");
+    } finally {
+      EasyLoading.dismiss();
+      update();
     }
   }
 
@@ -219,6 +222,9 @@ class EkitiranFormController extends GetxController {
         },
       );
       isLoading = false;
+      update();
+    } finally {
+      EasyLoading.dismiss();
       update();
     }
   }
@@ -370,7 +376,7 @@ class EkitiranFormController extends GetxController {
       request.files.add(pic);
 
       var response =
-          await request.send().timeout(Duration(seconds: 30), onTimeout: () {
+          await request.send().timeout(Duration(seconds: 20), onTimeout: () {
         throw Exception("Timeout");
       });
 
@@ -414,6 +420,9 @@ class EkitiranFormController extends GetxController {
         kategori: "success",
         duration: 3,
       );
+    } finally {
+      await EasyLoading.dismiss();
+      update();
     }
 
     update();
