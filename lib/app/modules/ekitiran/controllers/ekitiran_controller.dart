@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:bapenda_getx2/app/core/api/api.dart';
+import 'package:bapenda_getx2/app/modules/dashboard/models/auth_model_model.dart';
 import 'package:bapenda_getx2/app/modules/ekitiran/models/kitiran_model.dart';
 import 'package:bapenda_getx2/app/modules/ekitiran/models/rt_model.dart';
 import 'package:bapenda_getx2/utils/app_const.dart';
@@ -33,6 +34,7 @@ import 'package:path/path.dart' as path;
 
 class EkitiranController extends GetxController {
   late RTModel rtModel;
+  late AuthModel authmModel;
 
   //progress sync untuk loading progress sat sinkronisasi data offline ke online
   var progressSync = 0.0.obs;
@@ -53,6 +55,9 @@ class EkitiranController extends GetxController {
   final TextEditingController userrt_kecamatan = TextEditingController();
   final TextEditingController userrt_kelurahan = TextEditingController();
   final TextEditingController userrt_rt = TextEditingController();
+
+  final TextEditingController no_hp_rt = TextEditingController();
+  final TextEditingController password_rt = TextEditingController();
 
   //controller untuk cetak laporan
   final TextEditingController tahun_cetak = TextEditingController();
@@ -928,7 +933,14 @@ class EkitiranController extends GetxController {
                                     '52',
                                     '53',
                                     '54',
-                                    '55'
+                                    '55',
+                                    '56',
+                                    '57',
+                                    '58',
+                                    '59',
+                                    '60',
+                                    '61',
+                                    '62'
                                   ],
                                   dropdownValue:
                                       controller.userrt_rt.text.isEmpty
@@ -937,6 +949,32 @@ class EkitiranController extends GetxController {
                                   onDropdownChanged: (newValue) {
                                     controller.changeValue_userrt_rt(newValue);
                                   },
+                                  validator: true,
+                                ),
+                              ),
+                              Container(
+                                // width: 167.w,
+                                child: TextFields.defaultTextField2(
+                                  title: "No. HP Ketua RT",
+                                  isLoading: controller.isLoading,
+                                  textInputAction: TextInputAction.done,
+                                  textInputType: TextInputType.text,
+                                  prefixIcon: Icons.phone_android,
+                                  controller: controller.no_hp_rt,
+                                  borderColor: primaryColor,
+                                  validator: true,
+                                ),
+                              ),
+                              Container(
+                                // width: 167.w,
+                                child: TextFields.defaultTextField2(
+                                  title: "Buat Password Baru",
+                                  isLoading: controller.isLoading,
+                                  textInputAction: TextInputAction.done,
+                                  textInputType: TextInputType.text,
+                                  prefixIcon: Icons.key,
+                                  controller: controller.password_rt,
+                                  borderColor: primaryColor,
                                   validator: true,
                                 ),
                               ),
