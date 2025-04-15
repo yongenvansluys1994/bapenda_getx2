@@ -63,6 +63,8 @@ import '../modules/pbb/bindings/pbb_binding.dart';
 import '../modules/pbb/views/pbb_view.dart';
 import '../modules/pembayaran/bindings/pembayaran_binding.dart';
 import '../modules/pembayaran/views/pembayaran_view.dart';
+import '../modules/pick_googlemaps/bindings/pick_googlemaps_binding.dart';
+import '../modules/pick_googlemaps/views/pick_googlemaps_view.dart';
 import '../modules/ppid/bindings/ppid_binding.dart';
 import '../modules/ppid/views/ppid_view.dart';
 import '../modules/qrispbb/bindings/qrispbb_binding.dart';
@@ -305,6 +307,11 @@ class AppPages {
       name: _Paths.LAPORAN_EKITIRAN,
       page: () => const LaporanEkitiranView(),
       binding: LaporanEkitiranBinding(),
+    ),
+    GetPage(
+      name: _Paths.PICK_GOOGLEMAPS,
+      page: () => const PickGooglemapsView(),
+      binding: PickGooglemapsBinding(),
     ),
   ];
 }

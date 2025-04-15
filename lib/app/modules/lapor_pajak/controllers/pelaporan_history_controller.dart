@@ -2,6 +2,7 @@ import 'package:bapenda_getx2/app/core/api/api.dart';
 import 'package:bapenda_getx2/app/modules/lapor_pajak/models/model_getpelaporanuser.dart';
 import 'package:bapenda_getx2/app/modules/lapor_pajak/models/model_objekku.dart';
 import 'package:bapenda_getx2/widgets/getdialog.dart';
+import 'package:bapenda_getx2/widgets/logger.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
@@ -31,7 +32,7 @@ class PelaporanHistoryController extends GetxController {
   RxList<ModelGetpelaporanUser> datalist5 = <ModelGetpelaporanUser>[].obs;
 
   @override
-  void onInit() {
+  void onInit() async {
     super.onInit();
     dataArgument = Get.arguments;
     jenispajak = Get.parameters['jenispajak'].toString();
@@ -41,7 +42,14 @@ class PelaporanHistoryController extends GetxController {
       tahunhistory.add(
           tahunSekarang - i); //mengisi list tahunhistory 5 tahun kebelakang
     }
-    init();
+
+    bool isUrlAccessible = await checkUrlSimpatda();
+    if (isUrlAccessible) {
+      init();
+    } else {
+      EasyLoading.showError(
+          "Mohon maaf, Server sedang Maintenance, Coba lagi beberapa saat");
+    }
     update();
   }
 
@@ -53,6 +61,19 @@ class PelaporanHistoryController extends GetxController {
     GetHistoryPajak5(tahunhistory[4]);
 
     update();
+  }
+
+  Future<bool> checkUrlSimpatda() async {
+    try {
+      final response = await api.getUrlSimpatda();
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      return false;
+    }
   }
 
   Future<void> GetHistoryPajak(int tahun, bool notiflunas) async {

@@ -232,7 +232,7 @@ class HistoryPajak extends StatelessWidget {
                                               ),
                                             )
                                           : Text(
-                                              'Jenis Pajak : ${item.idSpt} \n NPWPD : ${item.npwpd}',
+                                              'Jenis Pajak : ${item.nmRekening} \n NPWPD : ${item.npwpd}',
                                               maxLines: 2,
                                               overflow: TextOverflow.clip,
                                               style: TextStyle(

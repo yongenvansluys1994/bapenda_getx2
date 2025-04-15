@@ -1291,8 +1291,19 @@ class _TambahNpwpdViewState extends State<TambahNpwpdView> {
                             elevation: 4,
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(15))),
-                        onPressed: () {
-                          Get.toNamed(Routes.OPENMAP_NPWPD);
+                        onPressed: () async {
+                          controller.removelatlng();
+                          final result =
+                              await Get.toNamed(Routes.PICK_GOOGLEMAPS);
+
+                          if (result != null) {
+                            controller.lat = result['lat'];
+                            controller.long = result['lng'];
+
+                            controller.addMarkers();
+                            print(
+                                "Latitude: ${controller.lat}, Longitude: ${controller.long}");
+                          }
                         },
                         child: Row(
                           children: [

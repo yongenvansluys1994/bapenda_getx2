@@ -274,6 +274,19 @@ class Api {
     );
   }
 
+  Future<Response> getUrlSimpatda() {
+    return dio3.post(
+      "/cek_utilitas/checkInternet.php",
+      options: Options(
+        receiveTimeout: Duration(seconds: 5), // Timeout maksimal 5 detik
+        sendTimeout: Duration(seconds: 5),
+        validateStatus: (status) {
+          return status! < 500; // Anggap sukses jika status di bawah 500
+        },
+      ),
+    );
+  }
+
   Future<Response> deleteData(int number) {
     return dio.delete("/v1/api/rest/material-movement/$number");
   }
@@ -371,7 +384,7 @@ class Api {
       required int tahun,
       required String jenispajak}) async {
     var response = await dio.get(
-        "/get_pelaporan_merge/index.php?id_wajib_pajak=${id_wajib_pajak}&tahun=${tahun}&jenispajak=${jenispajak}");
+        "/get_pelaporan_merge2/index.php?id_wajib_pajak=${id_wajib_pajak}&tahun=${tahun}&jenispajak=${jenispajak}");
     if (response.statusCode == 200) {
       //print(response.data); //untuk check response yang diberikan oleh url
       List data = json.decode(response.data);

@@ -952,32 +952,32 @@ class EkitiranController extends GetxController {
                                   validator: true,
                                 ),
                               ),
-                              Container(
-                                // width: 167.w,
-                                child: TextFields.defaultTextField2(
-                                  title: "No. HP Ketua RT",
-                                  isLoading: controller.isLoading,
-                                  textInputAction: TextInputAction.done,
-                                  textInputType: TextInputType.text,
-                                  prefixIcon: Icons.phone_android,
-                                  controller: controller.no_hp_rt,
-                                  borderColor: primaryColor,
-                                  validator: true,
-                                ),
-                              ),
-                              Container(
-                                // width: 167.w,
-                                child: TextFields.defaultTextField2(
-                                  title: "Buat Password Baru",
-                                  isLoading: controller.isLoading,
-                                  textInputAction: TextInputAction.done,
-                                  textInputType: TextInputType.text,
-                                  prefixIcon: Icons.key,
-                                  controller: controller.password_rt,
-                                  borderColor: primaryColor,
-                                  validator: true,
-                                ),
-                              ),
+                              // Container(
+                              //   // width: 167.w,
+                              //   child: TextFields.defaultTextField2(
+                              //     title: "No. HP Ketua RT",
+                              //     isLoading: controller.isLoading,
+                              //     textInputAction: TextInputAction.done,
+                              //     textInputType: TextInputType.text,
+                              //     prefixIcon: Icons.phone_android,
+                              //     controller: controller.no_hp_rt,
+                              //     borderColor: primaryColor,
+                              //     validator: true,
+                              //   ),
+                              // ),
+                              // Container(
+                              //   // width: 167.w,
+                              //   child: TextFields.defaultTextField2(
+                              //     title: "Buat Password Baru",
+                              //     isLoading: controller.isLoading,
+                              //     textInputAction: TextInputAction.done,
+                              //     textInputType: TextInputType.text,
+                              //     prefixIcon: Icons.key,
+                              //     controller: controller.password_rt,
+                              //     borderColor: primaryColor,
+                              //     validator: true,
+                              //   ),
+                              // ),
                               SizedBox(height: 10.h),
                               Buttons.gradientButton(
                                 handler: () {

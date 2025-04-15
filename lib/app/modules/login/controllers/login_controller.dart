@@ -160,11 +160,13 @@ class LoginController extends GetxController with AuthCacheService {
           });
           setFetchingState(false);
 
-          setFetchingState(true);
-          await getTokenMsg(
-              userInfo.nik, userInfo.noHp, userInfo.foto, userInfo.nama);
-          await InsertTokenFcm(userInfo.nik, tokenMsg);
-          setFetchingState(false);
+          if (APP_MODE == "prod") {
+            setFetchingState(true);
+            await getTokenMsg(
+                userInfo.nik, userInfo.noHp, userInfo.foto, userInfo.nama);
+            await InsertTokenFcm(userInfo.nik, tokenMsg);
+            setFetchingState(false);
+          }
 
           log("Logged in as ${userInfo.nama}");
 

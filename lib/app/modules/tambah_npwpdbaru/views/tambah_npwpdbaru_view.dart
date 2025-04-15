@@ -272,7 +272,8 @@ class _TambahNpwpdbaruViewState extends State<TambahNpwpdbaruView> {
                               ),
                               Container(
                                 child: TextFormField(
-                                  textCapitalization: TextCapitalization.characters,
+                                  textCapitalization:
+                                      TextCapitalization.characters,
                                   style: TextStyle(fontSize: 12.sp),
                                   controller: controller.kota_usaha,
                                   decoration: InputDecoration(
@@ -823,7 +824,8 @@ class _TambahNpwpdbaruViewState extends State<TambahNpwpdbaruView> {
                               ),
                               Container(
                                 child: TextFormField(
-                                  textCapitalization: TextCapitalization.characters,
+                                  textCapitalization:
+                                      TextCapitalization.characters,
                                   style: TextStyle(fontSize: 12.sp),
                                   controller: controller.kota_pemilik,
                                   decoration: InputDecoration(
@@ -1210,8 +1212,19 @@ class _TambahNpwpdbaruViewState extends State<TambahNpwpdbaruView> {
                             elevation: 4,
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(15))),
-                        onPressed: () {
-                          Get.toNamed(Routes.OPENMAP_NPWPDBARU);
+                        onPressed: () async {
+                          controller.removelatlng();
+                          final result =
+                              await Get.toNamed(Routes.PICK_GOOGLEMAPS);
+
+                          if (result != null) {
+                            controller.lat = result['lat'];
+                            controller.long = result['lng'];
+
+                            controller.addMarkers();
+                            print(
+                                "Latitude: ${controller.lat}, Longitude: ${controller.long}");
+                          }
                         },
                         child: Row(
                           children: [

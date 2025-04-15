@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:bapenda_getx2/app/core/api/api.dart';
 import 'package:bapenda_getx2/app/modules/lapor_pajak/controllers/pelaporan_history_controller.dart';
@@ -19,6 +20,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:month_picker_dialog/month_picker_dialog.dart';
 import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as path;
 
 class PelaporanDetailController extends GetxController {
   final pelaporanHistoryC = Get.find<PelaporanHistoryController>();
@@ -35,6 +38,7 @@ class PelaporanDetailController extends GetxController {
   TextEditingController pendapatan = TextEditingController();
   TextEditingController kwh = TextEditingController();
   XFile? imageFile = null;
+  XFile? previousImageFile = null;
 
   String formNum(String s) {
     return NumberFormat.decimalPattern().format(
@@ -327,138 +331,154 @@ class PelaporanDetailController extends GetxController {
   }
 
   Future<void> InputPelaporan() async {
-    // Awal Loading Disini-------------------------------
-    var client = http.Client();
-    try {
-      var request = http.MultipartRequest(
-          "POST", Uri.parse("${URL_APP}/pelaporan/${dataArgument.idDaftarwp}"));
-      request.fields['id_wajib_pajak'] = dataArgument.idWajibPajak;
-      request.fields['masa_pajak'] = "${selectedDate}";
-      request.fields['pendapatan'] = pendapatan.text;
-      request.fields['nik'] = dataArgument.nikUser;
-      request.fields['jenispajak'] = jenispajak;
-      request.fields['id_daftarwp'] = dataArgument.idDaftarwp;
+    bool isUrlAccessible = await checkUrlSimpatda();
+    if (isUrlAccessible) {
+      // Awal Loading Disini-------------------------------
+      var client = http.Client();
+      try {
+        var request = http.MultipartRequest("POST",
+            Uri.parse("${URL_APP}/pelaporan/${dataArgument.idDaftarwp}"));
+        request.fields['id_wajib_pajak'] = dataArgument.idWajibPajak;
+        request.fields['masa_pajak'] = "${selectedDate}";
+        request.fields['pendapatan'] = pendapatan.text;
+        request.fields['nik'] = dataArgument.nikUser;
+        request.fields['jenispajak'] = jenispajak;
+        request.fields['id_daftarwp'] = dataArgument.idDaftarwp;
 
-      if (imageFile != null) {
-        var pic = await http.MultipartFile.fromPath("image", imageFile!.path);
-        request.files.add(pic);
-      }
-
-      var response = await client.send(request).timeout(Duration(seconds: 12));
-      final responseData = await response.stream.toBytes();
-      final respStr = String.fromCharCodes(responseData);
-      if (response.statusCode == 200) {
-        if (respStr == "Berhasil") {
-          FinalDate = null;
-          pendapatan.text = "";
-          imageFile = null;
-          pelaporanHistoryC.GetHistoryPajak(
-              tahunhistory[0], false); //update history pelaporan
-          update();
-          //-------------------------
-          getDefaultDialog().onFix(
-              title: "Terima Kasih!",
-              desc:
-                  "Pelaporan Pajak Berhasil! Petugas Kami akan melakukan Verifikasi dan setelahnya Anda dapat membayar.",
-              kategori: "success");
-          sendPushMessage_topic(
-              "operatorpejabat",
-              "Pelaporan Pajak Masuk!",
-              "Terdapat Pelaporan Pajak baru, Buka aplikasi untuk melihat detailnya",
-              PELAPORAN_MASUK);
-        } else if (respStr == "SudahAda") {
-          getDefaultDialog().onFixWithoutIcon(
-              title: "Data Sudah Ada!",
-              desc:
-                  "Anda Telah melapor pada Masa Pajak yang sama sebelumnya! Pastikan anda memilih Masa Pajak dengan Benar");
-        } else {
-          RawSnackbar_top(
-              message: "Oops.. Kesalahan Koneksi",
-              kategori: "error",
-              duration: 2);
+        if (imageFile != null) {
+          var pic = await http.MultipartFile.fromPath("image", imageFile!.path);
+          request.files.add(pic);
         }
-      } else {
-        // Handle other status codes if needed
+
+        var response =
+            await client.send(request).timeout(Duration(seconds: 12));
+        final responseData = await response.stream.toBytes();
+        final respStr = String.fromCharCodes(responseData);
+        if (response.statusCode == 200) {
+          if (respStr == "Berhasil") {
+            FinalDate = null;
+            pendapatan.text = "";
+            imageFile = null;
+            pelaporanHistoryC.GetHistoryPajak(
+                tahunhistory[0], false); //update history pelaporan
+            update();
+            //-------------------------
+            getDefaultDialog().onFix(
+                title: "Terima Kasih!",
+                desc:
+                    "Pelaporan Pajak Berhasil! Petugas Kami akan melakukan Verifikasi dan setelahnya Anda dapat membayar.",
+                kategori: "success");
+            sendPushMessage_topic(
+                "operatorpejabat",
+                "Pelaporan Pajak Masuk!",
+                "Terdapat Pelaporan Pajak baru, Buka aplikasi untuk melihat detailnya",
+                PELAPORAN_MASUK);
+          } else if (respStr == "SudahAda") {
+            getDefaultDialog().onFixWithoutIcon(
+                title: "Data Sudah Ada!",
+                desc:
+                    "Anda Telah melapor pada Masa Pajak yang sama sebelumnya! Pastikan anda memilih Masa Pajak dengan Benar");
+          } else {
+            RawSnackbar_top(
+                message: "Oops.. Kesalahan Koneksi",
+                kategori: "error",
+                duration: 2);
+          }
+        } else {
+          // Handle other status codes if needed
+        }
+      } on TimeoutException catch (_) {
+        // Handle timeout
+        RawSnackbar_top(
+            message:
+                "Koneksi gagal, harap periksa kembali koneksi internet Anda",
+            kategori: "error",
+            duration: 2);
+      } catch (e) {
+        // Handle other errors
+        print('Error: $e');
+      } finally {
+        client.close(); // Close the client when finished
+        EasyLoading.dismiss();
       }
-    } on TimeoutException catch (_) {
-      // Handle timeout
-      RawSnackbar_top(
-          message: "Koneksi gagal, harap periksa kembali koneksi internet Anda",
-          kategori: "error",
-          duration: 2);
-    } catch (e) {
-      // Handle other errors
-      print('Error: $e');
-    } finally {
-      client.close(); // Close the client when finished
-      EasyLoading.dismiss();
+    } else {
+      EasyLoading.showError(
+          "Mohon maaf, Server sedang Maintenance, Coba lagi beberapa saat");
     }
   }
 
   Future<void> InputPelaporanCath() async {
-    // Awal Loading Disini-------------------------------
-    var client = http.Client();
-    try {
-      var request = http.MultipartRequest(
-          "POST", Uri.parse("${URL_APP}/pelaporan/${dataArgument.idDaftarwp}"));
-      request.fields['id_wajib_pajak'] = dataArgument.idWajibPajak;
-      request.fields['masa_pajak'] = "${selectedDate}";
-      request.fields['masa_pajak_akhir'] = "${selectedDate_akhir}";
-      request.fields['pendapatan'] = pendapatan.text;
-      request.fields['nik'] = dataArgument.nikUser;
-      request.fields['jenispajak'] = jenispajak;
-      request.fields['id_daftarwp'] = dataArgument.idDaftarwp;
+    bool isUrlAccessible = await checkUrlSimpatda();
+    if (isUrlAccessible) {
+      // Awal Loading Disini-------------------------------
+      var client = http.Client();
+      try {
+        var request = http.MultipartRequest("POST",
+            Uri.parse("${URL_APP}/pelaporan/${dataArgument.idDaftarwp}"));
+        request.fields['id_wajib_pajak'] = dataArgument.idWajibPajak;
+        request.fields['masa_pajak'] = "${selectedDate}";
+        request.fields['masa_pajak_akhir'] = "${selectedDate_akhir}";
+        request.fields['pendapatan'] = pendapatan.text;
+        request.fields['nik'] = dataArgument.nikUser;
+        request.fields['jenispajak'] = jenispajak;
+        request.fields['id_daftarwp'] = dataArgument.idDaftarwp;
 
-      if (imageFile != null) {
-        var pic = await http.MultipartFile.fromPath("image", imageFile!.path);
-        request.files.add(pic);
-      }
-
-      var response = await client.send(request).timeout(Duration(seconds: 12));
-      final responseData = await response.stream.toBytes();
-      final respStr = String.fromCharCodes(responseData);
-
-      if (response.statusCode == 200) {
-        if (respStr == "Berhasil") {
-          FinalDate = null;
-          FinalDate_akhir = null;
-          pendapatan.text = "";
-          imageFile = null;
-          pelaporanHistoryC.GetHistoryPajak(
-              tahunhistory[0], false); //update history pelaporan
-          update();
-          //-------------------------
-          getDefaultDialog().onFix(
-              title: "Terima Kasih!",
-              desc:
-                  "Pelaporan Pajak Berhasil! Petugas Kami akan melakukan Verifikasi dan setelahnya Anda dapat membayar.",
-              kategori: "success");
-          sendPushMessage_topic(
-              "operatorpejabat",
-              "Pelaporan Pajak Masuk!",
-              "Terdapat Pelaporan Pajak baru, Buka aplikasi untuk melihat detailnya",
-              "pelaporan_masuk");
-        } else {
-          RawSnackbar_top(
-              message: "Oops.. Kesalahan Koneksi",
-              kategori: "error",
-              duration: 2);
+        if (imageFile != null) {
+          var pic = await http.MultipartFile.fromPath("image", imageFile!.path);
+          request.files.add(pic);
         }
-      } else {
-        // Handle other status codes if needed
+
+        var response =
+            await client.send(request).timeout(Duration(seconds: 12));
+        final responseData = await response.stream.toBytes();
+        final respStr = String.fromCharCodes(responseData);
+
+        if (response.statusCode == 200) {
+          if (respStr == "Berhasil") {
+            FinalDate = null;
+            FinalDate_akhir = null;
+            pendapatan.text = "";
+            imageFile = null;
+            pelaporanHistoryC.GetHistoryPajak(
+                tahunhistory[0], false); //update history pelaporan
+            update();
+            //-------------------------
+            getDefaultDialog().onFix(
+                title: "Terima Kasih!",
+                desc:
+                    "Pelaporan Pajak Berhasil! Petugas Kami akan melakukan Verifikasi dan setelahnya Anda dapat membayar.",
+                kategori: "success");
+            sendPushMessage_topic(
+                "operatorpejabat",
+                "Pelaporan Pajak Masuk!",
+                "Terdapat Pelaporan Pajak baru, Buka aplikasi untuk melihat detailnya",
+                "pelaporan_masuk");
+          } else {
+            RawSnackbar_top(
+                message: "Oops.. Kesalahan Koneksi",
+                kategori: "error",
+                duration: 2);
+          }
+        } else {
+          // Handle other status codes if needed
+        }
+      } on TimeoutException catch (_) {
+        // Handle timeout
+        RawSnackbar_top(
+            message:
+                "Koneksi gagal, harap periksa kembali koneksi internet Anda",
+            kategori: "error",
+            duration: 2);
+      } catch (e) {
+        // Handle other errors
+        print('Error: $e');
+      } finally {
+        client.close(); // Close the client when finished
+        EasyLoading.dismiss();
       }
-    } on TimeoutException catch (_) {
-      // Handle timeout
-      RawSnackbar_top(
-          message: "Koneksi gagal, harap periksa kembali koneksi internet Anda",
-          kategori: "error",
-          duration: 2);
-    } catch (e) {
-      // Handle other errors
-      print('Error: $e');
-    } finally {
-      client.close(); // Close the client when finished
-      EasyLoading.dismiss();
+    } else {
+      EasyLoading.showError(
+          "Mohon maaf, Server sedang Maintenance, Coba lagi beberapa saat");
     }
   }
 
@@ -586,19 +606,39 @@ class PelaporanDetailController extends GetxController {
   }
 
   void _openGallery(BuildContext context) async {
-    final pickedFile =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
+    final pickedFile = await ImagePicker().pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 800, // Set target width
+      maxHeight: 800, // Set target height
+      imageQuality: 50, // Set quality (0-100)
+    );
+    //agar tidak terjadinya penumpukan cache bila user ganti2 foto
+    if (previousImageFile != null) {
+      final previousFileName = path.basename(previousImageFile!.path);
+      await clearImagePickerCache(previousFileName);
+    }
     imageFile = pickedFile!;
-    Get.back();
+    previousImageFile = pickedFile;
     update();
+    Get.back();
   }
 
   void _openCamera(BuildContext context) async {
-    final pickedFile =
-        await ImagePicker().pickImage(source: ImageSource.camera);
+    final pickedFile = await ImagePicker().pickImage(
+      source: ImageSource.camera,
+      maxWidth: 800, // Set target width
+      maxHeight: 800, // Set target height
+      imageQuality: 50, // Set quality (0-100)
+    );
+    //agar tidak terjadinya penumpukan cache bila user ganti2 foto
+    if (previousImageFile != null) {
+      final previousFileName = path.basename(previousImageFile!.path);
+      await clearImagePickerCache(previousFileName);
+    }
     imageFile = pickedFile!;
-    Get.back();
+    previousImageFile = pickedFile;
     update();
+    Get.back();
   }
 
   void _filePicker(BuildContext context) async {
@@ -629,6 +669,36 @@ class PelaporanDetailController extends GetxController {
         //Get.toNamed(Routes.LAPOR_PAJAK, arguments: authModel);
       }
     });
+  }
+
+  Future<bool> checkUrlSimpatda() async {
+    try {
+      final response = await api.getUrlSimpatda();
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      return false;
+    }
+  }
+
+  Future<void> clearImagePickerCache(String fileName) async {
+    final directory = await getTemporaryDirectory();
+    final cacheDirectory = Directory(directory.path);
+
+    final cleanFileName = fileName.replaceFirst(RegExp(r'^scaled_'), '');
+
+    if (cacheDirectory.existsSync()) {
+      print("Cache directory: ${cacheDirectory.path}");
+      for (var file in cacheDirectory.listSync(recursive: true)) {
+        if (file is File && file.path.contains(cleanFileName)) {
+          print('Deleting image cache: ${file.path}');
+          await file.delete();
+        }
+      }
+    }
   }
 
   @override

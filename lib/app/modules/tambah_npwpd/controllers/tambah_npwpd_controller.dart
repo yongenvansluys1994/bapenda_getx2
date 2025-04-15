@@ -4,9 +4,11 @@ import 'package:bapenda_getx2/app/core/api/api.dart';
 import 'package:bapenda_getx2/app/modules/dashboard/models/auth_model_model.dart';
 import 'package:bapenda_getx2/app/modules/lapor_pajak/controllers/lapor_pajak_controller.dart';
 import 'package:bapenda_getx2/app/modules/register/register_baru/models/modelcheck.dart';
+import 'package:bapenda_getx2/core/location_service.dart';
 import 'package:bapenda_getx2/core/push_notification/push_notif_topic.dart';
 import 'package:bapenda_getx2/utils/app_const.dart';
 import 'package:bapenda_getx2/widgets/getdialog.dart';
+import 'package:bapenda_getx2/widgets/logger.dart';
 import 'package:bapenda_getx2/widgets/snackbar.dart';
 import 'package:bapenda_getx2/widgets/theme/app_theme.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +23,7 @@ import 'package:http/http.dart' as http;
 class TambahNpwpdController extends GetxController {
   final laporController = Get.find<LaporPajakController>();
   late AuthModel authModel;
+
   double? lat;
   double? long;
   int activeStepIndex = 0;
@@ -48,14 +51,21 @@ class TambahNpwpdController extends GetxController {
   Set<Marker> markers2 = <Marker>{};
 
   void addMarkers() {
-    var latm = lat == null ? 0.13295280196348974 : lat!;
-    var longm = long == null ? 0.13295280196348974 : long!;
-    markers2 = <Marker>{
-      Marker(
-        markerId: MarkerId('1'),
-        position: LatLng(latm, longm),
-      ),
-    };
+    if (lat != null && long != null) {
+      markers2 = <Marker>{
+        Marker(
+          markerId: const MarkerId('selected_location'),
+          position: LatLng(lat!, long!),
+        ),
+      };
+      update();
+    }
+  }
+
+  void removelatlng() {
+    lat = null;
+    long = null;
+    logInfo("$lat");
     update();
   }
 
@@ -207,14 +217,14 @@ class TambahNpwpdController extends GetxController {
 
   void PickedLocation(PickedData pickedData) async {
     EasyLoading.show(status: "Sedang mengambil titik koordinat");
-  lat = null;
-  update();
-  await Future.delayed(Duration(seconds: 1));
-  lat = pickedData.latLong.latitude;
-  long = pickedData.latLong.longitude;
-  update();
-  EasyLoading.dismiss();
-  Get.back();
+    lat = null;
+    update();
+    await Future.delayed(Duration(seconds: 1));
+    lat = pickedData.latLong.latitude;
+    long = pickedData.latLong.longitude;
+    update();
+    EasyLoading.dismiss();
+    Get.back();
   }
 
   Future<List<ModelCheck>?> checknpwpd() async {

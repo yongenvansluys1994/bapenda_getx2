@@ -1,12 +1,12 @@
 // ignore_for_file: constant_identifier_names
-const int currentversion = 49;
+const int currentversion = 51;
 const int dataPBBVersion = 4; //RT update data Informasi PBB
 const String tahun_pbb = "2025";
 const String projectId = "bapendagetx";
+const String APP_MODE = "prod";
 const String PENDAFTARAN_MASUK = "pendaftaran_masuk";
 const String PELAPORAN_MASUK = "pelaporan_masuk";
 const String CHAT = "chat";
-const String APP_MODE = "dev";
 const String SHOW_WELCOME_PAGE = "welcome-page";
 const String STORAGE_LOGIN_DATA = "logindata";
 const String STORAGE_LOGIN_DATA_REFRESH = "logindata-refresh";

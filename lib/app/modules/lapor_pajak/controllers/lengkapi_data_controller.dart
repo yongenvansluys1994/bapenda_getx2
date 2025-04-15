@@ -1,9 +1,11 @@
 import 'package:bapenda_getx2/app/core/api/api.dart';
 import 'package:bapenda_getx2/app/modules/lapor_pajak/controllers/lapor_pajak_controller.dart';
 import 'package:bapenda_getx2/app/modules/lapor_pajak/models/model_objekku.dart';
+import 'package:bapenda_getx2/core/location_service.dart';
 import 'package:bapenda_getx2/core/push_notification/push_notif_topic.dart';
 import 'package:bapenda_getx2/utils/app_const.dart';
 import 'package:bapenda_getx2/widgets/getdialog.dart';
+import 'package:bapenda_getx2/widgets/logger.dart';
 import 'package:bapenda_getx2/widgets/snackbar.dart';
 import 'package:bapenda_getx2/widgets/theme/app_theme.dart';
 import 'package:flutter/material.dart';
@@ -45,14 +47,21 @@ class LengkapiDataController extends GetxController {
   Set<Marker> markers2 = <Marker>{};
 
   void addMarkers() {
-    var latm = lat == null ? 0.13295280196348974 : lat!;
-    var longm = long == null ? 0.13295280196348974 : long!;
-    markers2 = <Marker>{
-      Marker(
-        markerId: MarkerId('1'),
-        position: LatLng(latm, longm),
-      ),
-    };
+    if (lat != null && long != null) {
+      markers2 = <Marker>{
+        Marker(
+          markerId: const MarkerId('selected_location'),
+          position: LatLng(lat!, long!),
+        ),
+      };
+      update();
+    }
+  }
+
+  void removelatlng() {
+    lat = null;
+    long = null;
+    logInfo("$lat");
     update();
   }
 
@@ -158,32 +167,48 @@ class LengkapiDataController extends GetxController {
   }
 
   void _openGallery(BuildContext context) async {
-    final pickedFile =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
+    final pickedFile = await ImagePicker().pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 800, // Set target width
+      maxHeight: 800, // Set target height
+      imageQuality: 50, // Set quality (0-100)
+    );
     imageFileKTP = pickedFile!;
     update();
     Get.back();
   }
 
   void _openCamera(BuildContext context) async {
-    final pickedFile =
-        await ImagePicker().pickImage(source: ImageSource.camera);
+    final pickedFile = await ImagePicker().pickImage(
+      source: ImageSource.camera,
+      maxWidth: 800, // Set target width
+      maxHeight: 800, // Set target height
+      imageQuality: 50, // Set quality (0-100)
+    );
     imageFileKTP = pickedFile!;
     update();
     Get.back();
   }
 
   void _openGalleryNPWP(BuildContext context) async {
-    final pickedFile =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
+    final pickedFile = await ImagePicker().pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 800, // Set target width
+      maxHeight: 800, // Set target height
+      imageQuality: 50, // Set quality (0-100)
+    );
     imageFileNPWP = pickedFile!;
     update();
     Get.back();
   }
 
   void _openCameraNPWP(BuildContext context) async {
-    final pickedFile =
-        await ImagePicker().pickImage(source: ImageSource.camera);
+    final pickedFile = await ImagePicker().pickImage(
+      source: ImageSource.camera,
+      maxWidth: 800, // Set target width
+      maxHeight: 800, // Set target height
+      imageQuality: 50, // Set quality (0-100)
+    );
     imageFileNPWP = pickedFile!;
     update();
     Get.back();
