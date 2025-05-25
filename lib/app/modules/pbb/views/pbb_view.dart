@@ -1,8 +1,11 @@
+import 'dart:convert';
+
 import 'package:bapenda_getx2/app/routes/app_pages.dart';
 import 'package:bapenda_getx2/widgets/buttons.dart';
 import 'package:bapenda_getx2/widgets/custom_appbar.dart';
 import 'package:bapenda_getx2/widgets/dismiss_keyboard.dart';
 import 'package:bapenda_getx2/widgets/easythrottle.dart';
+import 'package:bapenda_getx2/widgets/logger.dart';
 import 'package:bapenda_getx2/widgets/nodata.dart';
 import 'package:bapenda_getx2/widgets/texts.dart';
 import 'package:bapenda_getx2/widgets/theme/app_theme.dart';
@@ -406,11 +409,12 @@ class PbbView extends GetView<PbbController> {
                                                                             textLink,
                                                                         handler:
                                                                             () async {
+                                                                          // Get.toNamed(
+                                                                          //     Routes.ESPPT_PBB);
                                                                           Get.toNamed(
-                                                                              Routes.QRISPBB,
+                                                                              Routes.ESPPT_PBB,
                                                                               arguments: [
-                                                                                spptItem.nopthn,
-                                                                                spptItem.jumlahHarusBayar
+                                                                                spptItem
                                                                               ]);
                                                                         },
                                                                         title:

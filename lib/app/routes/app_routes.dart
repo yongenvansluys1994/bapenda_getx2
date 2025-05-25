@@ -51,6 +51,8 @@ abstract class Routes {
   static const EKITIRAN_FORM = _Paths.EKITIRAN_FORM;
   static const LAPORAN_EKITIRAN = _Paths.LAPORAN_EKITIRAN;
   static const PICK_GOOGLEMAPS = _Paths.PICK_GOOGLEMAPS;
+  static const EPPT_PBB = _Paths.EPPT_PBB;
+  static const ESPPT_PBB = _Paths.ESPPT_PBB;
 }
 
 abstract class _Paths {
@@ -98,4 +100,6 @@ abstract class _Paths {
   static const EKITIRAN_FORM = '/ekitiran-form';
   static const LAPORAN_EKITIRAN = '/laporan-ekitiran';
   static const PICK_GOOGLEMAPS = '/pick-googlemaps';
+  static const EPPT_PBB = '/eppt-pbb';
+  static const ESPPT_PBB = '/esppt-pbb';
 }

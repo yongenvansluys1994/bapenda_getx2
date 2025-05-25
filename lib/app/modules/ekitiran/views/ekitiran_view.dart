@@ -4,6 +4,7 @@ import 'package:bapenda_getx2/app/routes/app_pages.dart';
 import 'package:bapenda_getx2/core/pdf/pdf_ekitiran_helper.dart';
 import 'package:bapenda_getx2/core/pdf/pdf_helper.dart';
 import 'package:bapenda_getx2/core/pdf/pdf_invoice_helper.dart';
+import 'package:bapenda_getx2/utils/app_const.dart';
 import 'package:bapenda_getx2/widgets/buttons.dart';
 import 'package:bapenda_getx2/widgets/custom_appbar.dart';
 import 'package:bapenda_getx2/widgets/getdialog.dart';
@@ -18,6 +19,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:intl/intl.dart';
 
 import '../controllers/ekitiran_controller.dart';
@@ -29,10 +31,14 @@ class EkitiranView extends GetView<EkitiranController> {
     return GetBuilder<EkitiranController>(
         init: EkitiranController(),
         builder: (controller) {
+          final storage = GetStorage();
+          int? storedVersion = storage.read<int>('versi_data_pbb');
           return Scaffold(
             appBar: AppBar(
               title: Texts.appBarText(
-                  "E-Kitiran ${controller.storage.read('user_rt') == null ? "" : "RT ${controller.storage.read('user_rt')['rt']} ${controller.storage.read('user_rt')['kelurahan']}"}",
+                  (storedVersion == null || storedVersion < dataPBBVersion)
+                      ? "E-Kitiran (No Data PBB)"
+                      : "E-Kitiran ${controller.storage.read('user_rt') == null ? "" : "RT ${controller.storage.read('user_rt')['rt']} ${controller.storage.read('user_rt')['kelurahan']}"}",
                   color: MainColor),
               automaticallyImplyLeading: false,
               centerTitle: true,

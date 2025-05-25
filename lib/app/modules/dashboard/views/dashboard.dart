@@ -517,7 +517,7 @@ class Dashboard extends StatelessWidget {
                                         //     desc:
                                         //         "Modul Pelayanan PBB sedang dalam pengembangan",
                                         //     kategori: "error");
-                                        if (controller.modul_pbb == 1) {
+                                        if (controller.modul_pbb != 1) {
                                           Get.toNamed(Routes.PBB,
                                               arguments: controller.authModel);
                                         } else {

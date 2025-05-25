@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:bapenda_getx2/app/core/api/api.dart';
 import 'package:bapenda_getx2/app/modules/dashboard/models/auth_model_model.dart';
 import 'package:bapenda_getx2/app/modules/lapor_pajak/models/model_getpelaporanuser.dart';
+import 'package:bapenda_getx2/app/modules/pbb/models/model_pbb.dart';
 import 'package:bapenda_getx2/widgets/logger.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
@@ -23,7 +24,6 @@ import 'package:bapenda_getx2/widgets/snackbar.dart';
 
 class QrispbbController extends GetxController {
   late AuthModel authModel;
-  late ModelGetpelaporanUser dataArgument;
   String? nomor_pembayaran;
   int? totalpajak;
   String $id_institution_qris =
@@ -69,7 +69,7 @@ class QrispbbController extends GetxController {
     super.onInit();
     List<dynamic> arguments = Get.arguments;
     nomor_pembayaran = arguments[0]; //pajak
-    totalpajak = int.parse(arguments[1]); //pajak
+    totalpajak = arguments[1]; //pajak
 
     CheckQRIS();
     startTimer();
@@ -321,6 +321,7 @@ class QrispbbController extends GetxController {
                 "INVOICE_NUMBER": "dummy",
                 "EXPIRED_DATE": "${data_QRIS['expired_time']}"
               }));
+          logInfo(responseStore.body);
           var data_storeto_sismiop = json.decode(responseStore.body);
           print("${data_storeto_sismiop}");
           //-------------------END STORE QRIS GENERATED TO SISMIOP------------------------------------

@@ -846,6 +846,71 @@ class Texts {
     );
   }
 
+  static Text textESPPT(
+    String text, {
+    TextAlign textAlign = TextAlign.left,
+    TextDecoration decoration = TextDecoration.none,
+    Color? color,
+    TextOverflow textOverflow = TextOverflow.ellipsis,
+    int? maxLines,
+    bool isItalic = false,
+    bool isUnderline = false,
+    bool isOverline = false,
+    bool isLineTrough = false,
+    bool isBold = false,
+  }) {
+    return Text(
+      text,
+      maxLines: maxLines,
+      textAlign: textAlign,
+      overflow: textOverflow,
+      style: TextStyle(
+        fontStyle: isItalic ? FontStyle.italic : FontStyle.normal,
+        fontFamily: Platform.isIOS ? 'OpenSans' : 'Roboto',
+        fontWeight: isBold ? FontWeight.bold : FontWeight.w400,
+        fontSize: 7.0.sp,
+        color: color,
+        letterSpacing: 0.4,
+        decoration: (isUnderline && isOverline && isLineTrough)
+            ? TextDecoration.combine(
+                [
+                  TextDecoration.underline,
+                  TextDecoration.overline,
+                  TextDecoration.lineThrough,
+                ],
+              )
+            : (isUnderline && isOverline)
+                ? TextDecoration.combine(
+                    [
+                      TextDecoration.underline,
+                      TextDecoration.overline,
+                    ],
+                  )
+                : (isUnderline && isLineTrough)
+                    ? TextDecoration.combine(
+                        [
+                          TextDecoration.underline,
+                          TextDecoration.lineThrough,
+                        ],
+                      )
+                    : (isOverline && isLineTrough)
+                        ? TextDecoration.combine(
+                            [
+                              TextDecoration.overline,
+                              TextDecoration.lineThrough,
+                            ],
+                          )
+                        : isUnderline
+                            ? TextDecoration.underline
+                            : isOverline
+                                ? TextDecoration.overline
+                                : isLineTrough
+                                    ? TextDecoration.lineThrough
+                                    : TextDecoration.none,
+      ),
+    );
+  }
+
   static Text captionDashboard(
     String text, {
     TextAlign textAlign = TextAlign.left,

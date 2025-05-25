@@ -1160,10 +1160,6 @@ class EkitiranController extends GetxController {
     if (storedVersion == null || storedVersion < dataPBBVersion) {
       print("Mulai download data PBB versi baru...");
       await DownloadDataPBBJson();
-
-      // Setelah selesai, simpan versi terbaru ke storage
-      storage.write('versi_data_pbb', dataPBBVersion);
-      print("Download selesai, versi_data_pbb disimpan: $dataPBBVersion");
     } else {
       print(
           "Data PBB sudah versi terbaru ($storedVersion). Tidak perlu download.");
@@ -1190,8 +1186,11 @@ class EkitiranController extends GetxController {
 
         // Simpan ke GetStorage
         await saveJsonToStorage(informasi);
-
         print('Data PBB berhasil disimpan ke GetStorage.');
+        // Setelah selesai, simpan versi terbaru ke storage
+        storage.write('versi_data_pbb', dataPBBVersion);
+        update();
+        print("Download selesai, versi_data_pbb disimpan: $dataPBBVersion");
       } else {
         print('Gagal mendapatkan data: ${response.statusCode}');
       }
@@ -1205,6 +1204,7 @@ class EkitiranController extends GetxController {
   Future<void> saveJsonToStorage(List<dynamic> informasi) async {
     storage.write('data_pbb', informasi);
     print('Data PBB berhasil disimpan di GetStorage.');
+    update();
   }
 
   Future<void> loadJsonFromStorage() async {
