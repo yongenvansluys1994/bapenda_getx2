@@ -129,7 +129,7 @@ class _TambahNpwpdViewState extends State<TambahNpwpdView> {
                                       "Check NPWPD",
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
-                                          fontSize: 8.5.sp,
+                                          fontSize: 7.sp,
                                           fontWeight: FontWeight.bold),
                                     ),
                                   ))

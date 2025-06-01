@@ -19,37 +19,42 @@ class PickGooglemapsView extends GetView<PickGooglemapsController> {
       body: Stack(
         children: [
           Obx(() {
-            // Tampilkan peta hanya jika isMapReady bernilai true
-            if (controller.isMapReady.value) {
-              return GoogleMap(
-                onMapCreated: controller.onMapCreated,
-                initialCameraPosition: CameraPosition(
-                  target: controller.initialPosition.value,
-                  zoom: 19,
-                ),
-                buildingsEnabled: true,
-                mapType: MapType.normal,
-                markers: controller.markers.toSet(),
-                onCameraMove: (position) {
-                  controller.updateCameraPosition(position.target);
-                },
-              );
-            } else {
-              // Tampilkan indikator loading sementara
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    CircularProgressIndicator(),
-                    Text(
-                      "Sedang memuat Peta...",
-                      style: TextStyle(fontSize: 12.sp),
-                    )
-                  ],
-                ),
-              );
-            }
+            return GoogleMap(
+              onMapCreated: controller.onMapCreated,
+              initialCameraPosition: CameraPosition(
+                target: controller.initialPosition.value,
+                zoom: 15,
+              ),
+              mapType: MapType.normal,
+              markers: controller.markers.toSet(),
+              onCameraMove: (position) {
+                controller.updateCameraPosition(position.target);
+              },
+              myLocationEnabled: true,
+              myLocationButtonEnabled: true,
+            );
+          }),
+
+          /// Loading Overlay
+          Obx(() {
+            return controller.isMapReady.value
+                ? SizedBox.shrink()
+                : Container(
+                    color: Colors.white.withOpacity(0.8),
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          CircularProgressIndicator(),
+                          SizedBox(height: 10),
+                          Text(
+                            "Sedang memuat lokasi...",
+                            style: TextStyle(fontSize: 12.sp),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
           }),
           // Marker in the center of the screen
           Obx(() {
@@ -57,13 +62,11 @@ class PickGooglemapsView extends GetView<PickGooglemapsController> {
             if (controller.isMapReady.value) {
               return Center(
                 child: Transform.translate(
-                  offset:
-                      const Offset(0, -25), // Geser ke atas sebesar 25 piksel
-                  child: Icon(
-                    Icons.location_pin,
-                    size: 50,
-                    color: Colors.red,
-                  ),
+                  offset: const Offset(
+                    0,
+                    -25,
+                  ), // Geser ke atas sebesar 25 piksel
+                  child: Icon(Icons.location_pin, size: 50, color: Colors.red),
                 ),
               );
             } else {
@@ -82,10 +85,12 @@ class PickGooglemapsView extends GetView<PickGooglemapsController> {
                 final selectedLocation = controller.currentCameraPosition.value;
 
                 // Kirim nilai lat dan lng ke screen sebelumnya
-                Get.back(result: {
-                  'lat': selectedLocation.latitude,
-                  'lng': selectedLocation.longitude,
-                });
+                Get.back(
+                  result: {
+                    'lat': selectedLocation.latitude,
+                    'lng': selectedLocation.longitude,
+                  },
+                );
               },
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 15),
@@ -95,35 +100,14 @@ class PickGooglemapsView extends GetView<PickGooglemapsController> {
               ),
               child: const Text(
                 "Tetapkan Pilihan Lokasi",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
               ),
             ),
           ),
-          // Positioned(
-          //   bottom: 20,
-          //   left: 10,
-          //   right: 10,
-          //   child: Obx(() => Container(
-          //         padding: const EdgeInsets.all(10),
-          //         decoration: BoxDecoration(
-          //           color: Colors.white,
-          //           borderRadius: BorderRadius.circular(8),
-          //           boxShadow: [
-          //             BoxShadow(
-          //               color: Colors.black26,
-          //               blurRadius: 5,
-          //               offset: Offset(0, 2),
-          //             ),
-          //           ],
-          //         ),
-          //         child: Text(
-          //           'Lat: ${controller.currentCameraPosition.value.latitude}, '
-          //           'Lng: ${controller.currentCameraPosition.value.longitude}',
-          //           textAlign: TextAlign.center,
-          //           style: const TextStyle(fontSize: 16),
-          //         ),
-          //       )),
-          // ),
           Positioned(
             top: 10,
             left: 10,
@@ -159,6 +143,7 @@ class PickGooglemapsView extends GetView<PickGooglemapsController> {
                           },
                           onChanged: (value) {
                             if (value.isNotEmpty) {
+                              print("Searching for: $value");
                               controller.fetchSuggestions(value);
                             } else {
                               controller.suggestions.clear();
@@ -179,40 +164,43 @@ class PickGooglemapsView extends GetView<PickGooglemapsController> {
                     ],
                   ),
                 ),
-                Obx(() => controller.suggestions.isNotEmpty
-                    ? Container(
-                        margin: const EdgeInsets.only(top: 5),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(8),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black26,
-                              blurRadius: 5,
-                              offset: Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: ListView.builder(
-                          shrinkWrap: true,
-                          itemCount: controller.suggestions.length,
-                          itemBuilder: (context, index) {
-                            final suggestion = controller.suggestions[index];
-                            return ListTile(
-                              title: Text(suggestion.description ?? ""),
-                              onTap: () {
-                                controller.searchController.text =
-                                    suggestion.description ?? "";
-                                controller.searchLocation(
-                                    suggestion.description ?? "");
-                                controller.suggestions.clear();
-                                dismissKeyboard();
-                              },
-                            );
-                          },
-                        ),
-                      )
-                    : const SizedBox()),
+                Obx(
+                  () => controller.suggestions.isNotEmpty
+                      ? Container(
+                          margin: const EdgeInsets.only(top: 5),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(8),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black26,
+                                blurRadius: 5,
+                                offset: Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: controller.suggestions.length,
+                            itemBuilder: (context, index) {
+                              final suggestion = controller.suggestions[index];
+                              return ListTile(
+                                title: Text(suggestion.description ?? ""),
+                                onTap: () {
+                                  controller.searchController.text =
+                                      suggestion.description ?? "";
+                                  controller.searchLocation(
+                                    suggestion.description ?? "",
+                                  );
+                                  controller.suggestions.clear();
+                                  dismissKeyboard();
+                                },
+                              );
+                            },
+                          ),
+                        )
+                      : const SizedBox(),
+                ),
               ],
             ),
           ),

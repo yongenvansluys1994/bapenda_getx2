@@ -26,9 +26,7 @@ import '../modules/lapor_pajak/bindings/lengkapi_data_binding.dart';
 import '../modules/lapor_pajak/bindings/pelaporan_detail_binding.dart';
 import '../modules/lapor_pajak/bindings/qris_page_binding.dart';
 import '../modules/lapor_pajak/bindings/va_page_binding.dart';
-import '../modules/lapor_pajak/views/OpenMap.dart';
-import '../modules/lapor_pajak/views/OpenMap_npwpdbaru.dart';
-import '../modules/lapor_pajak/views/OpenMap_tambahnpwpd.dart';
+
 import '../modules/lapor_pajak/views/ebilling_view.dart';
 import '../modules/lapor_pajak/views/lapor_pajak_view.dart';
 import '../modules/lapor_pajak/views/lengkapi_data_view.dart';
@@ -187,21 +185,6 @@ class AppPages {
           name: _Paths.LENGKAPI_DATA,
           page: () => LengkapiDataView(),
           binding: LengkapiDataBinding(),
-        ),
-        GetPage(
-          name: _Paths.OPENMAP,
-          page: () => OpenMap(),
-          binding: LengkapiDataBinding(),
-        ),
-        GetPage(
-          name: _Paths.OPENMAP_NPWPDBARU,
-          page: () => OpenMapNpwpdBaru(),
-          binding: TambahNpwpdbaruBinding(),
-        ),
-        GetPage(
-          name: _Paths.OPENMAP_NPWPD,
-          page: () => OpenMapTambahNpwpd(),
-          binding: TambahNpwpdBinding(),
         ),
         GetPage(
           name: _Paths.QRIS_PAGE,

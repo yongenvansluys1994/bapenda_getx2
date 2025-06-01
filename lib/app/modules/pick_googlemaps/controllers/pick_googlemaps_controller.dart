@@ -1,117 +1,164 @@
 import 'dart:convert';
+import 'package:bapenda_getx2/app/modules/pick_googlemaps/models/autocomplete_model.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:http/http.dart' as http;
 
 import 'package:bapenda_getx2/core/location_service.dart';
 import 'package:bapenda_getx2/widgets/logger.dart';
-import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:google_place/google_place.dart';
-import 'package:get/get.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class PickGooglemapsController extends GetxController {
-  late GoogleMapController mapController;
+  GoogleMapController? mapController; // Aman dari crash
   final searchController = TextEditingController();
-  final googlePlace = GooglePlace(
-      "AIzaSyAqNdAdaVAH0nPf6FlD4zr8-Dn1D1c-3N8"); // Replace with your API key
+
   final markers = <Marker>{}.obs;
   final Rx<LatLng> initialPosition =
       const LatLng(0.13707068955713855, 117.48831067227351).obs;
+  final Rx<LatLng> currentCameraPosition =
+      const LatLng(0.13707068955713855, 117.48831067227351).obs;
   final suggestions = <AutocompletePrediction>[].obs;
 
-  // Reactive variable to track the camera's position
-  final currentCameraPosition =
-      const LatLng(0.13707068955713855, 117.48831067227351).obs;
+  final RxBool isMapReady = false.obs;
 
   final LocationService locationService = LocationService();
-  final RxBool isMapReady = false.obs;
+  final String apiKey =
+      "AIzaSyAqNdAdaVAH0nPf6FlD4zr8-Dn1c-3N8"; // Ganti dengan milikmu
 
   @override
   void onInit() {
     super.onInit();
-    _setInitialLocation();
-  }
-
-  void _setInitialLocation() async {
-    try {
-      final userLocation = await locationService.locationStream.first;
-      logInfo(
-          "User location: ${userLocation.latitude}, ${userLocation.longitude}");
-      // Set the initial position to the user's location
-      initialPosition.value =
-          LatLng(userLocation.latitude, userLocation.longitude);
-
-      // Pindahkan kamera ke lokasi pengguna
-      await mapController.animateCamera(CameraUpdate.newLatLngZoom(
-          LatLng(userLocation.latitude, userLocation.longitude), 15));
-
-      // Tandai bahwa peta siap ditampilkan
-      isMapReady.value = true;
-    } catch (e) {
-      logError("Failed to get location: $e");
-      isMapReady.value = true; // Tetap tampilkan peta meskipun gagal
-    }
+    // Jangan ambil lokasi di sini, karena mapController belum siap
   }
 
   void onMapCreated(GoogleMapController controller) {
     mapController = controller;
+    _setInitialLocation(); // Panggil setelah controller siap
   }
 
   void updateCameraPosition(LatLng position) {
     currentCameraPosition.value = position;
-    logInfo("Lat: ${currentCameraPosition.value.latitude}, ");
-    logInfo("Lng: ${currentCameraPosition.value.longitude}, ");
+    logInfo("Camera position updated: $position");
   }
 
-  Future<void> searchLocation(String query) async {
-    final result = await googlePlace.search.getTextSearch(query);
+  Future<void> _setInitialLocation() async {
+    logInfo("Mulai ambil lokasi...");
 
-    // Log specific fields instead of the entire object
-    if (result != null && result.results != null) {
-      logInfo("Search results: ${result.results!.map((e) => e.name).toList()}");
-    } else {
-      logInfo("No results found for query: $query");
-    }
+    try {
+      final userLocation = await locationService.getCurrentLocation();
 
-    if (result != null &&
-        result.results != null &&
-        result.results!.isNotEmpty) {
-      final firstResult = result.results!.first;
-      final lat = firstResult.geometry?.location?.lat;
-      final lng = firstResult.geometry?.location?.lng;
-
-      if (lat != null && lng != null) {
-        final position = LatLng(lat, lng);
-        mapController.animateCamera(CameraUpdate.newLatLngZoom(position, 15));
-
-        // Remove this line to prevent adding a marker
-        // markers.add(Marker(markerId: MarkerId("search"), position: position));
+      if (userLocation == null) {
+        logError("Gagal dapatkan lokasi: hasil null");
+        isMapReady.value = true;
+        return;
       }
+
+      initialPosition.value = LatLng(
+        userLocation.latitude,
+        userLocation.longitude,
+      );
+
+      if (mapController != null) {
+        await mapController!.animateCamera(
+          CameraUpdate.newLatLngZoom(initialPosition.value, 15),
+        );
+      } else {
+        logError("MapController belum siap saat animasi kamera");
+      }
+
+      logInfo("Berhasil dapat lokasi: ${initialPosition.value}");
+    } catch (e) {
+      logError("Gagal mendapatkan lokasi: $e");
+    } finally {
+      isMapReady.value = true;
+      print("Map siap");
     }
+  }
+
+  void _showPermissionDeniedDialog() {
+    Get.defaultDialog(
+      title: "Izin Lokasi Diperlukan",
+      middleText: "Silakan aktifkan izin lokasi secara manual di Pengaturan.",
+      textConfirm: "Buka Pengaturan",
+      textCancel: "Batal",
+      onConfirm: () {
+        openAppSettings(); // dari package permission_handler
+        Get.back();
+      },
+      onCancel: () => Get.back(),
+    );
   }
 
   Future<void> fetchSuggestions(String query) async {
-    // Koordinat default manual (misalnya, lokasi tertentu)
-    LatLng defaultLocation = LatLng(
-        0.13707068955713855, 117.48831067227351); // Ganti dengan koordinat Anda
-    int searchRadius = 3000; // Radius pencarian dalam meter (5 km)
+    final defaultLocation = const LatLng(
+      0.13707068955713855,
+      117.48831067227351,
+    );
+    final searchRadius = 3000;
 
-    final result = await googlePlace.autocomplete.get(
-      query,
-      location: LatLon(defaultLocation.latitude, defaultLocation.longitude),
-      radius: searchRadius, // atau sesuai kebutuhan, misalnya 5000 untuk 5 km
+    final url = Uri.parse(
+      'https://maps.googleapis.com/maps/api/place/autocomplete/json'
+      '?input=${Uri.encodeComponent(query)}'
+      '&location=${defaultLocation.latitude},${defaultLocation.longitude}'
+      '&radius=$searchRadius'
+      '&key=$apiKey',
     );
 
-    if (result != null && result.predictions != null) {
-      suggestions.value = result.predictions!;
-    } else {
+    try {
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        print(jsonEncode(data));
+        final predictions = data['predictions'] as List<dynamic>;
+
+        suggestions.value = predictions
+            .map((item) => AutocompletePrediction.fromJson(item))
+            .toList();
+      } else {
+        logError("Google Places API error: ${response.statusCode}");
+        suggestions.clear();
+      }
+    } catch (e) {
+      logError("Failed to fetch suggestions: $e");
       suggestions.clear();
     }
   }
 
-  void zoomIn() {
-    mapController.animateCamera(CameraUpdate.zoomIn());
-  }
+  Future<void> searchLocation(String query) async {
+    final url = Uri.parse(
+      'https://maps.googleapis.com/maps/api/place/textsearch/json'
+      '?query=${Uri.encodeComponent(query)}'
+      '&key=$apiKey',
+    );
 
-  void zoomOut() {
-    mapController.animateCamera(CameraUpdate.zoomOut());
+    try {
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final results = data['results'] as List<dynamic>;
+
+        if (results.isNotEmpty) {
+          final firstResult = results.first;
+          final location = firstResult['geometry']['location'];
+          final lat = location['lat'] as double;
+          final lng = location['lng'] as double;
+
+          final position = LatLng(lat, lng);
+          await mapController!.animateCamera(
+            CameraUpdate.newLatLngZoom(position, 15),
+          );
+
+          logInfo("Search result: ${firstResult['name']} at $lat, $lng");
+        } else {
+          logInfo("No results found for query: $query");
+        }
+      } else {
+        logError("Google Text Search API error: ${response.statusCode}");
+      }
+    } catch (e) {
+      logError("Failed to search location: $e");
+    }
   }
 }

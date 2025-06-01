@@ -26,10 +26,7 @@ abstract class Routes {
   static const LENGKAPI_DATA = _Paths.LAPOR_PAJAK + _Paths.LENGKAPI_DATA;
   static const PROFILKU = _Paths.PROFILKU;
   static const ADSPAGE = _Paths.ADSPAGE;
-  static const OPENMAP = _Paths.LAPOR_PAJAK + _Paths.OPENMAP;
-  static const OPENMAP_NPWPDBARU =
-      _Paths.LAPOR_PAJAK + _Paths.OPENMAP_NPWPDBARU;
-  static const OPENMAP_NPWPD = _Paths.LAPOR_PAJAK + _Paths.OPENMAP_NPWPD;
+
   static const ADS_DETAIL = _Paths.ADS_DETAIL;
   static const PANDUAN = _Paths.PANDUAN;
   static const PANDUAN_DETAIL = _Paths.PANDUAN_DETAIL;
